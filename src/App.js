@@ -7,7 +7,7 @@ import Experience from './components/Experience';
 import Footer from './components/Footer';
 import './App.css';
 
-function App() {
+const App = () => {
   return (
     <Router>
       <Header />
@@ -19,6 +19,6 @@ function App() {
       <Footer />
     </Router>
   );
-}
+};
 
 export default App;
