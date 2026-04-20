@@ -23,11 +23,11 @@ export const SectionTitle: React.FC<SectionTitleProps> = ({
       viewport={{ once: true }}
       className={`mb-12 ${centered ? 'text-center' : ''}`}
     >
-      <h2 className="text-4xl md:text-5xl font-heading font-bold gradient-text mb-4">
+      <h2 className="text-3xl sm:text-4xl md:text-5xl font-[Raleway] font-bold gradient-text mb-4">
         {title}
       </h2>
       {subtitle && (
-        <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+        <p className="text-sm sm:text-base md:text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
           {subtitle}
         </p>
       )}

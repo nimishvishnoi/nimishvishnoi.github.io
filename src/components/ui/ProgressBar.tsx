@@ -30,7 +30,7 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
           {Math.round(percentage)}%
         </span>
       </div>
-      <div className="w-full bg-gray-200 dark:bg-dark-card rounded-full overflow-hidden h-3">
+      <div className="w-full bg-gray-200 dark:bg-slate-800 rounded-full overflow-hidden h-3">
         <motion.div
           initial={{ width: 0 }}
           whileInView={{ width: `${percentage}%` }}

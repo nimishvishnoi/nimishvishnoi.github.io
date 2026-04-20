@@ -19,14 +19,14 @@ export const SkillsSection: React.FC = () => {
   );
 
   return (
-    <section id="skills" className="py-section px-4 bg-gray-50 dark:bg-dark-bg">
+    <section id="skills" className="py-[5rem] px-4 bg-gray-50 dark:bg-slate-900">
       <div className="container-custom">
         <SectionTitle title="Skills" subtitle="Expertise across modern technologies" />
 
-        <div className="grid md:grid-cols-2 gap-8">
+        <div className="grid md:grid-cols-2 gap-4 sm:gap-6 md:gap-8">
           {Object.entries(groupedSkills).map(([category, categorySkills], categoryIndex) => (
             <Card key={category} delay={categoryIndex * 0.2}>
-              <h3 className="text-xl font-heading font-bold text-primary-600 dark:text-primary-400 mb-4">
+              <h3 className="text-xl font-[Raleway] font-bold text-primary-600 dark:text-primary-400 mb-4">
                 {skillCategories[category as keyof typeof skillCategories]}
               </h3>
 

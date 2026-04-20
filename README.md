@@ -34,14 +34,15 @@ git push origin main
 
 ## Setup Instructions
 
-See **[SETUP_CHECKLIST.md](SETUP_CHECKLIST.md)** for detailed step-by-step instructions.
+See **[docs/SETUP_CHECKLIST.md](docs/SETUP_CHECKLIST.md)** for detailed step-by-step instructions.
 
 ## Documentation
 
-- [REACT_MIGRATION.md](REACT_MIGRATION.md) - Complete tech stack overview
-- [SETUP_CHECKLIST.md](SETUP_CHECKLIST.md) - Setup and testing guide
-- [QUICK_REFERENCE.md](QUICK_REFERENCE.md) - Developer quick reference
-- [PROJECT_STRUCTURE.md](PROJECT_STRUCTURE.md) - File structure guide
+- [docs/REACT_MIGRATION.md](docs/REACT_MIGRATION.md) - Complete tech stack overview
+- [docs/SETUP_CHECKLIST.md](docs/SETUP_CHECKLIST.md) - Setup and testing guide
+- [docs/QUICK_REFERENCE.md](docs/QUICK_REFERENCE.md) - Developer quick reference
+- [docs/PROJECT_STRUCTURE.md](docs/PROJECT_STRUCTURE.md) - File structure guide
+- [docs/MIGRATION_COMPLETE.md](docs/MIGRATION_COMPLETE.md) - Migration completion summary
 
 ## Tech Stack
 

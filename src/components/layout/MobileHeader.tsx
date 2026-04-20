@@ -22,13 +22,13 @@ export const MobileHeader: React.FC<MobileHeaderProps> = ({
     <motion.header
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="fixed top-0 left-0 right-0 h-16 bg-gradient-to-r from-primary-700 to-primary-800 dark:from-dark-card dark:to-dark-bg text-white shadow-lg flex items-center justify-between px-4 lg:hidden z-50"
+      className="fixed top-0 left-0 right-0 h-16 bg-gradient-to-r from-primary-700 to-primary-800 dark:from-slate-800 dark:to-slate-900 text-white shadow-lg flex items-center justify-between px-3 sm:px-4 lg:hidden z-50"
     >
-      <h1 className="font-heading font-bold text-xl">Nimish Vishnoi</h1>
-      <div className="flex items-center gap-4">
+      <h1 className="font-[Raleway] font-bold text-lg sm:text-xl truncate">Nimish Vishnoi</h1>
+      <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
         <button
           onClick={onToggleDarkMode}
-          className="text-lg hover:text-primary-200 smooth-transition"
+          className="text-base sm:text-lg hover:text-primary-200 smooth-transition"
           aria-label="Toggle dark mode"
           title={darkMode ? 'Light mode' : 'Dark mode'}
         >
@@ -36,7 +36,7 @@ export const MobileHeader: React.FC<MobileHeaderProps> = ({
         </button>
         <button
           onClick={onToggleMobileNav}
-          className={`text-2xl hover:text-primary-200 smooth-transition transform transition-transform ${
+          className={`text-xl sm:text-2xl hover:text-primary-200 smooth-transition transform transition-transform ${
             mobileNavOpen ? 'rotate-90' : ''
           }`}
           aria-label="Toggle navigation"

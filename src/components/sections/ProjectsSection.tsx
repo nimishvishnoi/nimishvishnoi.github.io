@@ -7,16 +7,16 @@ import { projects } from '@data/projects';
 
 export const ProjectsSection: React.FC = () => {
   return (
-    <section id="projects" className="py-section px-4 bg-gray-50 dark:bg-dark-bg">
+    <section id="projects" className="py-[5rem] px-4 bg-gray-50 dark:bg-slate-900">
       <div className="container-custom">
         <SectionTitle title="Projects" subtitle="Showcase of work and expertise" />
 
-        <div className="grid md:grid-cols-2 gap-6">
+        <div className="grid md:grid-cols-2 gap-4 sm:gap-5 md:gap-6">
           {projects.map((project, index) => (
             <Card key={project.id} delay={(index % 2) * 0.2} className="flex flex-col">
               <div className="flex items-start justify-between mb-4">
                 <div className="flex-1">
-                  <h3 className="text-xl font-heading font-bold text-gray-900 dark:text-white">
+                  <h3 className="text-xl font-[Raleway] font-bold text-gray-900 dark:text-white">
                     {project.title}
                   </h3>
                   <p className="text-sm text-gray-600 dark:text-gray-400 font-accent">

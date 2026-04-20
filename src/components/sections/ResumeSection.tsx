@@ -21,7 +21,7 @@ export const ResumeSection: React.FC = () => {
   };
 
   return (
-    <section id="resume" className="py-section px-4">
+    <section id="resume" className="py-[5rem] px-4">
       <div className="container-custom">
         <SectionTitle title="Resume" subtitle="Professional journey and expertise" />
 
@@ -29,7 +29,7 @@ export const ResumeSection: React.FC = () => {
         <Card className="mb-12">
           <div className="grid md:grid-cols-2 gap-8">
             <div>
-              <h3 className="text-2xl font-heading font-bold mb-2">{summary.name}</h3>
+              <h3 className="text-2xl font-[Raleway] font-bold mb-2">{summary.name}</h3>
               <p className="text-primary-600 dark:text-primary-400 font-accent mb-4">
                 {summary.title}
               </p>
@@ -60,10 +60,10 @@ export const ResumeSection: React.FC = () => {
           </div>
         </Card>
 
-        <div className="grid lg:grid-cols-2 gap-8">
+        <div className="grid lg:grid-cols-2 gap-6 lg:gap-8">
           {/* Education */}
           <div>
-            <h3 className="text-2xl font-heading font-bold mb-6 text-primary-600 dark:text-primary-400">
+            <h3 className="text-2xl font-[Raleway] font-bold mb-6 text-primary-600 dark:text-primary-400">
               Education
             </h3>
             {education.map((edu, index) => (
@@ -84,7 +84,7 @@ export const ResumeSection: React.FC = () => {
 
           {/* Experience */}
           <div>
-            <h3 className="text-2xl font-heading font-bold mb-6 text-primary-600 dark:text-primary-400">
+            <h3 className="text-2xl font-[Raleway] font-bold mb-6 text-primary-600 dark:text-primary-400">
               Professional Experience
             </h3>
             {experiences.map((exp, index) => (
@@ -118,7 +118,7 @@ export const ResumeSection: React.FC = () => {
 
         {/* Achievements */}
         <div className="mt-12">
-          <h3 className="text-2xl font-heading font-bold mb-6 text-primary-600 dark:text-primary-400">
+          <h3 className="text-2xl font-[Raleway] font-bold mb-6 text-primary-600 dark:text-primary-400">
             Achievements & Certifications
           </h3>
           <div className="grid md:grid-cols-2 gap-6">

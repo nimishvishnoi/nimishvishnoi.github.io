@@ -17,24 +17,12 @@ import {
   ProjectsSection,
   ContactSection,
 } from '@components/sections';
-import { useScrollSpy, useMobileNav } from '@hooks';
+import { useScrollSpy, useMobileNav, useDarkMode } from '@hooks';
 
 const App: React.FC = () => {
   const { activeSection } = useScrollSpy(['about', 'skills', 'resume', 'projects', 'contact']);
   const { mobileNavOpen, toggleMobileNav, closeMobileNav } = useMobileNav();
-
-  // Update dark mode in DOM and localStorage
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('darkMode');
-      const darkMode = saved ? JSON.parse(saved) : window.matchMedia('(prefers-color-scheme: dark)').matches;
-      if (darkMode) {
-        document.documentElement.classList.add('dark');
-      } else {
-        document.documentElement.classList.remove('dark');
-      }
-    }
-  }, []);
+  const { darkMode, toggleDarkMode } = useDarkMode();
 
   // Close mobile nav on resize to desktop
   useEffect(() => {
@@ -49,14 +37,14 @@ const App: React.FC = () => {
   }, [mobileNavOpen, closeMobileNav]);
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen overflow-x-hidden">
       {/* Header */}
       <Header />
 
       {/* Mobile Header */}
       <MobileHeader
-        darkMode={false}
-        onToggleDarkMode={() => {}}
+        darkMode={darkMode}
+        onToggleDarkMode={toggleDarkMode}
         mobileNavOpen={mobileNavOpen}
         onToggleMobileNav={toggleMobileNav}
       />
@@ -69,8 +57,8 @@ const App: React.FC = () => {
         {mobileNavOpen && <MobileNav activeSection={activeSection} onClose={closeMobileNav} />}
       </AnimatePresence>
 
-      {/* Main Content */}
-      <main className="bg-white dark:bg-dark-bg text-gray-900 dark:text-white smooth-transition">
+      {/* Main Content - Add padding-top for mobile header */}
+      <main className="bg-white dark:bg-slate-900 text-gray-900 dark:text-white smooth-transition pt-16 lg:pt-0">
         {/* About Section */}
         <motion.div
           initial={{ opacity: 0 }}
@@ -127,7 +115,7 @@ const App: React.FC = () => {
           whileInView={{ opacity: 1 }}
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
-          className="bg-gray-100 dark:bg-dark-card py-8 px-4 text-center text-gray-600 dark:text-gray-400 border-t border-gray-200 dark:border-gray-800"
+          className="bg-gray-100 dark:bg-slate-800 py-8 px-4 text-center text-gray-600 dark:text-gray-400 border-t border-gray-200 dark:border-gray-800"
         >
           <p className="text-sm">
             © 2024 Nimish Vishnoi. Built with React 19 & TypeScript. All rights reserved.

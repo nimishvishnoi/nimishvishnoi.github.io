@@ -33,7 +33,7 @@ export const Navigation: React.FC<NavigationProps> = ({ activeSection, onLinkCli
   };
 
   return (
-    <nav className="bg-white dark:bg-dark-bg border-b border-gray-200 dark:border-gray-800 shadow-sm sticky top-0 z-30">
+    <nav className="bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-gray-800 shadow-sm sticky top-16 z-30 hidden lg:block">
       <div className="container-custom">
         <ul className="flex justify-center space-x-8 py-4">
           {navLinks.map((link, index) => (

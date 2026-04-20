@@ -19,7 +19,7 @@ export const Card: React.FC<CardProps> = ({ children, className = '', hover = tr
       transition={{ duration: 0.6, delay }}
       viewport={{ once: true }}
       whileHover={hover ? { translateY: -8 } : undefined}
-      className={`bg-white dark:bg-dark-card rounded-lg shadow-md hover:shadow-lg dark:shadow-xl dark:hover:shadow-2xl smooth-transition p-6 ${className}`}
+      className={`bg-white dark:bg-slate-800 rounded-lg shadow-md hover:shadow-lg dark:shadow-xl dark:hover:shadow-2xl smooth-transition p-6 ${className}`}
     >
       {children}
     </motion.div>

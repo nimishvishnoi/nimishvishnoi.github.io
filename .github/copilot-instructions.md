@@ -1,28 +1,31 @@
 # Project Guidelines
 
 ## Code Style
-- **HTML**: Semantic sections with IDs for navigation anchors. Use Bootstrap utility classes for layout and responsive design.
-- **CSS**: Mobile-first approach with breakpoints at 768px and 1024px. Primary colors: `#25ad7b` (teal), `#2eafec` (blue). Fonts: "Open Sans" (body), "Raleway" (headings), "Poppins" (accents).
-- **JavaScript**: jQuery-centric with ES5 syntax, IIFE pattern for encapsulation. Event delegation for dynamic elements. Reference [main.js](assets/js/main.js) for patterns.
+- **TypeScript**: Use strict typing and avoid `any`. Prefer `type` imports for interfaces from `@types`.
+- **React**: Use functional components with hooks. Keep components small, reusable, and accessible.
+- **CSS**: Use Tailwind CSS utility classes for styling. Keep global styles in `src/styles/globals.css`.
+- **Accessibility**: Use semantic HTML and proper ARIA roles. Always include `alt` text for images.
 
 ## Architecture
-Static single-page portfolio website deployed via GitHub Pages. All third-party libraries vendored locally in `assets/nimish/` to avoid CDN dependencies. No backend or build process—pure HTML/CSS/JS.
+Modern React portfolio built with React 19, TypeScript, Vite, Tailwind CSS, and Firebase. The application uses a component-based architecture with reusable UI components, custom hooks, and centralized data files under `src/data/`.
 
 ## Build and Test
-No build commands required. Deployment is automatic via GitHub Actions on push to `main` branch (see [.github/workflows/static.yml](.github/workflows/static.yml)).
+- Use `yarn install` to install dependencies.
+- Run `yarn dev` for local development.
+- Run `yarn build` for production.
+- Use `yarn lint` and `yarn format` to enforce code quality.
 
 ## Conventions
-- **Libraries**: Vendored in `assets/nimish/` (Bootstrap CSS-only, jQuery, AOS, Typed.js, Owl Carousel, VenoBox, Isotope, etc.). Update manually—no npm.
-- **Animations**: Use AOS library with data attributes (`data-aos`, `data-aos-delay`). Initialize with `duration: 1000, easing: "ease-in-out-back", once: true`.
-- **Icons**: Mix of icofont, boxicons, and Bootstrap icons. Prefer consistent usage within sections.
-- **Experience Calculation**: Update hardcoded join date in `experienceCalculator()` function annually (currently Aug 2018).
-- **Mobile Navigation**: Toggle `mobile-nav-active` class on `<body>` for menu state.
-- **Scroll Behavior**: Smooth scroll with 1500ms delay, scroll spy offset of 200px.
+- **Project data**: Keep content in `src/data/` files.
+- **Components**: Organize by feature under `src/components/layout/`, `src/components/sections/`, and `src/components/ui/`.
+- **Hooks**: Use `src/hooks/` for reusable logic such as navigation and scroll state.
+- **Services**: Keep external integration in `src/services/`.
+- **Utils**: Put shared helper logic in `src/utils.ts`.
+- **Firebase**: Store env vars in `.env.local` and keep `.env.example` committed.
 
 ## Potential Pitfalls
-- Avoid mixing icon libraries excessively—standardize on one per section.
-- Update experience date manually to prevent stale information.
-- Ensure accessibility: Add alt text to images, proper ARIA roles for progress bars.
-- Test mobile menu toggle on slow connections to avoid flicker.
-- Scroll spy offset may need adjustment for different viewport heights.</content>
-<parameter name="filePath">d:\Nimish Vishnoi\nimishvishnoi.github.io\.github\copilot-instructions.md
+- Do not reference old static site assets or jQuery patterns.
+- Avoid putting business data directly in component files; use `src/data/`.
+- Keep `dist/` out of source control and `.env.local` excluded.
+- Ensure responsive behavior across mobile, tablet, and desktop.
+- Validate contact form inputs before Firebase submission.

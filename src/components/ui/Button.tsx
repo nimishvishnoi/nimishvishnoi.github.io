@@ -38,8 +38,8 @@ export const Button = React.forwardRef<
       secondary:
         'bg-secondary-600 text-white hover:bg-secondary-700 dark:bg-secondary-500 dark:hover:bg-secondary-600',
       outline:
-        'border-2 border-primary-600 text-primary-600 hover:bg-primary-50 dark:border-primary-400 dark:text-primary-400 dark:hover:bg-dark-card',
-      ghost: 'text-primary-600 hover:bg-primary-50 dark:text-primary-400 dark:hover:bg-dark-card',
+        'border-2 border-primary-600 text-primary-600 hover:bg-primary-50 dark:border-primary-400 dark:text-primary-400 dark:hover:bg-slate-800',
+      ghost: 'text-primary-600 hover:bg-primary-50 dark:text-primary-400 dark:hover:bg-slate-800',
     };
 
     const sizes = {

@@ -50,7 +50,7 @@ export const MobileNav: React.FC<MobileNavProps> = ({ activeSection, onClose }) 
         animate={{ x: 0 }}
         exit={{ x: -300 }}
         transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-        className="fixed left-0 top-0 bottom-0 w-64 bg-primary-700 dark:bg-dark-card shadow-xl p-6 z-40 overflow-y-auto lg:hidden"
+        className="fixed left-0 top-0 bottom-0 w-3/4 max-w-xs bg-primary-700 dark:bg-slate-800 shadow-xl p-4 sm:p-6 z-40 overflow-y-auto lg:hidden"
       >
         {/* Close Button */}
         <button

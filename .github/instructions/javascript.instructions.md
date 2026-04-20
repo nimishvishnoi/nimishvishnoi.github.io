@@ -1,12 +1,15 @@
 ---
-description: "Use when editing JavaScript files to enforce jQuery patterns, IIFE encapsulation, and event delegation."
-applyTo: "assets/js/**"
+description: "Use when editing TypeScript/React files to enforce modern React + TypeScript patterns."
+applyTo: "src/**/*.{ts,tsx}"
 ---
 
-# JavaScript Guidelines
+# React & TypeScript Guidelines
 
-- Use jQuery-centric syntax with ES5.
-- Wrap code in IIFE: `!(function($) { ... })(jQuery)`
-- Use event delegation: `$(document).on('click', selector, handler)`
-- Reference [main.js](assets/js/main.js) for patterns.</content>
-<parameter name="filePath">d:\Nimish Vishnoi\nimishvishnoi.github.io\.github\instructions\javascript.instructions.md
+- Use React function components and hooks only.
+- Prefer `const Component = () => {}` with explicit props typing.
+- Avoid `any`; use strict typing and interfaces defined in `src/types/`.
+- Use path aliases from `tsconfig.json` such as `@components`, `@data`, `@hooks`, and `@services`.
+- Keep presentational and data logic separated.
+- Prefer Tailwind CSS utility classes instead of inline styles.
+- Place reusable logic in hooks or `src/utils.ts`.
+- Keep JSX accessible: use semantic elements, proper labels, and ARIA attributes.

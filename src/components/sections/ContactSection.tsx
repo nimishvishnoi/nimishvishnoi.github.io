@@ -76,11 +76,11 @@ export const ContactSection: React.FC = () => {
   };
 
   return (
-    <section id="contact" className="py-section px-4">
+    <section id="contact" className="py-[5rem] px-4">
       <div className="container-custom">
         <SectionTitle title="Contact" subtitle="Get in touch with me" />
 
-        <div className="grid lg:grid-cols-2 gap-8">
+        <div className="grid lg:grid-cols-2 gap-6 lg:gap-8">
           {/* Contact Information */}
           <div className="space-y-6">
             <Card>
@@ -89,7 +89,7 @@ export const ContactSection: React.FC = () => {
                   <FaMapMarkerAlt size={20} />
                 </div>
                 <div>
-                  <h3 className="font-heading font-bold text-lg mb-1">Location</h3>
+                  <h3 className="font-[Raleway] font-bold text-lg mb-1">Location</h3>
                   <p className="text-gray-600 dark:text-gray-400">{contactInfo.location}</p>
                 </div>
               </div>
@@ -101,7 +101,7 @@ export const ContactSection: React.FC = () => {
                   <FaEnvelope size={20} />
                 </div>
                 <div>
-                  <h3 className="font-heading font-bold text-lg mb-1">Email</h3>
+                  <h3 className="font-[Raleway] font-bold text-lg mb-1">Email</h3>
                   <a
                     href={`mailto:${contactInfo.email}`}
                     className="text-primary-600 dark:text-primary-400 hover:text-primary-700 smooth-transition"
@@ -118,7 +118,7 @@ export const ContactSection: React.FC = () => {
                   <FaPhone size={20} />
                 </div>
                 <div>
-                  <h3 className="font-heading font-bold text-lg mb-1">Phone</h3>
+                  <h3 className="font-[Raleway] font-bold text-lg mb-1">Phone</h3>
                   <a
                     href={`tel:${contactInfo.phone}`}
                     className="text-primary-600 dark:text-primary-400 hover:text-primary-700 smooth-transition"
@@ -130,14 +130,14 @@ export const ContactSection: React.FC = () => {
             </Card>
 
             <Card>
-              <h3 className="font-heading font-bold text-lg mb-4">Follow Me</h3>
+              <h3 className="font-[Raleway] font-bold text-lg mb-4">Follow Me</h3>
               <SocialLinks links={socialLinks} size="lg" />
             </Card>
           </div>
 
           {/* Contact Form */}
           <Card>
-            <h3 className="font-heading font-bold text-xl mb-6">Send Me a Message</h3>
+            <h3 className="font-[Raleway] font-bold text-xl mb-6">Send Me a Message</h3>
 
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               {!firebaseAvailable && (
@@ -158,7 +158,7 @@ export const ContactSection: React.FC = () => {
                   id="name"
                   type="text"
                   placeholder="John Doe"
-                  className="w-full px-4 py-2 border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-dark-card text-gray-900 dark:text-white focus:border-primary-600 focus:outline-none smooth-transition"
+                  className="w-full px-4 py-2 border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:border-primary-600 focus:outline-none smooth-transition"
                 />
                 {errors.name && (
                   <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>
@@ -175,7 +175,7 @@ export const ContactSection: React.FC = () => {
                   id="email"
                   type="email"
                   placeholder="john@example.com"
-                  className="w-full px-4 py-2 border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-dark-card text-gray-900 dark:text-white focus:border-primary-600 focus:outline-none smooth-transition"
+                  className="w-full px-4 py-2 border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:border-primary-600 focus:outline-none smooth-transition"
                 />
                 {errors.email && (
                   <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
@@ -192,7 +192,7 @@ export const ContactSection: React.FC = () => {
                   id="phone"
                   type="tel"
                   placeholder="+91 9876543210"
-                  className="w-full px-4 py-2 border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-dark-card text-gray-900 dark:text-white focus:border-primary-600 focus:outline-none smooth-transition"
+                  className="w-full px-4 py-2 border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:border-primary-600 focus:outline-none smooth-transition"
                 />
                 {errors.phone && (
                   <p className="text-red-500 text-sm mt-1">{errors.phone.message}</p>
@@ -209,7 +209,7 @@ export const ContactSection: React.FC = () => {
                   id="subject"
                   type="text"
                   placeholder="Project Discussion"
-                  className="w-full px-4 py-2 border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-dark-card text-gray-900 dark:text-white focus:border-primary-600 focus:outline-none smooth-transition"
+                  className="w-full px-4 py-2 border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:border-primary-600 focus:outline-none smooth-transition"
                 />
                 {errors.subject && (
                   <p className="text-red-500 text-sm mt-1">{errors.subject.message}</p>
@@ -226,7 +226,7 @@ export const ContactSection: React.FC = () => {
                   id="message"
                   rows={5}
                   placeholder="Your message here..."
-                  className="w-full px-4 py-2 border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-dark-card text-gray-900 dark:text-white focus:border-primary-600 focus:outline-none smooth-transition resize-none"
+                  className="w-full px-4 py-2 border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:border-primary-600 focus:outline-none smooth-transition resize-none"
                 />
                 {errors.message && (
                   <p className="text-red-500 text-sm mt-1">{errors.message.message}</p>

@@ -8,7 +8,7 @@ import { socialLinks } from '@data/contact';
 
 export const Header: React.FC = () => {
   return (
-    <header className="bg-gradient-to-b from-primary-700 to-primary-800 dark:from-dark-card dark:to-dark-bg text-white py-12">
+    <header className="bg-gradient-to-b from-primary-700 to-primary-800 dark:from-slate-800 dark:to-slate-900 text-white py-8 sm:py-12 hidden lg:block">
       <div className="container-custom">
         <motion.div
           initial={{ opacity: 0, scale: 0.5 }}
@@ -20,14 +20,14 @@ export const Header: React.FC = () => {
           <img
             src="/profile.jpg"
             alt="Nimish Vishnoi"
-            className="w-32 h-32 rounded-full border-4 border-white/20 mx-auto mb-4 object-cover bg-white/10"
+            className="w-24 sm:w-32 h-24 sm:h-32 rounded-full border-4 border-white/20 mx-auto mb-4 object-cover bg-white/10"
             onError={(e) => {
               e.currentTarget.src = '/profile.svg';
             }}
           />
 
           {/* Name */}
-          <h1 className="text-3xl font-heading font-bold mb-2">Nimish Vishnoi</h1>
+          <h1 className="text-2xl sm:text-3xl font-[Raleway] font-bold mb-2">Nimish Vishnoi</h1>
           <p className="text-primary-200 dark:text-primary-300 font-accent text-sm">
             Senior Software Engineer
           </p>
