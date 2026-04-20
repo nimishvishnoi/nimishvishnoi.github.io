@@ -2,12 +2,19 @@
  * Firebase service for contact form submissions
  * Uses environment variables for configuration
  */
-import { initializeApp } from 'firebase/app';
-import { getDatabase, ref, push, set, serverTimestamp } from 'firebase/database';
+import { initializeApp, type FirebaseOptions } from 'firebase/app';
+import {
+  getDatabase,
+  ref,
+  push,
+  set,
+  serverTimestamp,
+  type Database,
+} from 'firebase/database';
 import type { ContactFormData } from '@types';
 
 // Firebase configuration from environment variables
-const firebaseConfig = {
+const firebaseConfig: FirebaseOptions = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
   authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
   databaseURL: import.meta.env.VITE_FIREBASE_DATABASE_URL,
@@ -18,37 +25,57 @@ const firebaseConfig = {
   measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const database = getDatabase(app);
+const isFirebaseEnabled = Boolean(
+  firebaseConfig.apiKey &&
+    firebaseConfig.authDomain &&
+    firebaseConfig.databaseURL &&
+    firebaseConfig.projectId,
+);
+
+let database: Database | null = null;
+
+if (isFirebaseEnabled) {
+  const app = initializeApp(firebaseConfig);
+  database = getDatabase(app);
+} else {
+  console.warn(
+    'Firebase is not configured. Contact form submissions are disabled.',
+  );
+}
 
 /**
  * Submit contact form to Firebase
  */
 export const submitContactForm = async (formData: ContactFormData): Promise<void> => {
-  try {
-    // Create date-based path for organization
-    const now = new Date();
-    const dateString = `${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}${now.getFullYear()}`;
+  if (!database) {
+    throw new Error(
+      'Firebase is not configured. Please provide Firebase environment variables in .env.local.',
+    );
+  }
 
-    // Create a new reference for the message
+  try {
+    const now = new Date();
+    const dateString = `${String(now.getMonth() + 1).padStart(2, '0')}${String(
+      now.getDate(),
+    ).padStart(2, '0')}${now.getFullYear()}`;
+
     const messageRef = ref(database, `Message/${dateString}`);
     const newMessageRef = push(messageRef);
 
-    // Prepare the data with timestamp
     const messageData = {
       ...formData,
       createdAt: serverTimestamp(),
       submittedAt: new Date().toISOString(),
     };
 
-    // Set the data in the database
     await set(newMessageRef, messageData);
   } catch (error) {
     console.error('Error submitting contact form:', error);
     throw error;
   }
 };
+
+export { isFirebaseEnabled };
 
 /**
  * Validate form data before submission

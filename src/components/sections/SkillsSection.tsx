@@ -3,6 +3,7 @@
  */
 import React from 'react';
 import { SectionTitle, Card, Badge } from '@components/ui';
+import type { Skill } from '@types';
 import { skills, skillCategories } from '@data/skills';
 
 export const SkillsSection: React.FC = () => {
@@ -14,11 +15,11 @@ export const SkillsSection: React.FC = () => {
       acc[skill.category].push(skill);
       return acc;
     },
-    {} as Record<string, typeof skills>,
+    {} as Record<string, Skill[]>,
   );
 
   return (
-    <section id="skills" className="py-section px-4 lg:ml-80 bg-gray-50 dark:bg-dark-bg">
+    <section id="skills" className="py-section px-4 bg-gray-50 dark:bg-dark-bg">
       <div className="container-custom">
         <SectionTitle title="Skills" subtitle="Expertise across modern technologies" />
 

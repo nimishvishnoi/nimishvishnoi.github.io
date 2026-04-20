@@ -33,28 +33,30 @@ export const Navigation: React.FC<NavigationProps> = ({ activeSection, onLinkCli
   };
 
   return (
-    <nav className="hidden lg:block">
-      <ul className="space-y-3">
-        {navLinks.map((link, index) => (
-          <motion.li
-            key={link.href}
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.4, delay: index * 0.1 }}
-          >
-            <button
-              onClick={() => handleClick(link.href)}
-              className={`w-full text-left px-4 py-3 rounded-lg font-accent font-medium smooth-transition ${
-                activeSection === link.id
-                  ? 'bg-white text-primary-700 dark:bg-primary-600 dark:text-white'
-                  : 'text-white hover:bg-white/10'
-              }`}
+    <nav className="bg-white dark:bg-dark-bg border-b border-gray-200 dark:border-gray-800 shadow-sm sticky top-0 z-30">
+      <div className="container-custom">
+        <ul className="flex justify-center space-x-8 py-4">
+          {navLinks.map((link, index) => (
+            <motion.li
+              key={link.href}
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: index * 0.1 }}
             >
-              {link.label}
-            </button>
-          </motion.li>
-        ))}
-      </ul>
+              <button
+                onClick={() => handleClick(link.href)}
+                className={`px-4 py-2 rounded-lg font-accent font-medium smooth-transition ${
+                  activeSection === link.id
+                    ? 'bg-primary-600 text-white'
+                    : 'text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400'
+                }`}
+              >
+                {link.label}
+              </button>
+            </motion.li>
+          ))}
+        </ul>
+      </div>
     </nav>
   );
 };

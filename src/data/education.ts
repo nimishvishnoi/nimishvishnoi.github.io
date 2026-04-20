@@ -17,6 +17,6 @@ export const education: Education[] = [
 
 export const summary = {
   name: 'Nimish Vishnoi',
-  title: 'Senior Software Engineer',
-  bio: 'B.Tech Graduate with 7+ years of experience as a Software Developer with expertise in .NET, JavaScript, React JS, Python and SQL Server. Passionate about building scalable, maintainable, and user-centric applications.',
+  title: 'Software Engineer',
+  bio: 'B.Tech Graduate with 7 Years 8 Months of Experience as Software Developer have knowledge of .Net, JavaScript, React JS, Python and SQL Server.',
 };

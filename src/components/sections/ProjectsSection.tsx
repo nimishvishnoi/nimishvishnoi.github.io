@@ -2,13 +2,12 @@
  * Projects Section Component
  */
 import React from 'react';
-import { motion } from 'framer-motion';
 import { SectionTitle, Card, Badge } from '@components/ui';
 import { projects } from '@data/projects';
 
 export const ProjectsSection: React.FC = () => {
   return (
-    <section id="portfolio" className="py-section px-4 lg:ml-80 bg-gray-50 dark:bg-dark-bg">
+    <section id="projects" className="py-section px-4 bg-gray-50 dark:bg-dark-bg">
       <div className="container-custom">
         <SectionTitle title="Projects" subtitle="Showcase of work and expertise" />
 
@@ -24,17 +23,6 @@ export const ProjectsSection: React.FC = () => {
                     {project.year}
                   </p>
                 </div>
-                <Badge
-                  text={project.category}
-                  variant={
-                    project.category === 'app'
-                      ? 'primary'
-                      : project.category === 'web'
-                        ? 'secondary'
-                        : 'outline'
-                  }
-                  size="sm"
-                />
               </div>
 
               <p className="text-gray-700 dark:text-gray-300 mb-4 flex-1 leading-relaxed">
@@ -46,19 +34,6 @@ export const ProjectsSection: React.FC = () => {
                   <Badge key={tech} text={tech} variant="secondary" size="sm" />
                 ))}
               </div>
-
-              {project.url && (
-                <motion.a
-                  href={`https://${project.url}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="text-primary-600 dark:text-primary-400 hover:text-primary-700 font-accent font-semibold smooth-transition"
-                >
-                  Visit Project →
-                </motion.a>
-              )}
             </Card>
           ))}
         </div>

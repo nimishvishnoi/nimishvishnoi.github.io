@@ -6,13 +6,22 @@ import { motion } from 'framer-motion';
 import { SectionTitle, Card, Badge } from '@components/ui';
 import { experiences } from '@data/experience';
 import { education, summary } from '@data/education';
+import { skills } from '@data/skills';
+import { projects } from '@data/projects';
+import { contactInfo } from '@data/contact';
+import { achievements } from '@data/achievements';
 import { getTotalExperience, formatExperience, formatDate } from '@/utils';
+import { generateResumePdf } from '@/utils/pdf';
 
 export const ResumeSection: React.FC = () => {
   const totalExp = getTotalExperience(experiences);
 
+  const handleDownloadPdf = (): void => {
+    generateResumePdf(summary, education, experiences, skills, projects, contactInfo, achievements);
+  };
+
   return (
-    <section id="resume" className="py-section px-4 lg:ml-80">
+    <section id="resume" className="py-section px-4">
       <div className="container-custom">
         <SectionTitle title="Resume" subtitle="Professional journey and expertise" />
 
@@ -107,6 +116,28 @@ export const ResumeSection: React.FC = () => {
           </div>
         </div>
 
+        {/* Achievements */}
+        <div className="mt-12">
+          <h3 className="text-2xl font-heading font-bold mb-6 text-primary-600 dark:text-primary-400">
+            Achievements & Certifications
+          </h3>
+          <div className="grid md:grid-cols-2 gap-6">
+            {achievements.map((achievement, index) => (
+              <Card key={achievement.id} delay={index * 0.2}>
+                <h4 className="text-lg font-bold text-gray-900 dark:text-white mb-2">
+                  {achievement.title}
+                </h4>
+                <p className="text-primary-600 dark:text-primary-400 font-accent mb-2">
+                  {achievement.organization} • {achievement.year}
+                </p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  {achievement.description}
+                </p>
+              </Card>
+            ))}
+          </div>
+        </div>
+
         {/* Download Resume */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -114,13 +145,13 @@ export const ResumeSection: React.FC = () => {
           transition={{ duration: 0.6 }}
           className="mt-12 text-center"
         >
-          <a
-            href="./Nimish_Resume.pdf"
-            download
+          <button
+            type="button"
+            onClick={handleDownloadPdf}
             className="inline-flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-primary-600 to-secondary-600 text-white font-accent font-bold rounded-lg hover:shadow-lg smooth-transition"
           >
-            ⬇ Download Full Resume
-          </a>
+            ⬇ Download Resume PDF
+          </button>
         </motion.div>
       </div>
     </section>

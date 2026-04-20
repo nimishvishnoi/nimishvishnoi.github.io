@@ -8,7 +8,11 @@ import { z } from 'zod';
 import { motion } from 'framer-motion';
 import { SectionTitle, Card, Button, SocialLinks } from '@components/ui';
 import { contactInfo, socialLinks } from '@data/contact';
-import { submitContactForm, validateContactForm } from '@services/firebase';
+import {
+  submitContactForm,
+  validateContactForm,
+  isFirebaseEnabled,
+} from '@services/firebase';
 import { FaPhone, FaEnvelope, FaMapMarkerAlt } from 'react-icons/fa';
 
 // Validation schema using Zod
@@ -36,6 +40,8 @@ export const ContactSection: React.FC = () => {
   } = useForm<ContactFormInputs>({
     resolver: zodResolver(contactFormSchema),
   });
+
+  const firebaseAvailable = isFirebaseEnabled;
 
   const onSubmit = async (data: ContactFormInputs): Promise<void> => {
     try {
@@ -70,7 +76,7 @@ export const ContactSection: React.FC = () => {
   };
 
   return (
-    <section id="contact" className="py-section px-4 lg:ml-80">
+    <section id="contact" className="py-section px-4">
       <div className="container-custom">
         <SectionTitle title="Contact" subtitle="Get in touch with me" />
 
@@ -134,6 +140,14 @@ export const ContactSection: React.FC = () => {
             <h3 className="font-heading font-bold text-xl mb-6">Send Me a Message</h3>
 
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+              {!firebaseAvailable && (
+                <div className="mb-6 rounded-xl border border-yellow-300 bg-yellow-50 p-4 text-sm text-yellow-900 dark:border-yellow-600 dark:bg-yellow-900/10 dark:text-yellow-200">
+                  Contact form is disabled because Firebase is not configured. Add the required
+                  Firebase variables to <code className="font-mono">.env.local</code> and restart
+                  the app.
+                </div>
+              )}
+
               {/* Name Field */}
               <div>
                 <label htmlFor="name" className="block text-sm font-accent font-semibold mb-2">
@@ -243,7 +257,9 @@ export const ContactSection: React.FC = () => {
               {/* Submit Button */}
               <Button
                 type="submit"
-                disabled={isSubmitting || submitStatus === 'loading'}
+                disabled={
+                  !firebaseAvailable || isSubmitting || submitStatus === 'loading'
+                }
                 isLoading={isSubmitting || submitStatus === 'loading'}
                 className="w-full"
               >

@@ -90,13 +90,12 @@ export const MobileNav: React.FC<MobileNavProps> = ({ activeSection, onClose }) 
             transition={{ duration: 0.3, delay: navLinks.length * 0.1 }}
             className="pt-4 border-t border-white/20"
           >
-            <a
-              href="./Nimish_Resume.pdf"
-              download
-              className="block text-center py-3 px-4 bg-white text-primary-700 hover:bg-primary-100 rounded-lg font-accent font-bold smooth-transition"
+            <button
+              onClick={() => handleNavClick('#resume')}
+              className="w-full text-center py-3 px-4 bg-white text-primary-700 hover:bg-primary-100 rounded-lg font-accent font-bold smooth-transition"
             >
-              ⬇ Download Resume
-            </a>
+              ⬇ View Resume
+            </button>
           </motion.li>
         </ul>
       </motion.nav>

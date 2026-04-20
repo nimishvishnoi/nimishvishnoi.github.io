@@ -4,84 +4,112 @@
 import type { Skill } from '@types';
 
 export const skills: Skill[] = [
-  // Frontend
+  // Programming Languages
   {
     id: 'skill-1',
+    name: 'C#',
+    category: 'backend',
+    proficiency: 'expert',
+  },
+  {
+    id: 'skill-2',
     name: 'JavaScript',
     category: 'frontend',
     proficiency: 'expert',
   },
   {
-    id: 'skill-2',
-    name: 'React Js',
-    category: 'frontend',
-    proficiency: 'expert',
-  },
-  {
     id: 'skill-3',
-    name: 'HTML',
-    category: 'frontend',
-    proficiency: 'expert',
+    name: 'Python',
+    category: 'backend',
+    proficiency: 'advanced',
   },
+
+  // Web Development
   {
     id: 'skill-4',
-    name: 'CSS',
+    name: 'React JS',
     category: 'frontend',
     proficiency: 'expert',
   },
   {
     id: 'skill-5',
-    name: 'Bootstrap',
+    name: 'Stencil JS',
     category: 'frontend',
     proficiency: 'advanced',
   },
   {
     id: 'skill-6',
-    name: 'jQuery',
+    name: 'HTML',
     category: 'frontend',
+    proficiency: 'expert',
+  },
+  {
+    id: 'skill-7',
+    name: 'CSS',
+    category: 'frontend',
+    proficiency: 'expert',
+  },
+
+  // Version Control
+  {
+    id: 'skill-8',
+    name: 'Git',
+    category: 'tools',
     proficiency: 'advanced',
   },
 
-  // Backend
+  // Databases
   {
-    id: 'skill-7',
+    id: 'skill-9',
+    name: 'SQL Server',
+    category: 'database',
+    proficiency: 'expert',
+  },
+  {
+    id: 'skill-10',
+    name: 'MongoDB',
+    category: 'database',
+    proficiency: 'intermediate',
+  },
+
+  // Frameworks & Libraries
+  {
+    id: 'skill-11',
     name: '.NET',
     category: 'backend',
     proficiency: 'expert',
   },
   {
-    id: 'skill-8',
-    name: 'Python',
-    category: 'backend',
-    proficiency: 'advanced',
-  },
-  {
-    id: 'skill-9',
-    name: 'API',
-    category: 'backend',
-    proficiency: 'expert',
-  },
-
-  // Database
-  {
-    id: 'skill-10',
-    name: 'SQL',
-    category: 'database',
-    proficiency: 'expert',
-  },
-  {
-    id: 'skill-11',
-    name: 'MongoDB',
-    category: 'database',
-    proficiency: 'advanced',
-  },
-
-  // Tools
-  {
     id: 'skill-12',
-    name: 'GIT / TFS',
-    category: 'tools',
+    name: 'MVC',
+    category: 'backend',
     proficiency: 'expert',
+  },
+  {
+    id: 'skill-13',
+    name: 'REST API',
+    category: 'backend',
+    proficiency: 'advanced',
+  },
+  {
+    id: 'skill-14',
+    name: 'jQuery',
+    category: 'frontend',
+    proficiency: 'advanced',
+  },
+  {
+    id: 'skill-15',
+    name: 'Bootstrap',
+    category: 'frontend',
+    proficiency: 'advanced',
+  },
+
+  // Cloud Platforms
+  {
+    id: 'skill-16',
+    name: 'AWS',
+    category: 'tools',
+    proficiency: 'advanced',
   },
 ];
 
@@ -89,5 +117,5 @@ export const skillCategories = {
   frontend: 'Frontend Development',
   backend: 'Backend Development',
   database: 'Databases',
-  tools: 'Tools & Version Control',
+  tools: 'Tools & Cloud Platforms',
 };

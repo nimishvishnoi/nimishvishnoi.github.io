@@ -9,6 +9,14 @@ export interface Skill {
   proficiency: 'expert' | 'advanced' | 'intermediate';
 }
 
+export interface Achievement {
+  id: string;
+  title: string;
+  organization: string;
+  year: string;
+  description: string;
+}
+
 export interface Experience {
   id: string;
   title: string;
