@@ -1,0 +1,73 @@
+/**
+ * Global styles and Tailwind CSS imports
+ */
+
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+/* Font imports */
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600;700&family=Raleway:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap');
+
+/* Base styles */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply font-sans text-gray-800 dark:text-dark-text bg-white dark:bg-dark-bg;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading font-bold;
+  }
+
+  a {
+    @apply text-primary-600 hover:text-primary-700 transition-colors dark:text-primary-400 dark:hover:text-primary-300;
+  }
+}
+
+/* Component styles */
+@layer components {
+  .container-custom {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  .section-padding {
+    @apply py-section px-4 sm:px-6 lg:px-8;
+  }
+
+  .gradient-text {
+    @apply bg-gradient-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent;
+  }
+
+  .glass-effect {
+    @apply backdrop-blur-sm bg-white/10 dark:bg-dark-card/50 border border-white/20 dark:border-white/10;
+  }
+
+  .smooth-transition {
+    @apply transition-all duration-300 ease-out;
+  }
+}
+
+/* Scrollbar styles */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-primary-300 dark:bg-primary-700 rounded-full hover:bg-primary-400 dark:hover:bg-primary-600;
+}
+
+/* Selection styles */
+::selection {
+  @apply bg-primary-600 text-white dark:bg-primary-400 dark:text-dark-bg;
+}
