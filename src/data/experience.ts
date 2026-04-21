@@ -54,8 +54,8 @@ export const experiences: Experience[] = [
     title: 'Junior System Analyst',
     company: 'Contata Solutions',
     location: 'Noida, Uttar Pradesh, India',
-    startDate: new Date(2020, 0), // January 2020
-    endDate: new Date(2021, 10), // November 2021
+    startDate: new Date(2019, 10), // November 2019
+    endDate: new Date(2021, 9), // October 2021
     description: [
       'Worked as a .NET developer for ESI Synthesis in the Oil and Gas domain.',
       'Implemented business features using C#, SQL Server, JavaScript, and jQuery.',
