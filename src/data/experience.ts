@@ -11,7 +11,6 @@ export const experiences: Experience[] = [
     location: 'Noida, Uttar Pradesh, India',
     startDate: new Date(2025, 6), // July 2025
     endDate: null, // Current
-    periodLabel: 'Jul 2025 - Present',
     description: [
       'Provide technical leadership for enterprise web solutions and guide architecture decisions.',
       'Drive scalable implementation using C#, .NET, React, AWS, and delivery automation practices.',
@@ -27,7 +26,6 @@ export const experiences: Experience[] = [
     location: 'Noida, Uttar Pradesh, India',
     startDate: new Date(2023, 9), // October 2023
     endDate: new Date(2025, 6), // July 2025
-    periodLabel: 'Oct 2023 - Jul 2025',
     description: [
       'Delivered business-critical enhancements with strong emphasis on reliability and code quality.',
       'Built full-stack capabilities across .NET backend services and React frontends.',
@@ -43,7 +41,6 @@ export const experiences: Experience[] = [
     location: 'Noida, Uttar Pradesh, India',
     startDate: new Date(2021, 10, 25), // November 25, 2021
     endDate: new Date(2023, 9), // October 2023
-    periodLabel: 'Nov 2021 - Oct 2023',
     description: [
       'Built and optimized customer-facing web solutions using C#, .NET, SQL Server, JavaScript, and React.',
       'Contributed to used-car management and HRMS initiatives with strong delivery ownership.',
@@ -59,7 +56,6 @@ export const experiences: Experience[] = [
     location: 'Noida, Uttar Pradesh, India',
     startDate: new Date(2020, 0, 9), // January 9, 2020
     endDate: new Date(2021, 10, 24), // November 24, 2021
-    periodLabel: 'Jan 2020 - Nov 2021',
     description: [
       'Worked as a .NET developer for ESI Synthesis in the Oil and Gas domain.',
       'Implemented business features using C#, SQL Server, JavaScript, and jQuery.',
@@ -74,8 +70,7 @@ export const experiences: Experience[] = [
     company: 'Wildnet Technologies',
     location: 'Noida, Uttar Pradesh, India',
     startDate: new Date(2018, 7, 13), // August 13, 2018
-    endDate: new Date(2019, 10, 30), // November 30, 2019
-    periodLabel: 'Aug 2018 - Nov 2019',
+    endDate: new Date(2019, 11, 1), // December 1, 2019
     description: [
       'Worked as a .NET developer with a focus on e-commerce platforms.',
       'Built features using C#, .NET Framework, SQL Server, JavaScript, jQuery, Firebase, and Azure.',

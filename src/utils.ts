@@ -57,6 +57,13 @@ export const formatDate = (date: Date | null): string => {
 };
 
 /**
+ * Format a date range using month and year only
+ */
+export const formatDateRange = (startDate: Date, endDate: Date | null): string => {
+  return `${formatDate(startDate)} - ${formatDate(endDate)}`;
+};
+
+/**
  * Get total years of experience from experiences array
  */
 export const getTotalExperience = (
@@ -66,36 +73,11 @@ export const getTotalExperience = (
     return { years: 0, months: 0 };
   }
 
-  const now = new Date();
-  const ranges = experiences
-    .map((experience) => ({
-      start: new Date(experience.startDate),
-      end: new Date(experience.endDate ?? now),
-    }))
-    .sort((a, b) => a.start.getTime() - b.start.getTime());
+  const firstStartDate = new Date(
+    Math.min(...experiences.map((experience) => experience.startDate.getTime()))
+  );
 
-  const mergedRanges: Array<{ start: Date; end: Date }> = [];
-  for (const range of ranges) {
-    const previous = mergedRanges[mergedRanges.length - 1];
-    if (!previous || range.start.getTime() > previous.end.getTime()) {
-      mergedRanges.push(range);
-      continue;
-    }
-
-    if (range.end.getTime() > previous.end.getTime()) {
-      previous.end = range.end;
-    }
-  }
-
-  const totalMonths = mergedRanges.reduce((sum, range) => {
-    const { years, months } = calculateExperience(range.start, range.end);
-    return sum + years * 12 + months;
-  }, 0);
-
-  return {
-    years: Math.floor(totalMonths / 12),
-    months: totalMonths % 12,
-  };
+  return calculateExperience(firstStartDate, new Date());
 };
 
 /**

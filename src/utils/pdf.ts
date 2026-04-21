@@ -1,5 +1,6 @@
 import { jsPDF } from 'jspdf/dist/jspdf.es.min.js';
 import type { Education, Experience, Skill, Project, ContactInfo, Achievement, ResumeSummary } from '@types';
+import { formatDateRange } from '@/utils';
 
 const PAGE_WIDTH = 595;
 const PAGE_HEIGHT = 842;
@@ -103,11 +104,7 @@ export const generateResumePdf = (
     y += LINE_HEIGHT;
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(10);
-    doc.text(
-      `${item.startDate.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })} - ${item.endDate ? item.endDate.toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : 'Present'}`,
-      MARGIN,
-      y
-    );
+    doc.text(formatDateRange(item.startDate, item.endDate), MARGIN, y);
     y += LINE_HEIGHT;
 
     item.description.forEach((bullet) => {

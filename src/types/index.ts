@@ -24,7 +24,6 @@ export interface Experience {
   location: string;
   startDate: Date;
   endDate: Date | null; // null for current position
-  periodLabel?: string; // Optional formatted date label (e.g., "Aug 2018 - Nov 2019")
   description: string[];
   technologies: string[];
 }

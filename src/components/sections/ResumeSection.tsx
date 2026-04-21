@@ -10,7 +10,7 @@ import { achievements } from '@data/achievements';
 import { contactInfo } from '@data/contact';
 import { resumeFileUrl } from '@/constants/site';
 import { downloadGeneratedResume } from '@/utils/resume';
-import { getTotalExperience, formatExperience, formatDate } from '@/utils';
+import { getTotalExperience, formatExperience, formatDate, formatDateRange } from '@/utils';
 
 export const ResumeSection: React.FC = () => {
   const totalExp = getTotalExperience(experiences);
@@ -111,7 +111,7 @@ export const ResumeSection: React.FC = () => {
                   {exp.company} • {exp.location}
                 </p>
                 <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
-                  {exp.periodLabel ?? `${formatDate(exp.startDate)} - ${formatDate(exp.endDate)}`}
+                  {formatDateRange(exp.startDate, exp.endDate)}
                 </p>
 
                 <ul className="space-y-2 mb-4">
