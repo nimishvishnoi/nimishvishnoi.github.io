@@ -3,20 +3,8 @@
  */
 import React from 'react';
 import { motion } from 'framer-motion';
-
-interface NavLink {
-  label: string;
-  href: string;
-  id: string;
-}
-
-const navLinks: NavLink[] = [
-  { label: 'About', href: '#about', id: 'about' },
-  { label: 'Skills', href: '#skills', id: 'skills' },
-  { label: 'Resume', href: '#resume', id: 'resume' },
-  { label: 'Projects', href: '#projects', id: 'projects' },
-  { label: 'Contact', href: '#contact', id: 'contact' },
-];
+import { navigationLinks } from '@/constants/site';
+import { downloadResume } from '@/utils/resume';
 
 interface NavigationProps {
   activeSection?: string;
@@ -36,7 +24,7 @@ export const Navigation: React.FC<NavigationProps> = ({ activeSection, onLinkCli
     <nav className="bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-gray-800 shadow-sm sticky top-16 z-30 hidden lg:block">
       <div className="container-custom">
         <ul className="flex justify-center space-x-8 py-4">
-          {navLinks.map((link, index) => (
+          {navigationLinks.map((link, index) => (
             <motion.li
               key={link.href}
               initial={{ opacity: 0, y: -10 }}
@@ -45,6 +33,7 @@ export const Navigation: React.FC<NavigationProps> = ({ activeSection, onLinkCli
             >
               <button
                 onClick={() => handleClick(link.href)}
+                aria-current={activeSection === link.id ? 'page' : undefined}
                 className={`px-4 py-2 rounded-lg font-accent font-medium smooth-transition ${
                   activeSection === link.id
                     ? 'bg-primary-600 text-white'
@@ -55,6 +44,21 @@ export const Navigation: React.FC<NavigationProps> = ({ activeSection, onLinkCli
               </button>
             </motion.li>
           ))}
+          <motion.li
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: navigationLinks.length * 0.1 }}
+          >
+            <button
+              type="button"
+              onClick={() => {
+                void downloadResume();
+              }}
+              className="px-4 py-2 rounded-lg font-accent font-medium smooth-transition text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400"
+            >
+              Download Resume
+            </button>
+          </motion.li>
         </ul>
       </div>
     </nav>

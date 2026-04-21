@@ -8,11 +8,7 @@ import { z } from 'zod';
 import { motion } from 'framer-motion';
 import { SectionTitle, Card, Button, SocialLinks } from '@components/ui';
 import { contactInfo, socialLinks } from '@data/contact';
-import {
-  submitContactForm,
-  validateContactForm,
-  isFirebaseEnabled,
-} from '@services/firebase';
+import { submitContactForm, validateContactForm, isFirebaseEnabled } from '@services/firebase';
 import { FaPhone, FaEnvelope, FaMapMarkerAlt } from 'react-icons/fa';
 
 // Validation schema using Zod
@@ -28,7 +24,7 @@ type ContactFormInputs = z.infer<typeof contactFormSchema>;
 
 export const ContactSection: React.FC = () => {
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'loading' | 'success' | 'error'>(
-    'idle',
+    'idle'
   );
   const [errorMessage, setErrorMessage] = useState<string>('');
 
@@ -69,14 +65,14 @@ export const ContactSection: React.FC = () => {
     } catch (error) {
       console.error('Form submission error:', error);
       setErrorMessage(
-        error instanceof Error ? error.message : 'Failed to send message. Please try again.',
+        error instanceof Error ? error.message : 'Failed to send message. Please try again.'
       );
       setSubmitStatus('error');
     }
   };
 
   return (
-    <section id="contact" className="py-[5rem] px-4">
+    <section id="contact" className="py-[5rem] px-4 scroll-mt-24 lg:scroll-mt-20">
       <div className="container-custom">
         <SectionTitle title="Contact" subtitle="Get in touch with me" />
 
@@ -160,9 +156,7 @@ export const ContactSection: React.FC = () => {
                   placeholder="John Doe"
                   className="w-full px-4 py-2 border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:border-primary-600 focus:outline-none smooth-transition"
                 />
-                {errors.name && (
-                  <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>
-                )}
+                {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>}
               </div>
 
               {/* Email Field */}
@@ -257,9 +251,7 @@ export const ContactSection: React.FC = () => {
               {/* Submit Button */}
               <Button
                 type="submit"
-                disabled={
-                  !firebaseAvailable || isSubmitting || submitStatus === 'loading'
-                }
+                disabled={!firebaseAvailable || isSubmitting || submitStatus === 'loading'}
                 isLoading={isSubmitting || submitStatus === 'loading'}
                 className="w-full"
               >

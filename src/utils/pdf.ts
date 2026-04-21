@@ -42,7 +42,7 @@ export const generateResumePdf = (
   skills: Skill[],
   projects: Project[],
   contactInfo: ContactInfo,
-  achievements: Achievement[],
+  achievements: Achievement[]
 ): void => {
   const doc = new jsPDF({ unit: 'pt', format: 'a4' });
   let y = MARGIN;
@@ -74,7 +74,11 @@ export const generateResumePdf = (
     y += LINE_HEIGHT;
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(10);
-    doc.text(`${item.field} • ${item.startDate.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })} - ${item.endDate.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}`, MARGIN, y);
+    doc.text(
+      `${item.field} • ${item.startDate.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })} - ${item.endDate.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}`,
+      MARGIN,
+      y
+    );
     y += LINE_HEIGHT * 1.6;
   });
 
@@ -105,7 +109,11 @@ export const generateResumePdf = (
     y += LINE_HEIGHT;
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(10);
-    doc.text(`${item.startDate.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })} - ${item.endDate ? item.endDate.toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : 'Present'}`, MARGIN, y);
+    doc.text(
+      `${item.startDate.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })} - ${item.endDate ? item.endDate.toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : 'Present'}`,
+      MARGIN,
+      y
+    );
     y += LINE_HEIGHT;
 
     item.description.forEach((bullet) => {
@@ -133,11 +141,14 @@ export const generateResumePdf = (
     database: 'Database',
     tools: 'Tools & Technologies',
   };
-  const groupedSkills = skills.reduce((acc, skill) => {
-    if (!acc[skill.category]) acc[skill.category] = [];
-    acc[skill.category].push(skill);
-    return acc;
-  }, {} as Record<string, Skill[]>);
+  const groupedSkills = skills.reduce(
+    (acc, skill) => {
+      if (!acc[skill.category]) acc[skill.category] = [];
+      acc[skill.category].push(skill);
+      return acc;
+    },
+    {} as Record<string, Skill[]>
+  );
 
   Object.entries(groupedSkills).forEach(([category, categorySkills]) => {
     y = addPageBreakIfNeeded(doc, y);

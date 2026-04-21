@@ -7,7 +7,7 @@ import { aboutContent } from '@data/about';
 
 export const AboutSection: React.FC = () => {
   return (
-    <section id="about" className="py-[5rem] px-4">
+    <section id="about" className="py-[5rem] px-4 scroll-mt-24 lg:scroll-mt-20">
       <div className="container-custom">
         <SectionTitle title={aboutContent.title} />
 

@@ -3,14 +3,7 @@
  * Uses environment variables for configuration
  */
 import { initializeApp, type FirebaseOptions } from 'firebase/app';
-import {
-  getDatabase,
-  ref,
-  push,
-  set,
-  serverTimestamp,
-  type Database,
-} from 'firebase/database';
+import { getDatabase, ref, push, set, serverTimestamp, type Database } from 'firebase/database';
 import type { ContactFormData } from '@types';
 
 // Firebase configuration from environment variables
@@ -27,9 +20,9 @@ const firebaseConfig: FirebaseOptions = {
 
 const isFirebaseEnabled = Boolean(
   firebaseConfig.apiKey &&
-    firebaseConfig.authDomain &&
-    firebaseConfig.databaseURL &&
-    firebaseConfig.projectId,
+  firebaseConfig.authDomain &&
+  firebaseConfig.databaseURL &&
+  firebaseConfig.projectId
 );
 
 let database: Database | null = null;
@@ -38,9 +31,7 @@ if (isFirebaseEnabled) {
   const app = initializeApp(firebaseConfig);
   database = getDatabase(app);
 } else {
-  console.warn(
-    'Firebase is not configured. Contact form submissions are disabled.',
-  );
+  console.warn('Firebase is not configured. Contact form submissions are disabled.');
 }
 
 /**
@@ -49,14 +40,14 @@ if (isFirebaseEnabled) {
 export const submitContactForm = async (formData: ContactFormData): Promise<void> => {
   if (!database) {
     throw new Error(
-      'Firebase is not configured. Please provide Firebase environment variables in .env.local.',
+      'Firebase is not configured. Please provide Firebase environment variables in .env.local.'
     );
   }
 
   try {
     const now = new Date();
     const dateString = `${String(now.getMonth() + 1).padStart(2, '0')}${String(
-      now.getDate(),
+      now.getDate()
     ).padStart(2, '0')}${now.getFullYear()}`;
 
     const messageRef = ref(database, `Message/${dateString}`);
@@ -80,7 +71,9 @@ export { isFirebaseEnabled };
 /**
  * Validate form data before submission
  */
-export const validateContactForm = (formData: ContactFormData): { isValid: boolean; errors: Record<string, string> } => {
+export const validateContactForm = (
+  formData: ContactFormData
+): { isValid: boolean; errors: Record<string, string> } => {
   const errors: Record<string, string> = {};
 
   // Validate name
@@ -96,7 +89,7 @@ export const validateContactForm = (formData: ContactFormData): { isValid: boole
 
   // Validate phone (optional, but if provided, should be valid)
   if (formData.phone) {
-    const phoneRegex = /^[\d\s\-\+\(\)]+$/;
+    const phoneRegex = /^[\d\s\-+()]+$/;
     if (!phoneRegex.test(formData.phone)) {
       errors.phone = 'Please enter a valid phone number';
     }

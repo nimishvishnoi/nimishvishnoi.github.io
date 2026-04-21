@@ -5,29 +5,48 @@ import { useEffect, useState } from 'react';
 
 export const useScrollSpy = (
   sectionIds: string[],
-  offset: number = 100,
+  offset: number = 160
 ): { activeSection: string } => {
-  const [activeSection, setActiveSection] = useState<string>('');
+  const [activeSection, setActiveSection] = useState<string>(sectionIds[0] ?? '');
 
   useEffect(() => {
-    const handleScroll = (): void => {
-      const scrollPosition = window.scrollY + offset;
+    if (sectionIds.length === 0) {
+      return undefined;
+    }
 
-      for (const id of sectionIds) {
-        const element = document.getElementById(id);
-        if (element) {
-          const { offsetTop, offsetHeight } = element;
-          if (scrollPosition >= offsetTop && scrollPosition < offsetTop + offsetHeight) {
-            setActiveSection(id);
-            break;
-          }
+    const sections = sectionIds
+      .map((id) => document.getElementById(id))
+      .filter((element): element is HTMLElement => element !== null);
+
+    if (sections.length === 0) {
+      return undefined;
+    }
+
+    const updateActiveSection = (): void => {
+      const currentScroll = window.scrollY + offset;
+      let currentSection = sections[0].id;
+
+      for (const section of sections) {
+        if (currentScroll >= section.offsetTop) {
+          currentSection = section.id;
+        } else {
+          break;
         }
       }
+
+      setActiveSection(currentSection);
     };
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [sectionIds, offset]);
+    updateActiveSection();
+
+    window.addEventListener('scroll', updateActiveSection, { passive: true });
+    window.addEventListener('resize', updateActiveSection);
+
+    return () => {
+      window.removeEventListener('scroll', updateActiveSection);
+      window.removeEventListener('resize', updateActiveSection);
+    };
+  }, [offset, sectionIds]);
 
   return { activeSection };
 };

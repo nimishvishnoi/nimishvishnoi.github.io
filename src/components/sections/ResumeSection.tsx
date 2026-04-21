@@ -6,22 +6,16 @@ import { motion } from 'framer-motion';
 import { SectionTitle, Card, Badge } from '@components/ui';
 import { experiences } from '@data/experience';
 import { education, summary } from '@data/education';
-import { skills } from '@data/skills';
-import { projects } from '@data/projects';
-import { contactInfo } from '@data/contact';
 import { achievements } from '@data/achievements';
+import { resumeFileUrl } from '@/constants/site';
+import { downloadResume } from '@/utils/resume';
 import { getTotalExperience, formatExperience, formatDate } from '@/utils';
-import { generateResumePdf } from '@/utils/pdf';
 
 export const ResumeSection: React.FC = () => {
   const totalExp = getTotalExperience(experiences);
 
-  const handleDownloadPdf = (): void => {
-    generateResumePdf(summary, education, experiences, skills, projects, contactInfo, achievements);
-  };
-
   return (
-    <section id="resume" className="py-[5rem] px-4">
+    <section id="resume" className="py-[5rem] px-4 scroll-mt-24 lg:scroll-mt-20">
       <div className="container-custom">
         <SectionTitle title="Resume" subtitle="Professional journey and expertise" />
 
@@ -143,14 +137,23 @@ export const ResumeSection: React.FC = () => {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="mt-12 text-center"
+          className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-4"
         >
+          <a
+            href={resumeFileUrl}
+            download
+            className="inline-flex items-center justify-center gap-2 px-8 py-3 bg-gradient-to-r from-primary-600 to-secondary-600 text-white font-accent font-bold rounded-lg hover:shadow-lg smooth-transition"
+          >
+            Download Predefined Resume
+          </a>
           <button
             type="button"
-            onClick={handleDownloadPdf}
-            className="inline-flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-primary-600 to-secondary-600 text-white font-accent font-bold rounded-lg hover:shadow-lg smooth-transition"
+            onClick={() => {
+              void downloadResume();
+            }}
+            className="inline-flex items-center gap-2 px-8 py-3 border-2 border-primary-600 text-primary-600 hover:bg-primary-50 dark:border-primary-400 dark:text-primary-400 dark:hover:bg-slate-800 font-accent font-bold rounded-lg smooth-transition"
           >
-            ⬇ Download Resume PDF
+            Generate From Website Content
           </button>
         </motion.div>
       </div>

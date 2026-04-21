@@ -2,9 +2,11 @@
  * Button Component
  */
 import React from 'react';
-import { motion, MotionProps } from 'framer-motion';
+import { motion } from 'framer-motion';
 
-interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+type MotionButtonProps = React.ComponentPropsWithoutRef<typeof motion.button>;
+
+interface ButtonProps extends MotionButtonProps {
   variant?: 'primary' | 'secondary' | 'outline' | 'ghost';
   size?: 'sm' | 'md' | 'lg';
   children: React.ReactNode;
@@ -12,10 +14,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   icon?: React.ReactNode;
 }
 
-export const Button = React.forwardRef<
-  HTMLButtonElement,
-  ButtonProps & MotionProps
->(
+export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   (
     {
       variant = 'primary',
@@ -27,7 +26,7 @@ export const Button = React.forwardRef<
       disabled,
       ...props
     },
-    ref,
+    ref
   ) => {
     const baseStyles =
       'inline-flex items-center justify-center gap-2 font-accent font-semibold rounded-lg smooth-transition disabled:opacity-50 disabled:cursor-not-allowed';
@@ -50,18 +49,18 @@ export const Button = React.forwardRef<
 
     return (
       <motion.button
-        ref={ref as any}
+        ref={ref}
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
         disabled={disabled || isLoading}
         className={`${baseStyles} ${variants[variant]} ${sizes[size]} ${className}`}
-        {...(props as any)}
+        {...props}
       >
         {icon && <span>{icon}</span>}
         {isLoading ? 'Loading...' : children}
       </motion.button>
     );
-  },
+  }
 );
 
 Button.displayName = 'Button';

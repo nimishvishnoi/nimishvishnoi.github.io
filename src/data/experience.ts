@@ -50,6 +50,16 @@ export const experiences: Experience[] = [
       'Oversaw microservices monitoring for reliability.',
       'Utilized .NET, C#, React.js, AWS, and more for high-quality solutions.',
     ],
-    technologies: ['C#', '.NET Framework', 'SQL Server', 'JavaScript', 'jQuery', 'Firebase', 'Azure', 'AWS', 'React.js'],
+    technologies: [
+      'C#',
+      '.NET Framework',
+      'SQL Server',
+      'JavaScript',
+      'jQuery',
+      'Firebase',
+      'Azure',
+      'AWS',
+      'React.js',
+    ],
   },
 ];

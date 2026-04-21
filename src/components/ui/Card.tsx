@@ -11,7 +11,12 @@ interface CardProps {
   delay?: number;
 }
 
-export const Card: React.FC<CardProps> = ({ children, className = '', hover = true, delay = 0 }) => {
+export const Card: React.FC<CardProps> = ({
+  children,
+  className = '',
+  hover = true,
+  delay = 0,
+}) => {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}

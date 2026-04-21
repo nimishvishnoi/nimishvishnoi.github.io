@@ -7,7 +7,7 @@
  */
 export const calculateExperience = (
   startDate: Date,
-  endDate: Date = new Date(),
+  endDate: Date = new Date()
 ): { years: number; months: number } => {
   let years = endDate.getFullYear() - startDate.getFullYear();
   let months = endDate.getMonth() - startDate.getMonth();
@@ -51,15 +51,13 @@ export const formatDate = (date: Date | null): string => {
  * Get total years of experience from experiences array
  */
 export const getTotalExperience = (
-  experiences: Array<{ startDate: Date; endDate: Date | null }>,
+  experiences: Array<{ startDate: Date; endDate: Date | null }>
 ): { years: number; months: number } => {
   if (experiences.length === 0) {
     return { years: 0, months: 0 };
   }
 
-  const oldestStart = new Date(
-    Math.min(...experiences.map((e) => e.startDate.getTime())),
-  );
+  const oldestStart = new Date(Math.min(...experiences.map((e) => e.startDate.getTime())));
   const newestEnd = new Date();
 
   return calculateExperience(oldestStart, newestEnd);
@@ -83,7 +81,7 @@ export const smoothScroll = (target: string): void => {
  */
 export const debounce = <T extends (...args: unknown[]) => unknown>(
   func: T,
-  wait: number,
+  wait: number
 ): ((...args: Parameters<T>) => void) => {
   let timeout: ReturnType<typeof setTimeout>;
 

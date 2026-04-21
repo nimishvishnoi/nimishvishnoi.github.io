@@ -15,11 +15,14 @@ export const SkillsSection: React.FC = () => {
       acc[skill.category].push(skill);
       return acc;
     },
-    {} as Record<string, Skill[]>,
+    {} as Record<string, Skill[]>
   );
 
   return (
-    <section id="skills" className="py-[5rem] px-4 bg-gray-50 dark:bg-slate-900">
+    <section
+      id="skills"
+      className="py-[5rem] px-4 bg-gray-50 dark:bg-slate-900 scroll-mt-24 lg:scroll-mt-20"
+    >
       <div className="container-custom">
         <SectionTitle title="Skills" subtitle="Expertise across modern technologies" />
 

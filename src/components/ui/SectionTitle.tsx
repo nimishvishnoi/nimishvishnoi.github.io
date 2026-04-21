@@ -10,11 +10,7 @@ interface SectionTitleProps {
   centered?: boolean;
 }
 
-export const SectionTitle: React.FC<SectionTitleProps> = ({
-  title,
-  subtitle,
-  centered = true,
-}) => {
+export const SectionTitle: React.FC<SectionTitleProps> = ({ title, subtitle, centered = true }) => {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}

@@ -4,20 +4,8 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { FaTimes } from 'react-icons/fa';
-
-interface NavLink {
-  label: string;
-  href: string;
-  id: string;
-}
-
-const navLinks: NavLink[] = [
-  { label: 'About', href: '#about', id: 'about' },
-  { label: 'Skills', href: '#skills', id: 'skills' },
-  { label: 'Resume', href: '#resume', id: 'resume' },
-  { label: 'Projects', href: '#projects', id: 'projects' },
-  { label: 'Contact', href: '#contact', id: 'contact' },
-];
+import { navigationLinks } from '@/constants/site';
+import { downloadResume } from '@/utils/resume';
 
 interface MobileNavProps {
   activeSection: string;
@@ -63,7 +51,7 @@ export const MobileNav: React.FC<MobileNavProps> = ({ activeSection, onClose }) 
 
         {/* Menu Items */}
         <ul className="space-y-4 mt-12">
-          {navLinks.map((link, index) => (
+          {navigationLinks.map((link, index) => (
             <motion.li
               key={link.href}
               initial={{ opacity: 0, x: -20 }}
@@ -72,6 +60,7 @@ export const MobileNav: React.FC<MobileNavProps> = ({ activeSection, onClose }) 
             >
               <button
                 onClick={() => handleNavClick(link.href)}
+                aria-current={activeSection === link.id ? 'page' : undefined}
                 className={`w-full text-left px-4 py-3 rounded-lg font-accent font-medium smooth-transition ${
                   activeSection === link.id
                     ? 'bg-white text-primary-700'
@@ -87,14 +76,18 @@ export const MobileNav: React.FC<MobileNavProps> = ({ activeSection, onClose }) 
           <motion.li
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.3, delay: navLinks.length * 0.1 }}
+            transition={{ duration: 0.3, delay: navigationLinks.length * 0.1 }}
             className="pt-4 border-t border-white/20"
           >
             <button
-              onClick={() => handleNavClick('#resume')}
-              className="w-full text-center py-3 px-4 bg-white text-primary-700 hover:bg-primary-100 rounded-lg font-accent font-bold smooth-transition"
+              type="button"
+              onClick={() => {
+                onClose();
+                void downloadResume();
+              }}
+              className="block w-full text-center py-3 px-4 bg-white text-primary-700 hover:bg-primary-100 rounded-lg font-accent font-bold smooth-transition"
             >
-              ⬇ View Resume
+              Download Resume
             </button>
           </motion.li>
         </ul>

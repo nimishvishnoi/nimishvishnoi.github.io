@@ -3,34 +3,56 @@
  */
 import { useState, useEffect } from 'react';
 
-export const useDarkMode = () => {
-  const [darkMode, setDarkMode] = useState(() => {
-    // Initialize from localStorage or system preference
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('darkMode');
-      if (saved !== null) {
-        return JSON.parse(saved);
-      }
-      return window.matchMedia('(prefers-color-scheme: dark)').matches;
-    }
-    return false;
-  });
-  const [mounted, setMounted] = useState(false);
+const STORAGE_KEY = 'darkMode';
 
-  // Apply dark mode to DOM on mount and when darkMode changes
+const getInitialDarkMode = (): boolean => {
+  if (typeof window === 'undefined') {
+    return false;
+  }
+
+  const savedPreference = window.localStorage.getItem(STORAGE_KEY);
+  if (savedPreference === 'true') {
+    return true;
+  }
+
+  if (savedPreference === 'false') {
+    return false;
+  }
+
+  return window.matchMedia('(prefers-color-scheme: dark)').matches;
+};
+
+export const useDarkMode = (): {
+  darkMode: boolean;
+  toggleDarkMode: () => void;
+} => {
+  const [darkMode, setDarkMode] = useState<boolean>(getInitialDarkMode);
+
   useEffect(() => {
-    setMounted(true);
-    if (darkMode) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-    localStorage.setItem('darkMode', JSON.stringify(darkMode));
+    document.documentElement.classList.toggle('dark', darkMode);
+    document.documentElement.style.colorScheme = darkMode ? 'dark' : 'light';
+    window.localStorage.setItem(STORAGE_KEY, String(darkMode));
   }, [darkMode]);
 
-  const toggleDarkMode = () => {
-    setDarkMode((prev: boolean) => !prev);
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    const savedPreference = window.localStorage.getItem(STORAGE_KEY);
+
+    if (savedPreference !== null) {
+      return undefined;
+    }
+
+    const handleChange = (event: MediaQueryListEvent): void => {
+      setDarkMode(event.matches);
+    };
+
+    mediaQuery.addEventListener('change', handleChange);
+    return () => mediaQuery.removeEventListener('change', handleChange);
+  }, []);
+
+  const toggleDarkMode = (): void => {
+    setDarkMode((previousValue) => !previousValue);
   };
 
-  return { darkMode: mounted ? darkMode : false, toggleDarkMode };
+  return { darkMode, toggleDarkMode };
 };

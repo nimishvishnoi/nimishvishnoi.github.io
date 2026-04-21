@@ -7,7 +7,10 @@ import { projects } from '@data/projects';
 
 export const ProjectsSection: React.FC = () => {
   return (
-    <section id="projects" className="py-[5rem] px-4 bg-gray-50 dark:bg-slate-900">
+    <section
+      id="projects"
+      className="py-[5rem] px-4 bg-gray-50 dark:bg-slate-900 scroll-mt-24 lg:scroll-mt-20"
+    >
       <div className="container-custom">
         <SectionTitle title="Projects" subtitle="Showcase of work and expertise" />
 

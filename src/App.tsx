@@ -1,15 +1,9 @@
 /**
  * Main App Component
  */
-import React, { useEffect } from 'react';
+import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import {
-  Header,
-  Navigation,
-  MobileHeader,
-  MobileNav,
-  ScrollToTopButton,
-} from '@components/layout';
+import { Header, Navigation, MobileHeader, MobileNav, ScrollToTopButton } from '@components/layout';
 import {
   AboutSection,
   SkillsSection,
@@ -18,23 +12,12 @@ import {
   ContactSection,
 } from '@components/sections';
 import { useScrollSpy, useMobileNav, useDarkMode } from '@hooks';
+import { sectionIds } from '@/constants/site';
 
 const App: React.FC = () => {
-  const { activeSection } = useScrollSpy(['about', 'skills', 'resume', 'projects', 'contact']);
+  const { activeSection } = useScrollSpy([...sectionIds]);
   const { mobileNavOpen, toggleMobileNav, closeMobileNav } = useMobileNav();
   const { darkMode, toggleDarkMode } = useDarkMode();
-
-  // Close mobile nav on resize to desktop
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth >= 1024 && mobileNavOpen) {
-        closeMobileNav();
-      }
-    };
-
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, [mobileNavOpen, closeMobileNav]);
 
   return (
     <div className="min-h-screen overflow-x-hidden">

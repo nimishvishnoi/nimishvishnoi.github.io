@@ -5,6 +5,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { SocialLinks } from '@components/ui';
 import { socialLinks } from '@data/contact';
+import { downloadResume } from '@/utils/resume';
 
 export const Header: React.FC = () => {
   return (
@@ -44,15 +45,18 @@ export const Header: React.FC = () => {
         </motion.div>
 
         {/* Download Resume */}
-        <motion.a
+        <motion.button
+          type="button"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.6, delay: 0.4 }}
-          href="#resume"
+          onClick={() => {
+            void downloadResume();
+          }}
           className="block text-center py-3 px-6 bg-white text-primary-700 hover:bg-primary-100 rounded-lg font-accent font-bold smooth-transition mt-6 mx-auto w-fit"
         >
-          View Resume
-        </motion.a>
+          Download Resume
+        </motion.button>
       </div>
     </header>
   );

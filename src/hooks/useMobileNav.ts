@@ -19,16 +19,29 @@ export const useMobileNav = (): {
   };
 
   useEffect(() => {
-    // Close mobile menu when window is resized to desktop size
     const handleResize = (): void => {
       if (window.innerWidth >= 1024) {
         closeMobileNav();
       }
     };
 
+    const handleKeyDown = (event: KeyboardEvent): void => {
+      if (event.key === 'Escape') {
+        closeMobileNav();
+      }
+    };
+
+    document.body.style.overflow = mobileNavOpen ? 'hidden' : '';
+
     window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = '';
+      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [mobileNavOpen]);
 
   return { mobileNavOpen, toggleMobileNav, closeMobileNav };
 };
