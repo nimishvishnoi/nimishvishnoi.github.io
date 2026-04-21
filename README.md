@@ -41,5 +41,6 @@ Portfolio content lives in `src/data/`.
 ## Notes
 
 - The contact form requires Firebase environment variables. Use `.env.example` as the template.
+- For GitHub Pages production builds, add the same `VITE_FIREBASE_*` names as GitHub Actions repository secrets.
 - Dark mode is controlled through a persisted class-based theme toggle.
 - Production build output is generated into `dist/`.
