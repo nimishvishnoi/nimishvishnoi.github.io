@@ -39,5 +39,5 @@ export const education: Education[] = [
 export const summary = {
   name: 'Nimish Vishnoi',
   title: 'Staff Engineer at Nagarro',
-  bio: 'Dynamic software engineer with a B.Tech in Computer Science and Engineering, experienced in building scalable applications with C#, .NET Core, JavaScript, React, Python, and SQL Server. Strong with AWS, GitHub Actions, and Terraform for deployment and automation.',
+  bio: 'Dynamic software engineer with 7+ years of professional experience and a B.Tech in Computer Science and Engineering. Specialized in building scalable applications with C#, .NET Core, JavaScript, React, Python, and SQL Server. Strong expertise with AWS, GitHub Actions, and Terraform for deployment and automation.',
 };

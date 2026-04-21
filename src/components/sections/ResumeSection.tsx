@@ -111,7 +111,7 @@ export const ResumeSection: React.FC = () => {
                   {exp.company} • {exp.location}
                 </p>
                 <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
-                  {formatDate(exp.startDate)} - {formatDate(exp.endDate)}
+                  {exp.periodLabel ?? `${formatDate(exp.startDate)} - ${formatDate(exp.endDate)}`}
                 </p>
 
                 <ul className="space-y-2 mb-4">
