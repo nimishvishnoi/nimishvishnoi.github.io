@@ -5,9 +5,9 @@
 export const aboutContent = {
   title: 'About',
   description:
-    'Experienced Software Engineer with a demonstrated history of working in the information technology and services industry. Skilled in Python, .NET, JavaScript, React, MongoDB, SQL Server. Strong engineering professional with a Bachelor of Technology (B.Tech) focused in Computer Science and Engineering.',
+    'Dynamic software engineer with a B.Tech in Computer Science and Engineering, building scalable applications across .NET, React, JavaScript, Python, SQL Server, and MongoDB.',
   fullDescription: [
-    'I am a passionate full-stack developer with 7+ years of experience building scalable web applications and software solutions. My expertise spans across modern technologies including React, .NET, and cloud platforms like AWS and Azure.',
-    'I thrive in collaborative environments where I can contribute to innovative projects that solve real-world problems. My approach combines clean code principles, architectural best practices, and a keen eye for user experience.',
+    'I focus on delivering reliable, efficient software that solves real business problems. My day-to-day work includes backend engineering in C#/.NET, modern frontend development with React, and data-centric workflows using SQL Server and Python.',
+    'I am also experienced with cloud and delivery tooling, including AWS, GitHub Actions, and Terraform, to support stable releases and automation. I enjoy collaborating with teams, driving technical clarity, and maintaining high engineering standards.',
   ],
 };

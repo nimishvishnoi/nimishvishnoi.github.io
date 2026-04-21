@@ -30,7 +30,7 @@ export const Header: React.FC = () => {
           {/* Name */}
           <h1 className="text-2xl sm:text-3xl font-[Raleway] font-bold mb-2">Nimish Vishnoi</h1>
           <p className="text-primary-200 dark:text-primary-300 font-accent text-sm">
-            Senior Software Engineer
+            Staff Engineer at Nagarro
           </p>
         </motion.div>
 

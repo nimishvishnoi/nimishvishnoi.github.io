@@ -36,6 +36,7 @@ export interface Education {
   field: string;
   startDate: Date;
   endDate: Date;
+  periodLabel?: string;
 }
 
 export interface Project {

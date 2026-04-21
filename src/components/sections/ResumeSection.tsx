@@ -7,6 +7,7 @@ import { SectionTitle, Card, Badge } from '@components/ui';
 import { experiences } from '@data/experience';
 import { education, summary } from '@data/education';
 import { achievements } from '@data/achievements';
+import { contactInfo } from '@data/contact';
 import { resumeFileUrl } from '@/constants/site';
 import { downloadGeneratedResume } from '@/utils/resume';
 import { getTotalExperience, formatExperience, formatDate } from '@/utils';
@@ -39,15 +40,15 @@ export const ResumeSection: React.FC = () => {
               </div>
               <div>
                 <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Location</p>
-                <p className="font-semibold text-gray-800 dark:text-white">Noida, India</p>
+                <p className="font-semibold text-gray-800 dark:text-white">{contactInfo.location}</p>
               </div>
               <div>
                 <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Email</p>
                 <a
-                  href="mailto:nimish.vishnoi@rocketmail.com"
+                  href={`mailto:${contactInfo.email}`}
                   className="font-semibold hover:text-primary-600 smooth-transition"
                 >
-                  nimish.vishnoi@rocketmail.com
+                  {contactInfo.email}
                 </a>
               </div>
             </div>
@@ -70,10 +71,32 @@ export const ResumeSection: React.FC = () => {
                   {edu.institution} • {edu.location}
                 </p>
                 <p className="text-sm font-semibold text-gray-700 dark:text-gray-300">
-                  {formatDate(edu.startDate)} - {formatDate(edu.endDate)}
+                  {edu.periodLabel ?? `${formatDate(edu.startDate)} - ${formatDate(edu.endDate)}`}
                 </p>
               </Card>
             ))}
+
+            {/* Achievements */}
+            <div className="mt-12">
+              <h3 className="text-2xl font-[Raleway] font-bold mb-6 text-primary-600 dark:text-primary-400">
+                Achievements & Certifications
+              </h3>
+              <div className="grid gap-6">
+                {achievements.map((achievement, index) => (
+                  <Card key={achievement.id} delay={index * 0.2}>
+                    <h4 className="text-lg font-bold text-gray-900 dark:text-white mb-2">
+                      {achievement.title}
+                    </h4>
+                    <p className="text-primary-600 dark:text-primary-400 font-accent mb-2">
+                      {achievement.organization} • {achievement.year}
+                    </p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                      {achievement.description}
+                    </p>
+                  </Card>
+                ))}
+              </div>
+            </div>
           </div>
 
           {/* Experience */}
@@ -105,28 +128,6 @@ export const ResumeSection: React.FC = () => {
                     <Badge key={tech} text={tech} variant="secondary" size="sm" />
                   ))}
                 </div>
-              </Card>
-            ))}
-          </div>
-        </div>
-
-        {/* Achievements */}
-        <div className="mt-12">
-          <h3 className="text-2xl font-[Raleway] font-bold mb-6 text-primary-600 dark:text-primary-400">
-            Achievements & Certifications
-          </h3>
-          <div className="grid md:grid-cols-2 gap-6">
-            {achievements.map((achievement, index) => (
-              <Card key={achievement.id} delay={index * 0.2}>
-                <h4 className="text-lg font-bold text-gray-900 dark:text-white mb-2">
-                  {achievement.title}
-                </h4>
-                <p className="text-primary-600 dark:text-primary-400 font-accent mb-2">
-                  {achievement.organization} • {achievement.year}
-                </p>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  {achievement.description}
-                </p>
               </Card>
             ))}
           </div>

@@ -7,7 +7,7 @@ import type { ContactInfo, SocialLink } from '@types';
 export const contactInfo: ContactInfo = {
   email: 'nimish.vishnoi@rocketmail.com',
   phone: '+91 829-971-8692',
-  location: 'Noida, Uttar Pradesh, INDIA',
+  location: 'Noida, Uttar Pradesh, India',
 };
 
 export const socialLinks: SocialLink[] = [

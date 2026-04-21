@@ -69,7 +69,7 @@ export const generateResumePdf = (
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(10);
     doc.text(
-      `${item.field} • ${item.startDate.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })} - ${item.endDate.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}`,
+      `${item.field} • ${item.periodLabel ?? `${item.startDate.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })} - ${item.endDate.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}`}`,
       MARGIN,
       y
     );

@@ -75,7 +75,7 @@ export const skills: Skill[] = [
   // Frameworks & Libraries
   {
     id: 'skill-11',
-    name: '.NET',
+    name: '.NET Core',
     category: 'backend',
     proficiency: 'expert',
   },
@@ -87,7 +87,7 @@ export const skills: Skill[] = [
   },
   {
     id: 'skill-13',
-    name: 'REST API',
+    name: 'RESTful Web Services',
     category: 'backend',
     proficiency: 'advanced',
   },
@@ -103,11 +103,35 @@ export const skills: Skill[] = [
     category: 'frontend',
     proficiency: 'advanced',
   },
+  {
+    id: 'skill-16',
+    name: 'Responsive Web Design',
+    category: 'frontend',
+    proficiency: 'advanced',
+  },
 
   // Cloud Platforms
   {
-    id: 'skill-16',
+    id: 'skill-17',
     name: 'AWS',
+    category: 'tools',
+    proficiency: 'advanced',
+  },
+  {
+    id: 'skill-18',
+    name: 'GitHub Actions',
+    category: 'tools',
+    proficiency: 'advanced',
+  },
+  {
+    id: 'skill-19',
+    name: 'Terraform',
+    category: 'tools',
+    proficiency: 'advanced',
+  },
+  {
+    id: 'skill-20',
+    name: 'Software Testing',
     category: 'tools',
     proficiency: 'advanced',
   },

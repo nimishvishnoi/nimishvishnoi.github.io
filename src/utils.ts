@@ -9,8 +9,17 @@ export const calculateExperience = (
   startDate: Date,
   endDate: Date = new Date()
 ): { years: number; months: number } => {
+  if (endDate < startDate) {
+    return { years: 0, months: 0 };
+  }
+
   let years = endDate.getFullYear() - startDate.getFullYear();
   let months = endDate.getMonth() - startDate.getMonth();
+  const days = endDate.getDate() - startDate.getDate();
+
+  if (days < 0) {
+    months -= 1;
+  }
 
   if (months < 0) {
     years--;
@@ -57,10 +66,36 @@ export const getTotalExperience = (
     return { years: 0, months: 0 };
   }
 
-  const oldestStart = new Date(Math.min(...experiences.map((e) => e.startDate.getTime())));
-  const newestEnd = new Date();
+  const now = new Date();
+  const ranges = experiences
+    .map((experience) => ({
+      start: new Date(experience.startDate),
+      end: new Date(experience.endDate ?? now),
+    }))
+    .sort((a, b) => a.start.getTime() - b.start.getTime());
 
-  return calculateExperience(oldestStart, newestEnd);
+  const mergedRanges: Array<{ start: Date; end: Date }> = [];
+  for (const range of ranges) {
+    const previous = mergedRanges[mergedRanges.length - 1];
+    if (!previous || range.start.getTime() > previous.end.getTime()) {
+      mergedRanges.push(range);
+      continue;
+    }
+
+    if (range.end.getTime() > previous.end.getTime()) {
+      previous.end = range.end;
+    }
+  }
+
+  const totalMonths = mergedRanges.reduce((sum, range) => {
+    const { years, months } = calculateExperience(range.start, range.end);
+    return sum + years * 12 + months;
+  }, 0);
+
+  return {
+    years: Math.floor(totalMonths / 12),
+    months: totalMonths % 12,
+  };
 };
 
 /**

@@ -19,7 +19,7 @@ export const projects: Project[] = [
     year: 2019,
     category: 'web',
     description:
-      'Website to show the vehicles based on model. Worked on this project at Wildnet in .Net MVC.',
+      'Automotive catalog website for browsing and filtering vehicles by model, built during my time at Wildnet using .NET MVC.',
     technologies: ['.Net MVC', 'jQuery', 'SQL Server'],
   },
   {
@@ -28,7 +28,7 @@ export const projects: Project[] = [
     year: 2019,
     category: 'web',
     description:
-      'Web App to help business connect with customers and let the customers to inquiry.',
+      'Customer engagement platform that helps businesses connect with prospects and manage customer inquiries.',
     technologies: ['.Net MVC', 'API', 'Firebase', 'JavaScript', 'SQL Server'],
   },
   {
@@ -37,7 +37,7 @@ export const projects: Project[] = [
     year: 2018,
     category: 'web',
     description:
-      'Website to manage flyers and its offers in it. Worked on this project in Wildnet using .Net MVC.',
+      'Flyer and promotional-offer management platform developed at Wildnet using .NET MVC.',
     technologies: ['.Net MVC', 'API', 'jQuery', 'SQL Server'],
   },
   {
@@ -55,7 +55,7 @@ export const projects: Project[] = [
     year: 2017,
     category: 'app',
     description:
-      'It is Android application which verify the MAC Address of the user device and check with the database, this application is developed to stop unauthorized distribution of that application.',
+      'Android application that verifies a device MAC address against a backend database to prevent unauthorized app distribution.',
     technologies: ['Android', 'PHP', 'MySQL', 'API', 'BootStrap'],
   },
   {
@@ -64,7 +64,7 @@ export const projects: Project[] = [
     year: 2017,
     category: 'web',
     description:
-      'It is a Website for my college annual fest Gyan Jyoti used for registration of events and it contains all the information regarding all the events and their timing.',
+      'Website for the Gyan Jyoti annual college fest, used for event registration and publishing schedules and event details.',
     technologies: ['PHP', 'JavaScript', 'MySQL', 'BootStrap'],
   },
   {
@@ -73,7 +73,7 @@ export const projects: Project[] = [
     year: 2017,
     category: 'app',
     description:
-      'It is a Java App which help the blood bank administrator to manage the stock of the blood. Here the administrator can fill all the basic information of Donor and Receiver. Developed Desktop and Web App.',
+      'Blood bank management system for maintaining stock and donor/receiver records, delivered as both desktop and web applications.',
     technologies: ['Java', 'MySQL'],
   },
 ];
