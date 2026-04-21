@@ -1,7 +1,7 @@
 /**
  * Contact Section Component
  */
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -57,11 +57,6 @@ export const ContactSection: React.FC = () => {
 
       setSubmitStatus('success');
       reset();
-
-      // Reset success message after 5 seconds
-      setTimeout(() => {
-        setSubmitStatus('idle');
-      }, 5000);
     } catch (error) {
       console.error('Form submission error:', error);
       setErrorMessage(
@@ -70,6 +65,18 @@ export const ContactSection: React.FC = () => {
       setSubmitStatus('error');
     }
   };
+
+  useEffect(() => {
+    if (submitStatus !== 'success') {
+      return undefined;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      setSubmitStatus('idle');
+    }, 5000);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [submitStatus]);
 
   return (
     <section id="contact" className="py-[5rem] px-4 scroll-mt-24 lg:scroll-mt-20">

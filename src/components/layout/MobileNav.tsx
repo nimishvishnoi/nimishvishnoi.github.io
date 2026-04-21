@@ -5,7 +5,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { FaTimes } from 'react-icons/fa';
 import { navigationLinks } from '@/constants/site';
-import { downloadResume } from '@/utils/resume';
+import { downloadGeneratedResume } from '@/utils/resume';
 
 interface MobileNavProps {
   activeSection: string;
@@ -83,7 +83,7 @@ export const MobileNav: React.FC<MobileNavProps> = ({ activeSection, onClose }) 
               type="button"
               onClick={() => {
                 onClose();
-                void downloadResume();
+                void downloadGeneratedResume();
               }}
               className="block w-full text-center py-3 px-4 bg-white text-primary-700 hover:bg-primary-100 rounded-lg font-accent font-bold smooth-transition"
             >

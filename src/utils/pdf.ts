@@ -1,11 +1,5 @@
-import { jsPDF } from 'jspdf';
-import type { Education, Experience, Skill, Project, ContactInfo, Achievement } from '@types';
-
-interface ResumeSummary {
-  name: string;
-  title: string;
-  bio: string;
-}
+import { jsPDF } from 'jspdf/dist/jspdf.es.min.js';
+import type { Education, Experience, Skill, Project, ContactInfo, Achievement, ResumeSummary } from '@types';
 
 const PAGE_WIDTH = 595;
 const PAGE_HEIGHT = 842;

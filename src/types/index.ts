@@ -68,3 +68,19 @@ export interface ContactFormData {
   subject: string;
   message: string;
 }
+
+export interface ResumeSummary {
+  name: string;
+  title: string;
+  bio: string;
+}
+
+export interface ResumePayload {
+  summary: ResumeSummary;
+  education: Education[];
+  experiences: Experience[];
+  skills: Skill[];
+  projects: Project[];
+  contactInfo: ContactInfo;
+  achievements: Achievement[];
+}

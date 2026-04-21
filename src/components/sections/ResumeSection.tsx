@@ -8,7 +8,7 @@ import { experiences } from '@data/experience';
 import { education, summary } from '@data/education';
 import { achievements } from '@data/achievements';
 import { resumeFileUrl } from '@/constants/site';
-import { downloadResume } from '@/utils/resume';
+import { downloadGeneratedResume } from '@/utils/resume';
 import { getTotalExperience, formatExperience, formatDate } from '@/utils';
 
 export const ResumeSection: React.FC = () => {
@@ -149,7 +149,7 @@ export const ResumeSection: React.FC = () => {
           <button
             type="button"
             onClick={() => {
-              void downloadResume();
+              void downloadGeneratedResume();
             }}
             className="inline-flex items-center gap-2 px-8 py-3 border-2 border-primary-600 text-primary-600 hover:bg-primary-50 dark:border-primary-400 dark:text-primary-400 dark:hover:bg-slate-800 font-accent font-bold rounded-lg smooth-transition"
           >

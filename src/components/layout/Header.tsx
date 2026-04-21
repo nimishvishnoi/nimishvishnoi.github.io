@@ -5,7 +5,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { SocialLinks } from '@components/ui';
 import { socialLinks } from '@data/contact';
-import { downloadResume } from '@/utils/resume';
+import { downloadGeneratedResume } from '@/utils/resume';
 
 export const Header: React.FC = () => {
   return (
@@ -51,7 +51,7 @@ export const Header: React.FC = () => {
           animate={{ opacity: 1 }}
           transition={{ duration: 0.6, delay: 0.4 }}
           onClick={() => {
-            void downloadResume();
+            void downloadGeneratedResume();
           }}
           className="block text-center py-3 px-6 bg-white text-primary-700 hover:bg-primary-100 rounded-lg font-accent font-bold smooth-transition mt-6 mx-auto w-fit"
         >

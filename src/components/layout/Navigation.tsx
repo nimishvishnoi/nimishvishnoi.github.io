@@ -4,7 +4,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { navigationLinks } from '@/constants/site';
-import { downloadResume } from '@/utils/resume';
+import { downloadGeneratedResume } from '@/utils/resume';
 
 interface NavigationProps {
   activeSection?: string;
@@ -52,7 +52,7 @@ export const Navigation: React.FC<NavigationProps> = ({ activeSection, onLinkCli
             <button
               type="button"
               onClick={() => {
-                void downloadResume();
+                void downloadGeneratedResume();
               }}
               className="px-4 py-2 rounded-lg font-accent font-medium smooth-transition text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400"
             >

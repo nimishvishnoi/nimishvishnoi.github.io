@@ -15,9 +15,10 @@ import { useScrollSpy, useMobileNav, useDarkMode } from '@hooks';
 import { sectionIds } from '@/constants/site';
 
 const App: React.FC = () => {
-  const { activeSection } = useScrollSpy([...sectionIds]);
+  const { activeSection } = useScrollSpy(sectionIds);
   const { mobileNavOpen, toggleMobileNav, closeMobileNav } = useMobileNav();
   const { darkMode, toggleDarkMode } = useDarkMode();
+  const currentYear = new Date().getFullYear();
 
   return (
     <div className="min-h-screen overflow-x-hidden">
@@ -101,7 +102,7 @@ const App: React.FC = () => {
           className="bg-gray-100 dark:bg-slate-800 py-8 px-4 text-center text-gray-600 dark:text-gray-400 border-t border-gray-200 dark:border-gray-800"
         >
           <p className="text-sm">
-            © 2024 Nimish Vishnoi. Built with React 19 & TypeScript. All rights reserved.
+            © {currentYear} Nimish Vishnoi. Built with React 19 & TypeScript. All rights reserved.
           </p>
         </motion.footer>
       </main>

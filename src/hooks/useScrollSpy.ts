@@ -4,7 +4,7 @@
 import { useEffect, useState } from 'react';
 
 export const useScrollSpy = (
-  sectionIds: string[],
+  sectionIds: readonly string[],
   offset: number = 160
 ): { activeSection: string } => {
   const [activeSection, setActiveSection] = useState<string>(sectionIds[0] ?? '');
