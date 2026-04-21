@@ -9,7 +9,7 @@ export const experiences: Experience[] = [
     title: 'Staff Engineer',
     company: 'Nagarro',
     location: 'Noida, Uttar Pradesh, India',
-    startDate: new Date(2025, 6), // July 2025 (promotion date)
+    startDate: new Date(2025, 6), // July 2025
     endDate: null, // Current
     description: [
       'Provide technical leadership for enterprise web solutions and guide architecture decisions.',
@@ -39,7 +39,7 @@ export const experiences: Experience[] = [
     title: 'Senior Engineer',
     company: 'Nagarro',
     location: 'Noida, Uttar Pradesh, India',
-    startDate: new Date(2021, 10, 25), // 25 November 2021
+    startDate: new Date(2021, 10, 25), // November 25, 2021
     endDate: new Date(2023, 9), // October 2023
     description: [
       'Built and optimized customer-facing web solutions using C#, .NET, SQL Server, JavaScript, and React.',
@@ -54,8 +54,8 @@ export const experiences: Experience[] = [
     title: 'Junior System Analyst',
     company: 'Contata Solutions',
     location: 'Noida, Uttar Pradesh, India',
-    startDate: new Date(2020, 0, 9), // 09 January 2020
-    endDate: new Date(2021, 10, 24), // 24 November 2021
+    startDate: new Date(2020, 0, 9), // January 9, 2020
+    endDate: new Date(2021, 10, 24), // November 24, 2021
     description: [
       'Worked as a .NET developer for ESI Synthesis in the Oil and Gas domain.',
       'Implemented business features using C#, SQL Server, JavaScript, and jQuery.',
@@ -69,8 +69,8 @@ export const experiences: Experience[] = [
     title: 'Junior Software Engineer',
     company: 'Wildnet Technologies',
     location: 'Noida, Uttar Pradesh, India',
-    startDate: new Date(2018, 7, 13), // 13 August 2018
-    endDate: new Date(2018, 10, 30), // 30 November 2018
+    startDate: new Date(2018, 7, 13), // August 13, 2018
+    endDate: new Date(2019, 10, 30), // November 30, 2019
     description: [
       'Worked as a .NET developer with a focus on e-commerce platforms.',
       'Built features using C#, .NET Framework, SQL Server, JavaScript, jQuery, Firebase, and Azure.',
