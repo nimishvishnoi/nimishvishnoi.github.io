@@ -1,6 +1,6 @@
 # Nimish Vishnoi Portfolio
 
-React portfolio migrated from the legacy static site to a Vite + TypeScript application.
+Personal portfolio built with React, TypeScript, Vite, Tailwind CSS, and Firebase.
 
 ## Stack
 
@@ -23,7 +23,7 @@ yarn preview
 
 ## Content
 
-Portfolio content lives in `src/data/`.
+Portfolio content is maintained in `src/data/`.
 
 - `about.ts`
 - `skills.ts`
@@ -35,12 +35,9 @@ Portfolio content lives in `src/data/`.
 
 ## Resume
 
-- Original resume download: `public/Nimish_Resume.pdf`
-- Generated PDF export: `src/utils/pdf.ts`
+- Static resume download: `public/Nimish_Resume.pdf`
+- Generated resume export: `src/utils/pdf.ts`
 
-## Notes
+## Deployment
 
-- The contact form requires Firebase environment variables. Use `.env.example` as the template.
-- For GitHub Pages production builds, add the same `VITE_FIREBASE_*` names as GitHub Actions repository secrets.
-- Dark mode is controlled through a persisted class-based theme toggle.
-- Production build output is generated into `dist/`.
+Deployment and Firebase setup are documented in [docs/deployment.md](docs/deployment.md).
