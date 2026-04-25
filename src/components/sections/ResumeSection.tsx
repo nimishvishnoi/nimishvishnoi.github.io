@@ -40,7 +40,9 @@ export const ResumeSection: React.FC = () => {
               </div>
               <div>
                 <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Location</p>
-                <p className="font-semibold text-gray-800 dark:text-white">{contactInfo.location}</p>
+                <p className="font-semibold text-gray-800 dark:text-white">
+                  {contactInfo.location}
+                </p>
               </div>
               <div>
                 <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Email</p>

@@ -1,5 +1,13 @@
 import { jsPDF } from 'jspdf/dist/jspdf.es.min.js';
-import type { Education, Experience, Skill, Project, ContactInfo, Achievement, ResumeSummary } from '@types';
+import type {
+  Education,
+  Experience,
+  Skill,
+  Project,
+  ContactInfo,
+  Achievement,
+  ResumeSummary,
+} from '@types';
 import { formatDateRange } from '@/utils';
 
 const PAGE_WIDTH = 595;
