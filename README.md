@@ -40,4 +40,19 @@ Portfolio content is maintained in `src/data/`.
 
 ## Deployment
 
-Deployment and Firebase setup are documented in [docs/deployment.md](docs/deployment.md).
+- Local development:
+  1. Copy `.env.example` to `.env.local`
+  2. Fill in Firebase `VITE_FIREBASE_*` values
+  3. Run `yarn dev`
+- Production build: `yarn build`
+- Deployment is handled through GitHub Pages via `.github/workflows/deploy.yml`.
+- Required GitHub Actions secrets:
+  - `VITE_FIREBASE_API_KEY`
+  - `VITE_FIREBASE_AUTH_DOMAIN`
+  - `VITE_FIREBASE_DATABASE_URL`
+  - `VITE_FIREBASE_PROJECT_ID`
+  - `VITE_FIREBASE_STORAGE_BUCKET`
+  - `VITE_FIREBASE_MESSAGING_SENDER_ID`
+  - `VITE_FIREBASE_APP_ID`
+  - `VITE_FIREBASE_MEASUREMENT_ID`
+- Production output is generated into `dist/`.
