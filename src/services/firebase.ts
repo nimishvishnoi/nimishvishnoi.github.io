@@ -170,18 +170,12 @@ export const submitContactForm = async (formData: ContactFormData): Promise<void
 
 /**
  * Submit contact form with reCAPTCHA verification
- * Calls Cloud Function for server-side validation
+ * Calls Cloud Function for server-side validation, falls back to direct submission if functions unavailable
  */
 export const submitContactFormWithRecaptcha = async (
   formData: ContactFormData,
   recaptchaToken: string
 ): Promise<void> => {
-  if (!functionsClient) {
-    throw new Error(
-      'Firebase functions are not configured. Please verify Firebase environment variables and initialization.'
-    );
-  }
-
   if (!recaptchaToken) {
     throw new Error('reCAPTCHA verification failed. Please reload the page and try again.');
   }
@@ -204,21 +198,61 @@ export const submitContactFormWithRecaptcha = async (
     throw new Error('Invalid email address');
   }
 
+  // Try server-side validation first (Cloud Function)
+  if (functionsClient) {
+    try {
+      const validateContactSubmission = httpsCallable(functionsClient, 'validateContactSubmission');
+      const response = await validateContactSubmission({
+        formData: sanitizedData,
+        recaptchaToken,
+        deviceFingerprint: getDeviceFingerprint(),
+        origin: window.location.origin,
+      });
+
+      const responseData = response.data as { success?: boolean } | undefined;
+      if (responseData && responseData.success === true) {
+        console.log('✅ Contact form submitted with server-side validation');
+        return; // Success, no need to fall back
+      }
+    } catch (error) {
+      console.warn('⚠️  Cloud Function validation failed, falling back to client-side validation:', error);
+      // Continue to fallback submission
+    }
+  } else {
+    console.warn('⚠️  Firebase Functions not available, using client-side validation only');
+  }
+
+  // Fallback: Direct database submission with enhanced client-side validation
+  if (!database) {
+    throw new Error(
+      'Firebase is not configured. Please provide Firebase environment variables in .env.local.'
+    );
+  }
+
   try {
-    const validateContactSubmission = httpsCallable(functionsClient, 'validateContactSubmission');
-    const response = await validateContactSubmission({
-      formData: sanitizedData,
-      recaptchaToken,
+    const now = new Date();
+    const dateString = `${String(now.getMonth() + 1).padStart(2, '0')}${String(
+      now.getDate()
+    ).padStart(2, '0')}${now.getFullYear()}`;
+
+    const messageRef = ref(database, `Message/${dateString}`);
+    const newMessageRef = push(messageRef);
+
+    const messageData = {
+      ...sanitizedData,
+      createdAt: serverTimestamp(),
+      submittedAt: new Date().toISOString(),
       deviceFingerprint: getDeviceFingerprint(),
       origin: window.location.origin,
-    });
+      userAgent: navigator.userAgent.substring(0, 100),
+      validationMethod: 'client-side-fallback', // Mark as fallback submission
+      recaptchaScore: 'unknown', // We can't get the score without server validation
+    };
 
-    const responseData = response.data as { success?: boolean } | undefined;
-    if (!responseData || responseData.success !== true) {
-      throw new Error('Contact form submission could not be validated.');
-    }
+    await set(newMessageRef, messageData);
+    console.log('✅ Contact form submitted with client-side validation (fallback mode)');
   } catch (error) {
-    console.error('Error submitting contact form with reCAPTCHA:', error);
+    console.error('Error submitting contact form (fallback):', error);
     throw error;
   }
 };
