@@ -13,11 +13,7 @@ admin.initializeApp();
 const db = admin.database();
 
 // Environment configuration
-const functionsConfig = functions.config();
-const RECAPTCHA_SECRET_KEY =
-  process.env.RECAPTCHA_SECRET_KEY ||
-  functionsConfig.recaptcha?.secret ||
-  '';
+const RECAPTCHA_SECRET_KEY = process.env.RECAPTCHA_SECRET_KEY || '';
 const RECAPTCHA_MIN_SCORE = 0.5; // reCAPTCHA v3 score threshold (0.0-1.0)
 const MAX_SUBMISSIONS_PER_HOUR = 3;
 const MAX_SUBMISSIONS_PER_DAY = 20;
