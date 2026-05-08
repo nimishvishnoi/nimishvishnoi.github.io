@@ -114,69 +114,12 @@ const detectSpam = (formData: ContactFormData): boolean => {
 /**
  * Submit contact form to Firebase with security validations
  */
-export const submitContactForm = async (formData: ContactFormData): Promise<void> => {
-  if (!database) {
-    throw new Error(
-      'Firebase is not configured. Please provide Firebase environment variables in .env.local.'
-    );
-  }
-
-  // Spam detection
-  if (detectSpam(formData)) {
-    throw new Error('Your message was flagged as spam. Please review your content and try again.');
-  }
-
-  try {
-    const now = new Date();
-    const dateString = `${String(now.getMonth() + 1).padStart(2, '0')}${String(
-      now.getDate()
-    ).padStart(2, '0')}${now.getFullYear()}`;
-
-    const messageRef = ref(database, `Message/${dateString}`);
-    const newMessageRef = push(messageRef);
-
-    // Sanitize all inputs
-    const sanitizedData = {
-      name: sanitizeInput(formData.name),
-      email: sanitizeInput(formData.email),
-      phone: formData.phone ? sanitizeInput(formData.phone) : '',
-      subject: sanitizeInput(formData.subject),
-      message: sanitizeInput(formData.message),
-    };
-
-    // Additional validation after sanitization
-    if (!isValidEmail(sanitizedData.email)) {
-      throw new Error('Invalid email address');
-    }
-
-    const messageData = {
-      ...sanitizedData,
-      createdAt: serverTimestamp(),
-      submittedAt: new Date().toISOString(),
-      deviceFingerprint: getDeviceFingerprint(),
-      origin: window.location.origin,
-      userAgent: navigator.userAgent.substring(0, 100), // Truncate for privacy
-    };
-
-    await set(newMessageRef, messageData);
-  } catch (error) {
-    console.error('Error submitting contact form:', error);
-    throw error;
-  }
-};
-
 /**
- * Submit contact form with reCAPTCHA verification
- * Calls Cloud Function for server-side validation, falls back to direct submission if functions unavailable
+ * Submit contact form with client-side validation and secure Realtime Database write
  */
-export const submitContactFormWithRecaptcha = async (
-  formData: ContactFormData,
-  recaptchaToken?: string
+export const submitContactForm = async (
+  formData: ContactFormData
 ): Promise<void> => {
-  if (!recaptchaToken) {
-    console.warn('reCAPTCHA token is not available. Submitting with client-side validation only.');
-  }
-
   // Spam detection
   if (detectSpam(formData)) {
     throw new Error('Your message was flagged as spam. Please review your content and try again.');
@@ -218,7 +161,7 @@ export const submitContactFormWithRecaptcha = async (
       origin: window.location.origin,
       userAgent: navigator.userAgent.substring(0, 100),
       validationMethod: 'client-side-only',
-      recaptchaScore: recaptchaToken ? 'unverified' : 'unavailable',
+      recaptchaScore: 'unavailable',
     };
 
     await set(newMessageRef, messageData);

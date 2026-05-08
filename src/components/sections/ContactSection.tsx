@@ -8,7 +8,7 @@ import { z } from 'zod';
 import { motion } from 'framer-motion';
 import { SectionTitle, Card, Button, SocialLinks } from '@components/ui';
 import { contactInfo, socialLinks } from '@data/contact';
-import { validateContactForm, isFirebaseEnabled, submitContactFormWithRecaptcha, checkRateLimit } from '@services/firebase';
+import { validateContactForm, isFirebaseEnabled, submitContactForm, checkRateLimit } from '@services/firebase';
 import { FaPhone, FaEnvelope, FaMapMarkerAlt } from 'react-icons/fa';
 
 // Validation schema using Zod (honeypot must be empty)
@@ -68,7 +68,7 @@ export const ContactSection: React.FC = () => {
         return;
       }
 
-      await submitContactFormWithRecaptcha(data);
+      await submitContactForm(data);
 
       setSubmitStatus('success');
       reset();
