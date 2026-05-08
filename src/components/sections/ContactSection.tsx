@@ -9,7 +9,6 @@ import { motion } from 'framer-motion';
 import { SectionTitle, Card, Button, SocialLinks } from '@components/ui';
 import { contactInfo, socialLinks } from '@data/contact';
 import { validateContactForm, isFirebaseEnabled, submitContactFormWithRecaptcha, checkRateLimit } from '@services/firebase';
-import { loadRecaptchaScript, isRecaptchaEnabled, executeRecaptcha } from '@services/recaptcha';
 import { FaPhone, FaEnvelope, FaMapMarkerAlt } from 'react-icons/fa';
 
 // Validation schema using Zod (honeypot must be empty)
@@ -29,7 +28,6 @@ export const ContactSection: React.FC = () => {
     'idle'
   );
   const [errorMessage, setErrorMessage] = useState<string>('');
-  const [recaptchaLoaded, setRecaptchaLoaded] = useState(false);
 
   const {
     register,
@@ -41,16 +39,6 @@ export const ContactSection: React.FC = () => {
   });
 
   const firebaseAvailable = isFirebaseEnabled;
-  const recaptchaAvailable = isRecaptchaEnabled();
-
-  // Load reCAPTCHA script on component mount
-  useEffect(() => {
-    if (recaptchaAvailable) {
-      loadRecaptchaScript().then(() => {
-        setRecaptchaLoaded(true);
-      });
-    }
-  }, [recaptchaAvailable]);
 
   const onSubmit = async (data: ContactFormInputs): Promise<void> => {
     try {
@@ -80,22 +68,7 @@ export const ContactSection: React.FC = () => {
         return;
       }
 
-      if (!recaptchaAvailable) {
-        throw new Error(
-          'Bot protection is not configured. Contact form submission is disabled until reCAPTCHA is enabled.'
-        );
-      }
-
-      if (!recaptchaLoaded) {
-        throw new Error('Bot protection is not ready yet. Please refresh the page and try again.');
-      }
-
-      const recaptchaToken = await executeRecaptcha('contact_form_submit');
-      if (!recaptchaToken) {
-        throw new Error('reCAPTCHA verification failed. Please reload the page and try again.');
-      }
-
-      await submitContactFormWithRecaptcha(data, recaptchaToken);
+      await submitContactFormWithRecaptcha(data);
 
       setSubmitStatus('success');
       reset();
@@ -312,32 +285,13 @@ export const ContactSection: React.FC = () => {
               {/* Submit Button */}
               <Button
                 type="submit"
-                disabled={
-                  !firebaseAvailable ||
-                  (recaptchaAvailable && !recaptchaLoaded) ||
-                  isSubmitting ||
-                  submitStatus === 'loading'
-                }
+                disabled={!firebaseAvailable || isSubmitting || submitStatus === 'loading'}
                 isLoading={isSubmitting || submitStatus === 'loading'}
                 className="w-full"
               >
                 {submitStatus === 'loading' ? 'Sending...' : 'Send Message'}
               </Button>
 
-              {/* reCAPTCHA Badge Notice */}
-              {recaptchaAvailable && (
-                <p className="text-xs text-center text-gray-500 dark:text-gray-400 mt-4">
-                  This site is protected by reCAPTCHA and the Google{' '}
-                  <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer" className="underline hover:text-primary-600">
-                    Privacy Policy
-                  </a>{' '}
-                  and{' '}
-                  <a href="https://policies.google.com/terms" target="_blank" rel="noopener noreferrer" className="underline hover:text-primary-600">
-                    Terms of Service
-                  </a>{' '}
-                  apply.
-                </p>
-              )}
             </form>
           </Card>
         </div>

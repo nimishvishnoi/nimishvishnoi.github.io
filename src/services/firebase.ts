@@ -5,7 +5,6 @@
  */
 import { initializeApp, type FirebaseOptions } from 'firebase/app';
 import { getDatabase, ref, push, set, serverTimestamp, type Database } from 'firebase/database';
-import { getFunctions, httpsCallable, type Functions } from 'firebase/functions';
 import DOMPurify from 'dompurify';
 import type { ContactFormData } from '@types';
 
@@ -29,12 +28,10 @@ const isFirebaseEnabled = Boolean(
 );
 
 let database: Database | null = null;
-let functionsClient: Functions | null = null;
 
 if (isFirebaseEnabled) {
   const app = initializeApp(firebaseConfig);
   database = getDatabase(app);
-  functionsClient = getFunctions(app);
 } else {
   console.warn('Firebase is not configured. Contact form submissions are disabled.');
 }
@@ -174,10 +171,10 @@ export const submitContactForm = async (formData: ContactFormData): Promise<void
  */
 export const submitContactFormWithRecaptcha = async (
   formData: ContactFormData,
-  recaptchaToken: string
+  recaptchaToken?: string
 ): Promise<void> => {
   if (!recaptchaToken) {
-    throw new Error('reCAPTCHA verification failed. Please reload the page and try again.');
+    console.warn('reCAPTCHA token is not available. Submitting with client-side validation only.');
   }
 
   // Spam detection
@@ -198,31 +195,6 @@ export const submitContactFormWithRecaptcha = async (
     throw new Error('Invalid email address');
   }
 
-  // Try server-side validation first (Cloud Function)
-  if (functionsClient) {
-    try {
-      const validateContactSubmission = httpsCallable(functionsClient, 'validateContactSubmission');
-      const response = await validateContactSubmission({
-        formData: sanitizedData,
-        recaptchaToken,
-        deviceFingerprint: getDeviceFingerprint(),
-        origin: window.location.origin,
-      });
-
-      const responseData = response.data as { success?: boolean } | undefined;
-      if (responseData && responseData.success === true) {
-        console.log('✅ Contact form submitted with server-side validation');
-        return; // Success, no need to fall back
-      }
-    } catch (error) {
-      console.warn('⚠️  Cloud Function validation failed, falling back to client-side validation:', error);
-      // Continue to fallback submission
-    }
-  } else {
-    console.warn('⚠️  Firebase Functions not available, using client-side validation only');
-  }
-
-  // Fallback: Direct database submission with enhanced client-side validation
   if (!database) {
     throw new Error(
       'Firebase is not configured. Please provide Firebase environment variables in .env.local.'
@@ -245,14 +217,14 @@ export const submitContactFormWithRecaptcha = async (
       deviceFingerprint: getDeviceFingerprint(),
       origin: window.location.origin,
       userAgent: navigator.userAgent.substring(0, 100),
-      validationMethod: 'client-side-fallback', // Mark as fallback submission
-      recaptchaScore: 'unknown', // We can't get the score without server validation
+      validationMethod: 'client-side-only',
+      recaptchaScore: recaptchaToken ? 'unverified' : 'unavailable',
     };
 
     await set(newMessageRef, messageData);
-    console.log('✅ Contact form submitted with client-side validation (fallback mode)');
+    console.log('✅ Contact form submitted with client-side validation');
   } catch (error) {
-    console.error('Error submitting contact form (fallback):', error);
+    console.error('Error submitting contact form:', error);
     throw error;
   }
 };

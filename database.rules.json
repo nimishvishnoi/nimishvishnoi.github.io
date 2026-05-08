@@ -1,6 +1,16 @@
 {
   "rules": {
     ".read": false,
-    ".write": false
+    ".write": false,
+    "Message": {
+      "$date": {
+        ".write": "newData.exists() &&
+          newData.child('name').isString() && newData.child('name').val().length >= 4 && newData.child('name').val().length <= 100 &&
+          newData.child('email').isString() && newData.child('email').val().matches(/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/) &&
+          newData.child('subject').isString() && newData.child('subject').val().length >= 8 && newData.child('subject').val().length <= 150 &&
+          newData.child('message').isString() && newData.child('message').val().length > 0 && newData.child('message').val().length <= 2000 &&
+          newData.child('createdAt').exists()"
+      }
+    }
   }
 }
