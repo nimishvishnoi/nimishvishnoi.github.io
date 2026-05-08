@@ -9,6 +9,7 @@ import { motion } from 'framer-motion';
 import { SectionTitle, Card, Button, SocialLinks } from '@components/ui';
 import { contactInfo, socialLinks } from '@data/contact';
 import { validateContactForm, isFirebaseEnabled, submitContactForm, checkRateLimit } from '@services/firebase';
+import { loadRecaptchaScript, isRecaptchaEnabled, executeRecaptcha } from '@services/recaptcha';
 import { FaPhone, FaEnvelope, FaMapMarkerAlt } from 'react-icons/fa';
 
 // Validation schema using Zod (honeypot must be empty)
@@ -28,6 +29,7 @@ export const ContactSection: React.FC = () => {
     'idle'
   );
   const [errorMessage, setErrorMessage] = useState<string>('');
+  const [recaptchaLoaded, setRecaptchaLoaded] = useState(false);
 
   const {
     register,
@@ -39,6 +41,16 @@ export const ContactSection: React.FC = () => {
   });
 
   const firebaseAvailable = isFirebaseEnabled;
+  const recaptchaAvailable = isRecaptchaEnabled();
+
+  // Load reCAPTCHA script on component mount
+  useEffect(() => {
+    if (recaptchaAvailable) {
+      loadRecaptchaScript().then(() => {
+        setRecaptchaLoaded(true);
+      });
+    }
+  }, [recaptchaAvailable]);
 
   const onSubmit = async (data: ContactFormInputs): Promise<void> => {
     try {
@@ -68,7 +80,13 @@ export const ContactSection: React.FC = () => {
         return;
       }
 
-      await submitContactForm(data);
+      // Get reCAPTCHA token if available
+      let recaptchaToken = '';
+      if (recaptchaAvailable && recaptchaLoaded) {
+        recaptchaToken = await executeRecaptcha('contact_form_submit');
+      }
+
+      await submitContactForm(data, recaptchaToken);
 
       setSubmitStatus('success');
       reset();

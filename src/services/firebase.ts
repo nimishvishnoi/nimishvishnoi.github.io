@@ -118,7 +118,8 @@ const detectSpam = (formData: ContactFormData): boolean => {
  * Submit contact form with client-side validation and secure Realtime Database write
  */
 export const submitContactForm = async (
-  formData: ContactFormData
+  formData: ContactFormData,
+  recaptchaToken?: string
 ): Promise<void> => {
   // Spam detection
   if (detectSpam(formData)) {
@@ -161,7 +162,8 @@ export const submitContactForm = async (
       origin: window.location.origin,
       userAgent: navigator.userAgent.substring(0, 100),
       validationMethod: 'client-side-only',
-      recaptchaScore: 'unavailable',
+      recaptchaToken: recaptchaToken || null,
+      recaptchaScore: recaptchaToken ? 'token-provided' : 'unavailable',
     };
 
     await set(newMessageRef, messageData);
