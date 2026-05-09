@@ -1,0 +1,18 @@
+User-agent: *
+Allow: /
+
+# Block access to files that should not be indexed if accidentally published
+Disallow: /.env
+Disallow: /.env.local
+Disallow: /node_modules/
+Disallow: /.git/
+Disallow: /dist/
+
+# Allow access to assets
+Allow: /assets/
+Allow: /img/
+Allow: /css/
+Allow: /js/
+
+# Sitemap
+Sitemap: https://nimishvishnoi.github.io/sitemap.xml

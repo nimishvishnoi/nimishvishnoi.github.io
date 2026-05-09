@@ -1,0 +1,27 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "Message": {
+      "$date": {
+        "$messageId": {
+          ".write": "!data.exists()",
+          ".validate": "newData.hasChildren(['name','email','subject','message','createdAt','submittedAt'])",
+          "name": { ".validate": "newData.isString() && newData.val().length >= 4 && newData.val().length <= 100" },
+          "email": { ".validate": "newData.isString() && newData.val().matches(/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/)" },
+          "phone": { ".validate": "!newData.exists() || (newData.isString() && newData.val().length <= 30 && newData.val().matches(/^[\\d\\s\\-+()]*$/))" },
+          "subject": { ".validate": "newData.isString() && newData.val().length >= 8 && newData.val().length <= 150" },
+          "message": { ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 2000" },
+          "createdAt": { ".validate": "newData.isNumber()" },
+          "submittedAt": { ".validate": "newData.isString() && newData.val().length <= 40" },
+          "recaptchaStatus": { ".validate": "newData.isString() && newData.val().length <= 30" },
+          "deviceFingerprint": { ".validate": "newData.isString() && newData.val().length <= 64" },
+          "origin": { ".validate": "newData.isString() && newData.val().length <= 120" },
+          "userAgent": { ".validate": "newData.isString() && newData.val().length <= 100" },
+          "validationMethod": { ".validate": "newData.isString() && newData.val().length <= 40" },
+          "$other": { ".validate": false }
+        }
+      }
+    }
+  }
+}

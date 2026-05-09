@@ -42,5 +42,13 @@ export default defineConfig({
         },
       },
     },
+    // SEO and performance optimizations
+    cssCodeSplit: true,
+    reportCompressedSize: false,
+    assetsInlineLimit: 4096,
+  },
+  // Performance optimizations
+  optimizeDeps: {
+    include: ['react', 'react-dom', 'framer-motion'],
   },
 })

@@ -8,16 +8,24 @@ import { z } from 'zod';
 import { motion } from 'framer-motion';
 import { SectionTitle, Card, Button, SocialLinks } from '@components/ui';
 import { contactInfo, socialLinks } from '@data/contact';
-import { submitContactForm, validateContactForm, isFirebaseEnabled } from '@services/firebase';
+import {
+  validateContactForm,
+  isFirebaseEnabled,
+  submitContactForm,
+  checkRateLimit,
+  recordContactFormSubmission,
+} from '@services/firebase';
+import { loadRecaptchaScript, isRecaptchaEnabled, executeRecaptcha } from '@services/recaptcha';
 import { FaPhone, FaEnvelope, FaMapMarkerAlt } from 'react-icons/fa';
 
-// Validation schema using Zod
+// Validation schema using Zod (honeypot must be empty)
 const contactFormSchema = z.object({
   name: z.string().min(4, 'Please enter at least 4 characters'),
   email: z.string().email('Please enter a valid email'),
   phone: z.string().optional().or(z.literal('')),
   subject: z.string().min(8, 'Please enter at least 8 characters'),
   message: z.string().min(1, 'Please write something'),
+  website: z.string().optional().or(z.literal('')), // Honeypot field
 });
 
 type ContactFormInputs = z.infer<typeof contactFormSchema>;
@@ -27,6 +35,7 @@ export const ContactSection: React.FC = () => {
     'idle'
   );
   const [errorMessage, setErrorMessage] = useState<string>('');
+  const [recaptchaLoaded, setRecaptchaLoaded] = useState(false);
 
   const {
     register,
@@ -38,11 +47,36 @@ export const ContactSection: React.FC = () => {
   });
 
   const firebaseAvailable = isFirebaseEnabled;
+  const recaptchaAvailable = isRecaptchaEnabled();
+
+  // Load reCAPTCHA script on component mount
+  useEffect(() => {
+    if (recaptchaAvailable) {
+      loadRecaptchaScript().then((loaded) => {
+        setRecaptchaLoaded(loaded);
+      });
+    }
+  }, [recaptchaAvailable]);
 
   const onSubmit = async (data: ContactFormInputs): Promise<void> => {
     try {
       setSubmitStatus('loading');
       setErrorMessage('');
+
+      // Honeypot check: if website field is filled, it's a bot
+      if (data.website && data.website.trim().length > 0) {
+        console.warn('Honeypot field filled - spam detected');
+        setSubmitStatus('success');
+        reset();
+        return;
+      }
+
+      // Rate limiting check: max 3 submissions per hour per device
+      if (!checkRateLimit(3, 3600000)) {
+        setErrorMessage('You have exceeded the maximum number of submissions. Please try again in 1 hour.');
+        setSubmitStatus('error');
+        return;
+      }
 
       // Additional validation
       const validation = validateContactForm(data);
@@ -52,8 +86,14 @@ export const ContactSection: React.FC = () => {
         return;
       }
 
-      // Submit to Firebase
-      await submitContactForm(data);
+      // Get reCAPTCHA token if available
+      let recaptchaToken = '';
+      if (recaptchaAvailable && recaptchaLoaded) {
+        recaptchaToken = await executeRecaptcha('contact_form_submit');
+      }
+
+      await submitContactForm(data, recaptchaToken);
+      recordContactFormSubmission();
 
       setSubmitStatus('success');
       reset();
@@ -88,7 +128,7 @@ export const ContactSection: React.FC = () => {
           <div className="space-y-6">
             <Card>
               <div className="flex items-start gap-4">
-                <div className="w-12 h-12 bg-primary-600 text-white rounded-lg flex items-center justify-center flex-shrink-0">
+                <div className="w-12 h-12 bg-primary-600 text-white rounded-lg flex items-center justify-center shrink-0">
                   <FaMapMarkerAlt size={20} />
                 </div>
                 <div>
@@ -100,7 +140,7 @@ export const ContactSection: React.FC = () => {
 
             <Card>
               <div className="flex items-start gap-4">
-                <div className="w-12 h-12 bg-secondary-600 text-white rounded-lg flex items-center justify-center flex-shrink-0">
+                <div className="w-12 h-12 bg-secondary-600 text-white rounded-lg flex items-center justify-center shrink-0">
                   <FaEnvelope size={20} />
                 </div>
                 <div>
@@ -117,7 +157,7 @@ export const ContactSection: React.FC = () => {
 
             <Card>
               <div className="flex items-start gap-4">
-                <div className="w-12 h-12 bg-primary-600 text-white rounded-lg flex items-center justify-center flex-shrink-0">
+                <div className="w-12 h-12 bg-primary-600 text-white rounded-lg flex items-center justify-center shrink-0">
                   <FaPhone size={20} />
                 </div>
                 <div>
@@ -217,6 +257,18 @@ export const ContactSection: React.FC = () => {
                 )}
               </div>
 
+              {/* Honeypot Field - Hidden from users */}
+              <div className="hidden">
+                <input
+                  {...register('website')}
+                  id="website"
+                  type="text"
+                  placeholder="Your Website"
+                  tabIndex={-1}
+                  autoComplete="off"
+                />
+              </div>
+
               {/* Message Field */}
               <div>
                 <label htmlFor="message" className="block text-sm font-accent font-semibold mb-2">
@@ -264,6 +316,7 @@ export const ContactSection: React.FC = () => {
               >
                 {submitStatus === 'loading' ? 'Sending...' : 'Send Message'}
               </Button>
+
             </form>
           </Card>
         </div>
