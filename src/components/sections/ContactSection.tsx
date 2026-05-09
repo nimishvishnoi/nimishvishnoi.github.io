@@ -8,7 +8,13 @@ import { z } from 'zod';
 import { motion } from 'framer-motion';
 import { SectionTitle, Card, Button, SocialLinks } from '@components/ui';
 import { contactInfo, socialLinks } from '@data/contact';
-import { validateContactForm, isFirebaseEnabled, submitContactForm, checkRateLimit } from '@services/firebase';
+import {
+  validateContactForm,
+  isFirebaseEnabled,
+  submitContactForm,
+  checkRateLimit,
+  recordContactFormSubmission,
+} from '@services/firebase';
 import { loadRecaptchaScript, isRecaptchaEnabled, executeRecaptcha } from '@services/recaptcha';
 import { FaPhone, FaEnvelope, FaMapMarkerAlt } from 'react-icons/fa';
 
@@ -46,8 +52,8 @@ export const ContactSection: React.FC = () => {
   // Load reCAPTCHA script on component mount
   useEffect(() => {
     if (recaptchaAvailable) {
-      loadRecaptchaScript().then(() => {
-        setRecaptchaLoaded(true);
+      loadRecaptchaScript().then((loaded) => {
+        setRecaptchaLoaded(loaded);
       });
     }
   }, [recaptchaAvailable]);
@@ -87,6 +93,7 @@ export const ContactSection: React.FC = () => {
       }
 
       await submitContactForm(data, recaptchaToken);
+      recordContactFormSubmission();
 
       setSubmitStatus('success');
       reset();

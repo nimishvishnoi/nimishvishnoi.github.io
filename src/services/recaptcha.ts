@@ -23,12 +23,24 @@ export const isRecaptchaEnabled = (): boolean => {
 };
 
 /**
- * Load reCAPTCHA script dynamically
+ * Load reCAPTCHA script dynamically.
+ * Returns whether the script is ready to execute.
  */
-export const loadRecaptchaScript = (): Promise<void> => {
+export const loadRecaptchaScript = (): Promise<boolean> => {
   return new Promise((resolve) => {
     if (window.grecaptcha) {
-      resolve();
+      resolve(true);
+      return;
+    }
+
+    const existingScript = document.querySelector<HTMLScriptElement>(
+      'script[data-recaptcha="true"]'
+    );
+    if (existingScript) {
+      existingScript.addEventListener('load', () => resolve(Boolean(window.grecaptcha)), {
+        once: true,
+      });
+      existingScript.addEventListener('error', () => resolve(false), { once: true });
       return;
     }
 
@@ -36,10 +48,11 @@ export const loadRecaptchaScript = (): Promise<void> => {
     script.src = `https://www.google.com/recaptcha/api.js?render=${getRecaptchaSiteKey()}`;
     script.async = true;
     script.defer = true;
-    script.onload = () => resolve();
+    script.dataset.recaptcha = 'true';
+    script.onload = () => resolve(Boolean(window.grecaptcha));
     script.onerror = () => {
       console.error('Failed to load reCAPTCHA script');
-      resolve();
+      resolve(false);
     };
     document.head.appendChild(script);
   });

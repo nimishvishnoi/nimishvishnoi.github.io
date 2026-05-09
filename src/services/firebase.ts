@@ -44,9 +44,9 @@ if (isFirebaseEnabled) {
  * Sanitize user input to prevent XSS attacks
  */
 const sanitizeInput = (input: string): string => {
-  return DOMPurify.sanitize(input.trim(), { 
-    ALLOWED_TAGS: [], 
-    ALLOWED_ATTR: [] 
+  return DOMPurify.sanitize(input.trim(), {
+    ALLOWED_TAGS: [],
+    ALLOWED_ATTR: []
   });
 };
 
@@ -111,6 +111,8 @@ const detectSpam = (formData: ContactFormData): boolean => {
   return spamPatterns.some(pattern => pattern.test(combined));
 };
 
+const rateLimitStorageKey = (fingerprint: string): string => `submission_${fingerprint}`;
+
 /**
  * Submit contact form to Firebase with security validations
  */
@@ -159,11 +161,10 @@ export const submitContactForm = async (
       createdAt: serverTimestamp(),
       submittedAt: new Date().toISOString(),
       deviceFingerprint: getDeviceFingerprint(),
-      origin: window.location.origin,
+      origin: window.location.origin.substring(0, 120),
       userAgent: navigator.userAgent.substring(0, 100),
-      validationMethod: 'client-side-only',
-      recaptchaToken: recaptchaToken || null,
-      recaptchaScore: recaptchaToken ? 'token-provided' : 'unavailable',
+      validationMethod: recaptchaToken ? 'client-validation+recaptcha' : 'client-validation',
+      recaptchaStatus: recaptchaToken ? 'token-generated' : 'not-configured',
     };
 
     await set(newMessageRef, messageData);
@@ -227,9 +228,12 @@ export const validateContactForm = (
  * Rate limiting using localStorage
  * Stores submission timestamps by device fingerprint
  */
-export const checkRateLimit = (maxSubmissions: number = 3, timeWindowMs: number = 3600000): boolean => {
+export const checkRateLimit = (
+  maxSubmissions: number = 3,
+  timeWindowMs: number = 3600000
+): boolean => {
   const fingerprint = getDeviceFingerprint();
-  const storageKey = `submission_${fingerprint}`;
+  const storageKey = rateLimitStorageKey(fingerprint);
   const now = Date.now();
 
   const storedData = localStorage.getItem(storageKey);
@@ -250,8 +254,26 @@ export const checkRateLimit = (maxSubmissions: number = 3, timeWindowMs: number 
     return false;
   }
 
-  // Add current timestamp and save
+  return true;
+};
+
+export const recordContactFormSubmission = (timeWindowMs: number = 3600000): void => {
+  const fingerprint = getDeviceFingerprint();
+  const storageKey = rateLimitStorageKey(fingerprint);
+  const now = Date.now();
+
+  const storedData = localStorage.getItem(storageKey);
+  let timestamps: number[] = [];
+
+  if (storedData) {
+    try {
+      timestamps = JSON.parse(storedData);
+      timestamps = timestamps.filter(ts => now - ts < timeWindowMs);
+    } catch {
+      timestamps = [];
+    }
+  }
+
   timestamps.push(now);
   localStorage.setItem(storageKey, JSON.stringify(timestamps));
-  return true;
 };

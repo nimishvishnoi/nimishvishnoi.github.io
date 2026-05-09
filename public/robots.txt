@@ -1,8 +1,7 @@
 User-agent: *
 Allow: /
 
-# Block access to sensitive files
-Disallow: /functions/
+# Block access to files that should not be indexed if accidentally published
 Disallow: /.env
 Disallow: /.env.local
 Disallow: /node_modules/
