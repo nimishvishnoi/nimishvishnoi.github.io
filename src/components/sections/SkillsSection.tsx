@@ -26,7 +26,7 @@ export const SkillsSection: React.FC = () => {
       <div className="container-custom">
         <SectionTitle title="Skills" subtitle="Expertise across modern technologies" />
 
-        <div className="grid md:grid-cols-2 gap-4 sm:gap-6 md:gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 md:gap-8">
           {Object.entries(groupedSkills).map(([category, categorySkills], categoryIndex) => (
             <Card key={category} delay={categoryIndex * 0.2}>
               <h3 className="text-xl font-[Raleway] font-bold text-primary-600 dark:text-primary-400 mb-4">

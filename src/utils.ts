@@ -40,8 +40,10 @@ export const formatExperience = (years: number, months: number): string => {
     return `${years} ${yearText} ${months} ${monthText}`;
   } else if (years > 0) {
     return `${years} ${yearText}`;
-  } else {
+  } else if (months > 0) {
     return `${months} ${monthText}`;
+  } else {
+    return 'Less than 1 Month';
   }
 };
 

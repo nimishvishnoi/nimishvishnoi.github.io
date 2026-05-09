@@ -16,7 +16,9 @@ Personal portfolio built with React, TypeScript, Vite, Tailwind CSS, and Firebas
 
 ```bash
 yarn dev
+yarn format:check
 yarn lint
+yarn check:csp
 yarn build
 yarn preview
 ```
@@ -37,6 +39,15 @@ Portfolio content is maintained in `src/data/`.
 
 - Static resume download: `public/Nimish_Resume.pdf`
 - Generated resume export: `src/utils/pdf.ts`
+- Social preview image: `public/og-image.jpg`
+
+## Contact Form Security
+
+- Firebase config is read from `VITE_FIREBASE_*` variables.
+- Placeholder values from `.env.example` are treated as disabled config.
+- Submissions are validated in the browser and again by `database.rules.json`.
+- reCAPTCHA v3 is optional through `VITE_RECAPTCHA_SITE_KEY`; tokens are not stored.
+- The frontend keeps only local rate-limit timestamps and does not send a device fingerprint.
 
 ## Deployment
 
@@ -55,4 +66,6 @@ Portfolio content is maintained in `src/data/`.
   - `VITE_FIREBASE_MESSAGING_SENDER_ID`
   - `VITE_FIREBASE_APP_ID`
   - `VITE_FIREBASE_MEASUREMENT_ID`
+  - `VITE_RECAPTCHA_SITE_KEY` (optional)
+  - `FIREBASE_TOKEN` (only needed when deploying `database.rules.json`)
 - Production output is generated into `dist/`.

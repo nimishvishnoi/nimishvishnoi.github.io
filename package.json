@@ -9,8 +9,9 @@
     "preview": "vite preview",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "format": "prettier --write \"src/**/*.{ts,tsx,css}\"",
-    "format:check": "prettier --check \"src/**/*.{ts,tsx,css}\""
+    "check:csp": "node scripts/check-csp-hash.mjs",
+    "format": "prettier --write \"**/*.{ts,tsx,css,js,json,md,html,yml,yaml}\" --ignore-path .gitignore",
+    "format:check": "prettier --check \"**/*.{ts,tsx,css,js,json,md,html,yml,yaml}\" --ignore-path .gitignore"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",

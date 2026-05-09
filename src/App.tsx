@@ -2,7 +2,7 @@
  * Main App Component
  */
 import React from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, MotionConfig } from 'framer-motion';
 import { Header, Navigation, MobileHeader, MobileNav, ScrollToTopButton } from '@components/layout';
 import {
   AboutSection,
@@ -21,95 +21,101 @@ const App: React.FC = () => {
   const currentYear = new Date().getFullYear();
 
   return (
-    <div className="min-h-screen overflow-x-hidden">
-      {/* Header */}
-      <Header />
+    <MotionConfig reducedMotion="user">
+      <div className="min-h-screen overflow-x-hidden">
+        {/* Header */}
+        <Header />
 
-      {/* Mobile Header */}
-      <MobileHeader
-        darkMode={darkMode}
-        onToggleDarkMode={toggleDarkMode}
-        mobileNavOpen={mobileNavOpen}
-        onToggleMobileNav={toggleMobileNav}
-      />
+        {/* Mobile Header */}
+        <MobileHeader
+          darkMode={darkMode}
+          onToggleDarkMode={toggleDarkMode}
+          mobileNavOpen={mobileNavOpen}
+          onToggleMobileNav={toggleMobileNav}
+        />
 
-      {/* Navigation */}
-      <Navigation activeSection={activeSection} />
+        {/* Navigation */}
+        <Navigation
+          activeSection={activeSection}
+          darkMode={darkMode}
+          onToggleDarkMode={toggleDarkMode}
+        />
 
-      {/* Mobile Navigation */}
-      <AnimatePresence>
-        {mobileNavOpen && <MobileNav activeSection={activeSection} onClose={closeMobileNav} />}
-      </AnimatePresence>
+        {/* Mobile Navigation */}
+        <AnimatePresence>
+          {mobileNavOpen && <MobileNav activeSection={activeSection} onClose={closeMobileNav} />}
+        </AnimatePresence>
 
-      {/* Main Content - Add padding-top for mobile header */}
-      <main className="bg-white dark:bg-slate-900 text-gray-900 dark:text-white smooth-transition pt-16 lg:pt-0">
-        {/* About Section */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          transition={{ duration: 0.6 }}
-          viewport={{ once: true, margin: '-100px' }}
-        >
-          <AboutSection />
-        </motion.div>
+        {/* Main Content - Add padding-top for mobile header */}
+        <main className="bg-white dark:bg-slate-900 text-gray-900 dark:text-white smooth-transition pt-16 lg:pt-0">
+          {/* About Section */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true, margin: '-100px' }}
+          >
+            <AboutSection />
+          </motion.div>
 
-        {/* Skills Section */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          transition={{ duration: 0.6 }}
-          viewport={{ once: true, margin: '-100px' }}
-        >
-          <SkillsSection />
-        </motion.div>
+          {/* Skills Section */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true, margin: '-100px' }}
+          >
+            <SkillsSection />
+          </motion.div>
 
-        {/* Resume Section */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          transition={{ duration: 0.6 }}
-          viewport={{ once: true, margin: '-100px' }}
-        >
-          <ResumeSection />
-        </motion.div>
+          {/* Resume Section */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true, margin: '-100px' }}
+          >
+            <ResumeSection />
+          </motion.div>
 
-        {/* Projects Section */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          transition={{ duration: 0.6 }}
-          viewport={{ once: true, margin: '-100px' }}
-        >
-          <ProjectsSection />
-        </motion.div>
+          {/* Projects Section */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true, margin: '-100px' }}
+          >
+            <ProjectsSection />
+          </motion.div>
 
-        {/* Contact Section */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          transition={{ duration: 0.6 }}
-          viewport={{ once: true, margin: '-100px' }}
-        >
-          <ContactSection />
-        </motion.div>
+          {/* Contact Section */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true, margin: '-100px' }}
+          >
+            <ContactSection />
+          </motion.div>
 
-        {/* Footer */}
-        <motion.footer
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          transition={{ duration: 0.6 }}
-          viewport={{ once: true }}
-          className="bg-gray-100 dark:bg-slate-800 py-8 px-4 text-center text-gray-600 dark:text-gray-400 border-t border-gray-200 dark:border-gray-800"
-        >
-          <p className="text-sm">
-            © {currentYear} Nimish Vishnoi. Built with React 19 & TypeScript. All rights reserved.
-          </p>
-        </motion.footer>
-      </main>
+          {/* Footer */}
+          <motion.footer
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+            className="bg-gray-100 dark:bg-slate-800 py-8 px-4 text-center text-gray-600 dark:text-gray-400 border-t border-gray-200 dark:border-gray-800"
+          >
+            <p className="text-sm">
+              © {currentYear} Nimish Vishnoi. Built with React 19 & TypeScript. All rights reserved.
+            </p>
+          </motion.footer>
+        </main>
 
-      {/* Scroll to Top Button */}
-      <ScrollToTopButton />
-    </div>
+        {/* Scroll to Top Button */}
+        <ScrollToTopButton />
+      </div>
+    </MotionConfig>
   );
 };
 

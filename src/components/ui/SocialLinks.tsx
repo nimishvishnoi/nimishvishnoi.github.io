@@ -31,13 +31,18 @@ export const SocialLinks: React.FC<SocialLinksProps> = ({ links, size = 'md' }) 
       {links.map((link, index) => {
         const IconComponent = iconMap[link.icon as keyof typeof iconMap];
 
+        if (!IconComponent) {
+          return null;
+        }
+
         return (
           <motion.a
             key={link.id}
             href={link.url}
             target="_blank"
-            rel="noopener noreferrer"
+            rel="me noopener noreferrer"
             aria-label={link.platform}
+            title={link.platform}
             initial={{ opacity: 0, scale: 0.5 }}
             whileInView={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.3, delay: index * 0.1 }}

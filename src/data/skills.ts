@@ -27,13 +27,13 @@ export const skills: Skill[] = [
   // Web Development
   {
     id: 'skill-4',
-    name: 'React JS',
+    name: 'React',
     category: 'frontend',
     proficiency: 'expert',
   },
   {
     id: 'skill-5',
-    name: 'Stencil JS',
+    name: 'Stencil',
     category: 'frontend',
     proficiency: 'advanced',
   },
@@ -81,7 +81,7 @@ export const skills: Skill[] = [
   },
   {
     id: 'skill-12',
-    name: 'MVC',
+    name: 'ASP.NET MVC',
     category: 'backend',
     proficiency: 'expert',
   },

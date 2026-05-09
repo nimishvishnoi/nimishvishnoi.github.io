@@ -29,7 +29,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     ref
   ) => {
     const baseStyles =
-      'inline-flex items-center justify-center gap-2 font-accent font-semibold rounded-lg smooth-transition disabled:opacity-50 disabled:cursor-not-allowed';
+      'inline-flex min-h-10 items-center justify-center gap-2 font-accent font-semibold rounded-lg smooth-transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white disabled:opacity-50 disabled:cursor-not-allowed dark:focus-visible:ring-offset-slate-900';
 
     const variants = {
       primary:
@@ -50,9 +50,10 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     return (
       <motion.button
         ref={ref}
-        whileHover={{ scale: 1.02 }}
-        whileTap={{ scale: 0.98 }}
+        whileHover={!disabled && !isLoading ? { scale: 1.02 } : undefined}
+        whileTap={!disabled && !isLoading ? { scale: 0.98 } : undefined}
         disabled={disabled || isLoading}
+        aria-busy={isLoading || undefined}
         className={`${baseStyles} ${variants[variant]} ${sizes[size]} ${className}`}
         {...props}
       >

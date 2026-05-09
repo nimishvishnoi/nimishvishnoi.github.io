@@ -11,7 +11,7 @@ interface BadgeProps {
 
 export const Badge: React.FC<BadgeProps> = ({ text, variant = 'primary', size = 'md' }) => {
   const baseStyles =
-    'inline-flex items-center font-accent font-semibold rounded-full whitespace-nowrap';
+    'inline-flex max-w-full items-center justify-center break-words text-center font-accent font-semibold rounded-full';
 
   const variants = {
     primary: 'bg-primary-600 text-white dark:bg-primary-500',
