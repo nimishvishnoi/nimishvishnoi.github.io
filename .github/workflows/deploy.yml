@@ -118,7 +118,7 @@ jobs:
       - name: Check for database rules changes
         id: rules-check
         run: |
-          if git log -m -1 --name-only --format="" HEAD | grep -xq 'database.rules.json'; then
+          if git diff-tree --no-commit-id --name-only -r HEAD | grep -xq 'database.rules.json'; then
             echo "rules_changed=true" >> "$GITHUB_OUTPUT"
           else
             echo "rules_changed=false" >> "$GITHUB_OUTPUT"
