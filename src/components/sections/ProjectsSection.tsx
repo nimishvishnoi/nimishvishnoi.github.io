@@ -14,7 +14,7 @@ export const ProjectsSection: React.FC = () => {
       <div className="container-custom">
         <SectionTitle title="Projects" subtitle="Showcase of work and expertise" />
 
-        <div className="grid md:grid-cols-2 gap-4 sm:gap-5 md:gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5 md:gap-6">
           {projects.map((project, index) => (
             <Card key={project.id} delay={(index % 2) * 0.2} className="flex flex-col">
               <div className="flex items-start justify-between mb-4">

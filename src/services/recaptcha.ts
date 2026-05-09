@@ -2,24 +2,30 @@
  * reCAPTCHA v3 Service
  * Handles bot verification with Google reCAPTCHA v3
  */
+import { getOptionalEnvValue } from '@/utils/env';
+
+const readRecaptchaSiteKey = (logMissing: boolean = false): string => {
+  const key = getOptionalEnvValue(import.meta.env.VITE_RECAPTCHA_SITE_KEY);
+
+  if (!key && logMissing && import.meta.env.DEV) {
+    console.warn('reCAPTCHA site key not configured. Bot protection disabled.');
+  }
+
+  return key;
+};
 
 /**
  * Get reCAPTCHA site key from environment
  */
 export const getRecaptchaSiteKey = (): string => {
-  const key = import.meta.env.VITE_RECAPTCHA_SITE_KEY;
-  if (!key) {
-    console.warn('reCAPTCHA site key not configured. Bot protection disabled.');
-    return '';
-  }
-  return key;
+  return readRecaptchaSiteKey(true);
 };
 
 /**
  * Check if reCAPTCHA is configured
  */
 export const isRecaptchaEnabled = (): boolean => {
-  return Boolean(import.meta.env.VITE_RECAPTCHA_SITE_KEY);
+  return Boolean(readRecaptchaSiteKey());
 };
 
 /**
@@ -28,6 +34,12 @@ export const isRecaptchaEnabled = (): boolean => {
  */
 export const loadRecaptchaScript = (): Promise<boolean> => {
   return new Promise((resolve) => {
+    const siteKey = getRecaptchaSiteKey();
+    if (!siteKey) {
+      resolve(false);
+      return;
+    }
+
     if (window.grecaptcha) {
       resolve(true);
       return;
@@ -45,13 +57,15 @@ export const loadRecaptchaScript = (): Promise<boolean> => {
     }
 
     const script = document.createElement('script');
-    script.src = `https://www.google.com/recaptcha/api.js?render=${getRecaptchaSiteKey()}`;
+    script.src = `https://www.google.com/recaptcha/api.js?render=${encodeURIComponent(siteKey)}`;
     script.async = true;
     script.defer = true;
     script.dataset.recaptcha = 'true';
     script.onload = () => resolve(Boolean(window.grecaptcha));
     script.onerror = () => {
-      console.error('Failed to load reCAPTCHA script');
+      if (import.meta.env.DEV) {
+        console.error('Failed to load reCAPTCHA script');
+      }
       resolve(false);
     };
     document.head.appendChild(script);
@@ -73,12 +87,16 @@ export const executeRecaptcha = async (action: string = 'contact_form_submit'): 
           const token = await grecaptcha.execute(siteKey, { action });
           resolve(token);
         } catch (error) {
-          console.error('reCAPTCHA execution failed:', error);
+          if (import.meta.env.DEV) {
+            console.error('reCAPTCHA execution failed:', error);
+          }
           resolve('');
         }
       });
     } catch (error) {
-      console.error('reCAPTCHA execution failed:', error);
+      if (import.meta.env.DEV) {
+        console.error('reCAPTCHA execution failed:', error);
+      }
       resolve('');
     }
   });

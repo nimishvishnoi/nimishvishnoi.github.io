@@ -11,10 +11,10 @@ export const AboutSection: React.FC = () => {
       <div className="container-custom">
         <SectionTitle title={aboutContent.title} />
 
-        <div className="grid md:grid-cols-2 gap-4 sm:gap-6 md:gap-8 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 md:gap-8 mb-8">
           {aboutContent.fullDescription.map((paragraph, index) => (
             <Card key={index} delay={index * 0.2}>
-              <p className="text-gray-700 dark:text-gray-300 leading-relaxed text-lg">
+              <p className="break-words text-gray-700 dark:text-gray-300 leading-relaxed text-base sm:text-lg">
                 {paragraph}
               </p>
             </Card>
@@ -22,7 +22,7 @@ export const AboutSection: React.FC = () => {
         </div>
 
         <Card>
-          <p className="text-gray-700 dark:text-gray-300 leading-relaxed text-base">
+          <p className="break-words text-gray-700 dark:text-gray-300 leading-relaxed text-base">
             {aboutContent.description}
           </p>
         </Card>

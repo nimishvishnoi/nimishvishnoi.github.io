@@ -9,18 +9,18 @@ export interface Achievement {
 export const achievements: Achievement[] = [
   {
     id: 'sih-2017',
-    title: 'Runner Up in Smart India Hackathon 2017',
-    organization: 'Smart India Hackathon (SIH) organized by GOI',
+    title: 'Runner-up in Smart India Hackathon 2017',
+    organization: 'Smart India Hackathon organized by the Government of India',
     year: '2017',
     description:
-      'Runner-up in SIH organized by the GOI, receiving recognition from the ISRO Chairman.',
+      'Earned runner-up recognition in SIH 2017, including recognition from the ISRO Chairman.',
   },
   {
     id: 'fest-coordinator-2017',
-    title: 'College Fest Tech & Web Dev Coordinator 2017',
+    title: 'College Fest Technical and Web Coordinator',
     organization: 'Gyan Jyoti Fest',
     year: '2017',
     description:
-      'Coordinated tech and web dev for Gyan Jyoti fest, developed fest website enabling event registration and info dissemination.',
+      'Coordinated technical execution and built the fest website for event registration, schedules, and public information.',
   },
 ];

@@ -1,13 +1,12 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  content: [
-    './index.html',
-    './src/**/*.{js,ts,jsx,tsx}',
-  ],
+  content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {
       fontFamily: {
+        sans: ['"Open Sans"', 'sans-serif'],
         heading: ['"Raleway"', 'sans-serif'],
+        accent: ['"Poppins"', 'sans-serif'],
       },
       animation: {
         'fade-in': 'fadeIn 0.5s ease-in',
@@ -35,4 +34,4 @@ export default {
   },
   darkMode: 'class',
   plugins: [],
-}
+};

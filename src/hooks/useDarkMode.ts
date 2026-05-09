@@ -5,12 +5,20 @@ import { useState, useEffect } from 'react';
 
 const STORAGE_KEY = 'darkMode';
 
+const readStoredPreference = (): string | null => {
+  try {
+    return window.localStorage.getItem(STORAGE_KEY);
+  } catch {
+    return null;
+  }
+};
+
 const getInitialDarkMode = (): boolean => {
   if (typeof window === 'undefined') {
     return false;
   }
 
-  const savedPreference = window.localStorage.getItem(STORAGE_KEY);
+  const savedPreference = readStoredPreference();
   if (savedPreference === 'true') {
     return true;
   }
@@ -31,12 +39,17 @@ export const useDarkMode = (): {
   useEffect(() => {
     document.documentElement.classList.toggle('dark', darkMode);
     document.documentElement.style.colorScheme = darkMode ? 'dark' : 'light';
-    window.localStorage.setItem(STORAGE_KEY, String(darkMode));
+
+    try {
+      window.localStorage.setItem(STORAGE_KEY, String(darkMode));
+    } catch {
+      // Persisting theme is a convenience; the UI still works without storage access.
+    }
   }, [darkMode]);
 
   useEffect(() => {
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    const savedPreference = window.localStorage.getItem(STORAGE_KEY);
+    const savedPreference = readStoredPreference();
 
     if (savedPreference !== null) {
       return undefined;

@@ -1,7 +1,6 @@
 /**
  * Contact information and social links
  */
-import { FaGithub, FaLinkedin, FaFacebook, FaTwitter, FaInstagram } from 'react-icons/fa';
 import type { ContactInfo, SocialLink } from '@types';
 
 export const contactInfo: ContactInfo = {
@@ -41,21 +40,4 @@ export const socialLinks: SocialLink[] = [
     url: 'https://www.instagram.com/nimishvishnoi',
     icon: 'FaInstagram',
   },
-];
-
-// Map icon names to actual React Icon components
-export const iconMap = {
-  FaGithub,
-  FaLinkedin,
-  FaFacebook,
-  FaTwitter,
-  FaInstagram,
-};
-
-export const navigationLinks = [
-  { label: 'About', href: '#about', icon: 'FaUser' },
-  { label: 'Skills', href: '#skills', icon: 'FaCode' },
-  { label: 'Resume', href: '#resume', icon: 'FaFileAlt' },
-  { label: 'Projects', href: '#portfolio', icon: 'FaProjectDiagram' },
-  { label: 'Contact', href: '#contact', icon: 'FaEnvelope' },
 ];

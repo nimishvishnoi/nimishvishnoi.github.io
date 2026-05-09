@@ -18,14 +18,45 @@ import {
 import { loadRecaptchaScript, isRecaptchaEnabled, executeRecaptcha } from '@services/recaptcha';
 import { FaPhone, FaEnvelope, FaMapMarkerAlt } from 'react-icons/fa';
 
+const CONTACT_LIMITS = {
+  nameMax: 100,
+  emailMax: 254,
+  phoneMax: 30,
+  subjectMax: 150,
+  messageMin: 10,
+  messageMax: 2000,
+};
+
 // Validation schema using Zod (honeypot must be empty)
 const contactFormSchema = z.object({
-  name: z.string().min(4, 'Please enter at least 4 characters'),
-  email: z.string().email('Please enter a valid email'),
-  phone: z.string().optional().or(z.literal('')),
-  subject: z.string().min(8, 'Please enter at least 8 characters'),
-  message: z.string().min(1, 'Please write something'),
-  website: z.string().optional().or(z.literal('')), // Honeypot field
+  name: z
+    .string()
+    .trim()
+    .min(4, 'Please enter at least 4 characters')
+    .max(CONTACT_LIMITS.nameMax, 'Please keep your name under 100 characters'),
+  email: z
+    .string()
+    .trim()
+    .email('Please enter a valid email')
+    .max(CONTACT_LIMITS.emailMax, 'Please keep your email under 254 characters'),
+  phone: z
+    .string()
+    .trim()
+    .max(CONTACT_LIMITS.phoneMax, 'Please keep your phone under 30 characters')
+    .regex(/^[\d\s\-+()]*$/, 'Please enter a valid phone number')
+    .optional()
+    .or(z.literal('')),
+  subject: z
+    .string()
+    .trim()
+    .min(8, 'Please enter at least 8 characters')
+    .max(CONTACT_LIMITS.subjectMax, 'Please keep the subject under 150 characters'),
+  message: z
+    .string()
+    .trim()
+    .min(CONTACT_LIMITS.messageMin, 'Please write at least 10 characters')
+    .max(CONTACT_LIMITS.messageMax, 'Please keep your message under 2000 characters'),
+  website: z.string().max(200).optional().or(z.literal('')), // Honeypot field
 });
 
 type ContactFormInputs = z.infer<typeof contactFormSchema>;
@@ -65,7 +96,6 @@ export const ContactSection: React.FC = () => {
 
       // Honeypot check: if website field is filled, it's a bot
       if (data.website && data.website.trim().length > 0) {
-        console.warn('Honeypot field filled - spam detected');
         setSubmitStatus('success');
         reset();
         return;
@@ -100,7 +130,9 @@ export const ContactSection: React.FC = () => {
       setSubmitStatus('success');
       reset();
     } catch (error) {
-      console.error('Form submission error:', error);
+      if (import.meta.env.DEV) {
+        console.error('Form submission error:', error);
+      }
       setErrorMessage(
         error instanceof Error ? error.message : 'Failed to send message. Please try again.'
       );
@@ -125,7 +157,7 @@ export const ContactSection: React.FC = () => {
       <div className="container-custom">
         <SectionTitle title="Contact" subtitle="Get in touch with me" />
 
-        <div className="grid lg:grid-cols-2 gap-6 lg:gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
           {/* Contact Information */}
           <div className="space-y-6">
             <Card>
@@ -149,7 +181,7 @@ export const ContactSection: React.FC = () => {
                   <h3 className="font-[Raleway] font-bold text-lg mb-1">Email</h3>
                   <a
                     href={`mailto:${contactInfo.email}`}
-                    className="text-primary-600 dark:text-primary-400 hover:text-primary-700 smooth-transition"
+                    className="break-all text-primary-600 dark:text-primary-400 hover:text-primary-700 smooth-transition"
                   >
                     {contactInfo.email}
                   </a>
@@ -202,10 +234,18 @@ export const ContactSection: React.FC = () => {
                   {...register('name')}
                   id="name"
                   type="text"
+                  autoComplete="name"
+                  maxLength={CONTACT_LIMITS.nameMax}
                   placeholder="John Doe"
+                  aria-invalid={Boolean(errors.name)}
+                  aria-describedby={errors.name ? 'name-error' : undefined}
                   className="w-full px-4 py-2 border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:border-primary-600 focus:outline-none smooth-transition"
                 />
-                {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>}
+                {errors.name && (
+                  <p id="name-error" className="text-red-500 text-sm mt-1">
+                    {errors.name.message}
+                  </p>
+                )}
               </div>
 
               {/* Email Field */}
@@ -217,11 +257,17 @@ export const ContactSection: React.FC = () => {
                   {...register('email')}
                   id="email"
                   type="email"
+                  autoComplete="email"
+                  maxLength={CONTACT_LIMITS.emailMax}
                   placeholder="john@example.com"
+                  aria-invalid={Boolean(errors.email)}
+                  aria-describedby={errors.email ? 'email-error' : undefined}
                   className="w-full px-4 py-2 border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:border-primary-600 focus:outline-none smooth-transition"
                 />
                 {errors.email && (
-                  <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
+                  <p id="email-error" className="text-red-500 text-sm mt-1">
+                    {errors.email.message}
+                  </p>
                 )}
               </div>
 
@@ -234,11 +280,17 @@ export const ContactSection: React.FC = () => {
                   {...register('phone')}
                   id="phone"
                   type="tel"
+                  autoComplete="tel"
+                  maxLength={CONTACT_LIMITS.phoneMax}
                   placeholder="+91 9876543210"
+                  aria-invalid={Boolean(errors.phone)}
+                  aria-describedby={errors.phone ? 'phone-error' : undefined}
                   className="w-full px-4 py-2 border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:border-primary-600 focus:outline-none smooth-transition"
                 />
                 {errors.phone && (
-                  <p className="text-red-500 text-sm mt-1">{errors.phone.message}</p>
+                  <p id="phone-error" className="text-red-500 text-sm mt-1">
+                    {errors.phone.message}
+                  </p>
                 )}
               </div>
 
@@ -251,16 +303,23 @@ export const ContactSection: React.FC = () => {
                   {...register('subject')}
                   id="subject"
                   type="text"
+                  autoComplete="off"
+                  maxLength={CONTACT_LIMITS.subjectMax}
                   placeholder="Project Discussion"
+                  aria-invalid={Boolean(errors.subject)}
+                  aria-describedby={errors.subject ? 'subject-error' : undefined}
                   className="w-full px-4 py-2 border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:border-primary-600 focus:outline-none smooth-transition"
                 />
                 {errors.subject && (
-                  <p className="text-red-500 text-sm mt-1">{errors.subject.message}</p>
+                  <p id="subject-error" className="text-red-500 text-sm mt-1">
+                    {errors.subject.message}
+                  </p>
                 )}
               </div>
 
               {/* Honeypot Field - Hidden from users */}
-              <div className="hidden">
+              <div className="sr-only" aria-hidden="true">
+                <label htmlFor="website">Website</label>
                 <input
                   {...register('website')}
                   id="website"
@@ -280,11 +339,17 @@ export const ContactSection: React.FC = () => {
                   {...register('message')}
                   id="message"
                   rows={5}
+                  minLength={CONTACT_LIMITS.messageMin}
+                  maxLength={CONTACT_LIMITS.messageMax}
                   placeholder="Your message here..."
+                  aria-invalid={Boolean(errors.message)}
+                  aria-describedby={errors.message ? 'message-error' : undefined}
                   className="w-full px-4 py-2 border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:border-primary-600 focus:outline-none smooth-transition resize-none"
                 />
                 {errors.message && (
-                  <p className="text-red-500 text-sm mt-1">{errors.message.message}</p>
+                  <p id="message-error" className="text-red-500 text-sm mt-1">
+                    {errors.message.message}
+                  </p>
                 )}
               </div>
 
@@ -293,9 +358,10 @@ export const ContactSection: React.FC = () => {
                 <motion.div
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
+                  role="status"
                   className="p-4 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded-lg text-sm font-accent"
                 >
-                  ✓ Your message has been sent successfully! Thank you for reaching out.
+                  Success: Your message has been sent. Thank you for reaching out.
                 </motion.div>
               )}
 
@@ -303,9 +369,10 @@ export const ContactSection: React.FC = () => {
                 <motion.div
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
+                  role="alert"
                   className="p-4 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 rounded-lg text-sm font-accent"
                 >
-                  ✗ {errorMessage || 'Failed to send message. Please try again.'}
+                  Error: {errorMessage || 'Failed to send message. Please try again.'}
                 </motion.div>
               )}
 

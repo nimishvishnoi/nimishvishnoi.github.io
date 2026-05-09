@@ -20,7 +20,7 @@ export const projects: Project[] = [
     category: 'web',
     description:
       'Automotive catalog website for browsing and filtering vehicles by model, built during my time at Wildnet using .NET MVC.',
-    technologies: ['.Net MVC', 'jQuery', 'SQL Server'],
+    technologies: ['.NET MVC', 'jQuery', 'SQL Server'],
   },
   {
     id: 'proj-3',
@@ -29,7 +29,7 @@ export const projects: Project[] = [
     category: 'web',
     description:
       'Customer engagement platform that helps businesses connect with prospects and manage customer inquiries.',
-    technologies: ['.Net MVC', 'API', 'Firebase', 'JavaScript', 'SQL Server'],
+    technologies: ['.NET MVC', 'API', 'Firebase', 'JavaScript', 'SQL Server'],
   },
   {
     id: 'proj-4',
@@ -38,7 +38,7 @@ export const projects: Project[] = [
     category: 'web',
     description:
       'Flyer and promotional-offer management platform developed at Wildnet using .NET MVC.',
-    technologies: ['.Net MVC', 'API', 'jQuery', 'SQL Server'],
+    technologies: ['.NET MVC', 'API', 'jQuery', 'SQL Server'],
   },
   {
     id: 'proj-5',
@@ -46,7 +46,7 @@ export const projects: Project[] = [
     year: 2018,
     category: 'app',
     description:
-      'The aim of project was to identify unexpected items or events in datasets using unsupervised learning algorithms.',
+      'Identified unexpected items or events in datasets using unsupervised learning algorithms.',
     technologies: ['Python', 'Machine Learning'],
   },
   {
@@ -56,7 +56,7 @@ export const projects: Project[] = [
     category: 'app',
     description:
       'Android application that verifies a device MAC address against a backend database to prevent unauthorized app distribution.',
-    technologies: ['Android', 'PHP', 'MySQL', 'API', 'BootStrap'],
+    technologies: ['Android', 'PHP', 'MySQL', 'API', 'Bootstrap'],
   },
   {
     id: 'proj-7',
@@ -65,7 +65,7 @@ export const projects: Project[] = [
     category: 'web',
     description:
       'Website for the Gyan Jyoti annual college fest, used for event registration and publishing schedules and event details.',
-    technologies: ['PHP', 'JavaScript', 'MySQL', 'BootStrap'],
+    technologies: ['PHP', 'JavaScript', 'MySQL', 'Bootstrap'],
   },
   {
     id: 'proj-8',

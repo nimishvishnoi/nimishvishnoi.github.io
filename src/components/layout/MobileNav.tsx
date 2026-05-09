@@ -5,7 +5,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { FaTimes } from 'react-icons/fa';
 import { navigationLinks } from '@/constants/site';
-import { downloadGeneratedResume } from '@/utils/resume';
+import { downloadPredefinedResume } from '@/utils/resume';
 
 interface MobileNavProps {
   activeSection: string;
@@ -34,6 +34,10 @@ export const MobileNav: React.FC<MobileNavProps> = ({ activeSection, onClose }) 
 
       {/* Menu */}
       <motion.nav
+        id="mobile-navigation"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Primary navigation"
         initial={{ x: -300 }}
         animate={{ x: 0 }}
         exit={{ x: -300 }}
@@ -42,8 +46,9 @@ export const MobileNav: React.FC<MobileNavProps> = ({ activeSection, onClose }) 
       >
         {/* Close Button */}
         <button
+          type="button"
           onClick={onClose}
-          className="absolute top-6 right-6 text-white hover:text-primary-200 smooth-transition"
+          className="absolute top-6 right-6 inline-flex h-10 w-10 items-center justify-center rounded-lg text-white hover:text-primary-200 smooth-transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-primary-800"
           aria-label="Close navigation"
         >
           <FaTimes size={24} />
@@ -59,9 +64,10 @@ export const MobileNav: React.FC<MobileNavProps> = ({ activeSection, onClose }) 
               transition={{ duration: 0.3, delay: index * 0.1 }}
             >
               <button
+                type="button"
                 onClick={() => handleNavClick(link.href)}
                 aria-current={activeSection === link.id ? 'page' : undefined}
-                className={`w-full text-left px-4 py-3 rounded-lg font-accent font-medium smooth-transition ${
+                className={`w-full text-left px-4 py-3 rounded-lg font-accent font-medium smooth-transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white ${
                   activeSection === link.id
                     ? 'bg-white text-primary-700'
                     : 'text-white hover:bg-white/10'
@@ -83,9 +89,9 @@ export const MobileNav: React.FC<MobileNavProps> = ({ activeSection, onClose }) 
               type="button"
               onClick={() => {
                 onClose();
-                void downloadGeneratedResume();
+                downloadPredefinedResume();
               }}
-              className="block w-full text-center py-3 px-4 bg-white text-primary-700 hover:bg-primary-100 rounded-lg font-accent font-bold smooth-transition"
+              className="block w-full text-center py-3 px-4 bg-white text-primary-700 hover:bg-primary-100 rounded-lg font-accent font-bold smooth-transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
             >
               Download Resume
             </button>
