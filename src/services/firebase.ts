@@ -46,7 +46,7 @@ if (isFirebaseEnabled) {
 const sanitizeInput = (input: string): string => {
   return DOMPurify.sanitize(input.trim(), {
     ALLOWED_TAGS: [],
-    ALLOWED_ATTR: []
+    ALLOWED_ATTR: [],
   });
 };
 
@@ -61,13 +61,13 @@ const getDeviceFingerprint = (): string => {
     screenResolution: `${window.screen.width}x${window.screen.height}`,
     colorDepth: window.screen.colorDepth,
   };
-  
+
   // Simple hash of fingerprint
   const str = JSON.stringify(fingerprint);
   let hash = 0;
   for (let i = 0; i < str.length; i++) {
     const char = str.charCodeAt(i);
-    hash = ((hash << 5) - hash) + char;
+    hash = (hash << 5) - hash + char;
     hash = hash & hash; // Convert to 32bit integer
   }
   return Math.abs(hash).toString(16);
@@ -83,10 +83,14 @@ const isValidEmail = (email: string): boolean => {
 
   // Reject disposable email patterns
   const disposableDomains = [
-    'tempmail.com', '10minutemail.com', 'guerrillamail.com',
-    'mailinator.com', 'maildrop.cc', 'throwaway.email'
+    'tempmail.com',
+    '10minutemail.com',
+    'guerrillamail.com',
+    'mailinator.com',
+    'maildrop.cc',
+    'throwaway.email',
   ];
-  
+
   const domain = email.split('@')[1].toLowerCase();
   return !disposableDomains.includes(domain);
 };
@@ -95,8 +99,9 @@ const isValidEmail = (email: string): boolean => {
  * Check for spam patterns
  */
 const detectSpam = (formData: ContactFormData): boolean => {
-  const combined = `${formData.name} ${formData.email} ${formData.subject} ${formData.message}`.toLowerCase();
-  
+  const combined =
+    `${formData.name} ${formData.email} ${formData.subject} ${formData.message}`.toLowerCase();
+
   // Common spam patterns
   const spamPatterns = [
     /viagra|cialis|casino|poker|lottery|bitcoin|cryptocurrency/i,
@@ -104,11 +109,11 @@ const detectSpam = (formData: ContactFormData): boolean => {
     /you have won|congratulations|claim.*prize/i,
     /https?:\/\/[^\s]+/g, // Multiple links
   ];
-  
+
   const linkCount = (combined.match(/https?:\/\//g) || []).length;
   if (linkCount > 2) return true; // Too many links
-  
-  return spamPatterns.some(pattern => pattern.test(combined));
+
+  return spamPatterns.some((pattern) => pattern.test(combined));
 };
 
 const rateLimitStorageKey = (fingerprint: string): string => `submission_${fingerprint}`;
@@ -243,7 +248,7 @@ export const checkRateLimit = (
     try {
       timestamps = JSON.parse(storedData);
       // Remove old timestamps outside the time window
-      timestamps = timestamps.filter(ts => now - ts < timeWindowMs);
+      timestamps = timestamps.filter((ts) => now - ts < timeWindowMs);
     } catch {
       timestamps = [];
     }
@@ -268,7 +273,7 @@ export const recordContactFormSubmission = (timeWindowMs: number = 3600000): voi
   if (storedData) {
     try {
       timestamps = JSON.parse(storedData);
-      timestamps = timestamps.filter(ts => now - ts < timeWindowMs);
+      timestamps = timestamps.filter((ts) => now - ts < timeWindowMs);
     } catch {
       timestamps = [];
     }

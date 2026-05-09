@@ -73,7 +73,9 @@ export const ContactSection: React.FC = () => {
 
       // Rate limiting check: max 3 submissions per hour per device
       if (!checkRateLimit(3, 3600000)) {
-        setErrorMessage('You have exceeded the maximum number of submissions. Please try again in 1 hour.');
+        setErrorMessage(
+          'You have exceeded the maximum number of submissions. Please try again in 1 hour.'
+        );
         setSubmitStatus('error');
         return;
       }
@@ -316,7 +318,6 @@ export const ContactSection: React.FC = () => {
               >
                 {submitStatus === 'loading' ? 'Sending...' : 'Send Message'}
               </Button>
-
             </form>
           </Card>
         </div>
