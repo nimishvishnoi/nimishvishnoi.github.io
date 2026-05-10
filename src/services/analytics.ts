@@ -5,7 +5,7 @@ import { getOptionalEnvValue } from '../utils/env';
 interface AnalyticsEvent {
   eventType: string;
   timestamp: number;
-  data: Record<string, any>;
+  data: Record<string, unknown>;
   userAgent: string;
   url: string;
 }

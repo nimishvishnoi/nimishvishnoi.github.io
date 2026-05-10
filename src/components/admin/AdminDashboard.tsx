@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAppState } from '../../hooks/useAppState';
 import analytics from '../../services/analytics';
 
@@ -18,14 +18,7 @@ export function AdminDashboard() {
   ]);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    if (!state.isAdmin) {
-      return;
-    }
-    loadAnalytics();
-  }, [state.isAdmin]);
-
-  const loadAnalytics = async () => {
+  const loadAnalytics = useCallback(async () => {
     setIsLoading(true);
     try {
       const [pageViews, formSubmissions, projectClicks, resumeDownloads] = await Promise.all([
@@ -54,7 +47,15 @@ export function AdminDashboard() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (!state.isAdmin) {
+      return;
+    }
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    loadAnalytics();
+  }, [state.isAdmin, loadAnalytics]);
 
   if (!state.isAdmin) {
     return (

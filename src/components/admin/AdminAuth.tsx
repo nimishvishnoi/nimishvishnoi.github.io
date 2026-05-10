@@ -4,6 +4,8 @@ import { getAuth, signInWithEmailAndPassword, signOut, User } from 'firebase/aut
 import { initializeApp, getApps, getApp } from 'firebase/app';
 import { getOptionalEnvValue } from '../../utils/env';
 
+const getTimestamp = () => Date.now();
+
 export function AdminAuth() {
   const { state, dispatch } = useAppState();
   const [email, setEmail] = useState('');
@@ -47,20 +49,21 @@ export function AdminAuth() {
           payload: {
             message: 'You do not have admin privileges',
             type: 'error',
-            timestamp: Date.now(),
+            timestamp: getTimestamp(),
           },
         });
       }
 
       setEmail('');
       setPassword('');
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const err = error as Error;
       dispatch({
         type: 'SET_ERROR',
         payload: {
-          message: error.message || 'Login failed. Please check your credentials.',
+          message: err.message || 'Login failed. Please check your credentials.',
           type: 'error',
-          timestamp: Date.now(),
+          timestamp: getTimestamp(),
         },
       });
     } finally {

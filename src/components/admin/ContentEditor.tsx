@@ -6,7 +6,7 @@ export interface EditableContent {
   type: 'project' | 'skill' | 'experience' | 'education';
   title: string;
   description: string;
-  metadata: Record<string, any>;
+  metadata: Record<string, unknown>;
 }
 
 export function ContentEditor() {

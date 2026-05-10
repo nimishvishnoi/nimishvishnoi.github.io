@@ -2,8 +2,8 @@
  * useFormPersistence - Auto-save form data to localStorage
  * Recovers on component mount if available
  */
-export function useFormPersistence(key: string, _initialData: Record<string, any>) {
-  const saveToStorage = (data: Record<string, any>) => {
+export function useFormPersistence(key: string, _initialData: Record<string, unknown>) {
+  const saveToStorage = (data: Record<string, unknown>) => {
     try {
       localStorage.setItem(key, JSON.stringify({ data, timestamp: Date.now() }));
     } catch (error) {
@@ -11,7 +11,7 @@ export function useFormPersistence(key: string, _initialData: Record<string, any
     }
   };
 
-  const getFromStorage = (): Record<string, any> | null => {
+  const getFromStorage = (): Record<string, unknown> | null => {
     try {
       const item = localStorage.getItem(key);
       if (item) {
@@ -90,6 +90,7 @@ export function preloadImage(src: string): Promise<HTMLImageElement> {
 /**
  * Debounce function for auto-save
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function debounce<T extends (...args: any[]) => any>(
   func: T,
   wait: number
@@ -108,6 +109,7 @@ export function debounce<T extends (...args: any[]) => any>(
 /**
  * Throttle function for scroll events
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function throttle<T extends (...args: any[]) => any>(
   func: T,
   limit: number

@@ -79,20 +79,20 @@ export const ContactSection: React.FC = () => {
     subject: '',
     message: '',
   });
-  const [submissionStartTime] = useState(Date.now());
+  const [submissionStartTime] = useState(getTimestamp());
 
   const {
     register,
     handleSubmit,
     reset,
-    watch,
+    control,
     formState: { errors, isSubmitting },
   } = useForm<ContactFormInputs>({
     resolver: zodResolver(contactFormSchema),
     defaultValues: getFromStorage() || undefined,
   });
 
-  const formValues = watch();
+  const formValues = useWatch({ control });
   const firebaseAvailable = isFirebaseEnabled;
   const recaptchaAvailable = isRecaptchaEnabled();
 
@@ -140,7 +140,7 @@ export const ContactSection: React.FC = () => {
           payload: {
             message: errorMsg,
             type: 'error',
-            timestamp: Date.now(),
+            timestamp: getTimestamp(),
           },
         });
         return;
@@ -156,7 +156,7 @@ export const ContactSection: React.FC = () => {
           payload: {
             message: 'Please check all fields',
             type: 'error',
-            timestamp: Date.now(),
+            timestamp: getTimestamp(),
           },
         });
         return;
@@ -172,7 +172,7 @@ export const ContactSection: React.FC = () => {
       recordContactFormSubmission();
 
       // Calculate submission duration
-      const submissionDuration = Date.now() - submissionStartTime;
+      const submissionDuration = getTimestamp() - submissionStartTime;
 
       // Log analytics
       await analytics.logFormSubmission('contact_form', true, submissionDuration);
@@ -194,12 +194,12 @@ export const ContactSection: React.FC = () => {
         payload: {
           message: errorMsg,
           type: 'error',
-          timestamp: Date.now(),
+          timestamp: getTimestamp(),
         },
       });
 
       // Log failed submission
-      await analytics.logFormSubmission('contact_form', false, Date.now() - submissionStartTime);
+      await analytics.logFormSubmission('contact_form', false, getTimestamp() - submissionStartTime);
     } finally {
       dispatch({ type: 'SET_FORM_SUBMITTING', payload: false });
     }

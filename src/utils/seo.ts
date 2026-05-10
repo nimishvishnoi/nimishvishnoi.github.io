@@ -145,7 +145,7 @@ function updateCanonicalURL(url: string) {
 /**
  * Update or create structured data script tag
  */
-function updateStructuredData(data: any) {
+function updateStructuredData(data: Record<string, unknown>) {
   let script = document.querySelector('script[type="application/ld+json"]') as HTMLScriptElement;
   if (!script) {
     script = document.createElement('script');
