@@ -22,6 +22,8 @@ import { useFormPersistence, debounce } from '@/utils/storage';
 import analytics from '@services/analytics';
 import { FaPhone, FaEnvelope, FaMapMarkerAlt } from 'react-icons/fa';
 
+const getTimestamp = () => Date.now();
+
 const CONTACT_LIMITS = {
   nameMax: 100,
   emailMax: 254,
