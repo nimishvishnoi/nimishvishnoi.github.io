@@ -199,7 +199,11 @@ export const ContactSection: React.FC = () => {
       });
 
       // Log failed submission
-      await analytics.logFormSubmission('contact_form', false, getTimestamp() - submissionStartTime);
+      await analytics.logFormSubmission(
+        'contact_form',
+        false,
+        getTimestamp() - submissionStartTime
+      );
     } finally {
       dispatch({ type: 'SET_FORM_SUBMITTING', payload: false });
     }
