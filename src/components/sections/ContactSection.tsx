@@ -7,7 +7,9 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { motion } from 'framer-motion';
 import { SectionTitle, Card, Button, SocialLinks } from '@components/ui';
+import { LoadingOverlay } from '@components/ui/LoadingComponents';
 import { contactInfo, socialLinks } from '@data/contact';
+import { useAppState } from '@hooks/useAppState';
 import {
   validateContactForm,
   isFirebaseEnabled,
@@ -16,6 +18,8 @@ import {
   recordContactFormSubmission,
 } from '@services/firebase';
 import { loadRecaptchaScript, isRecaptchaEnabled, executeRecaptcha } from '@services/recaptcha';
+import { useFormPersistence, debounce } from '@/utils/storage';
+import analytics from '@services/analytics';
 import { FaPhone, FaEnvelope, FaMapMarkerAlt } from 'react-icons/fa';
 
 const CONTACT_LIMITS = {
@@ -62,23 +66,44 @@ const contactFormSchema = z.object({
 type ContactFormInputs = z.infer<typeof contactFormSchema>;
 
 export const ContactSection: React.FC = () => {
+  const { state, dispatch } = useAppState();
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'loading' | 'success' | 'error'>(
     'idle'
   );
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [recaptchaLoaded, setRecaptchaLoaded] = useState(false);
+  const { saveToStorage, getFromStorage, clearStorage } = useFormPersistence('contact-form', {
+    name: '',
+    email: '',
+    phone: '',
+    subject: '',
+    message: '',
+  });
+  const [submissionStartTime] = useState(Date.now());
 
   const {
     register,
     handleSubmit,
     reset,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<ContactFormInputs>({
     resolver: zodResolver(contactFormSchema),
+    defaultValues: getFromStorage() || undefined,
   });
 
+  const formValues = watch();
   const firebaseAvailable = isFirebaseEnabled;
   const recaptchaAvailable = isRecaptchaEnabled();
+
+  // Auto-save form data with debouncing
+  useEffect(() => {
+    const debouncedSave = debounce(() => {
+      saveToStorage(formValues);
+    }, 1000);
+
+    debouncedSave();
+  }, [formValues, saveToStorage]);
 
   // Load reCAPTCHA script on component mount
   useEffect(() => {
@@ -93,20 +118,30 @@ export const ContactSection: React.FC = () => {
     try {
       setSubmitStatus('loading');
       setErrorMessage('');
+      dispatch({ type: 'SET_FORM_SUBMITTING', payload: true });
 
       // Honeypot check: if website field is filled, it's a bot
       if (data.website && data.website.trim().length > 0) {
         setSubmitStatus('success');
         reset();
+        clearStorage();
+        dispatch({ type: 'SET_SUCCESS_MESSAGE', payload: 'Message sent successfully!' });
         return;
       }
 
       // Rate limiting check: max 3 submissions per hour per device
       if (!checkRateLimit(3, 3600000)) {
-        setErrorMessage(
-          'You have exceeded the maximum number of submissions. Please try again in 1 hour.'
-        );
+        const errorMsg = 'You have exceeded the maximum number of submissions. Please try again in 1 hour.';
+        setErrorMessage(errorMsg);
         setSubmitStatus('error');
+        dispatch({
+          type: 'SET_ERROR',
+          payload: {
+            message: errorMsg,
+            type: 'error',
+            timestamp: Date.now(),
+          },
+        });
         return;
       }
 
@@ -115,6 +150,14 @@ export const ContactSection: React.FC = () => {
       if (!validation.isValid) {
         setErrorMessage('Please check all fields');
         setSubmitStatus('error');
+        dispatch({
+          type: 'SET_ERROR',
+          payload: {
+            message: 'Please check all fields',
+            type: 'error',
+            timestamp: Date.now(),
+          },
+        });
         return;
       }
 
@@ -127,16 +170,37 @@ export const ContactSection: React.FC = () => {
       await submitContactForm(data, recaptchaToken);
       recordContactFormSubmission();
 
+      // Calculate submission duration
+      const submissionDuration = Date.now() - submissionStartTime;
+
+      // Log analytics
+      await analytics.logFormSubmission('contact_form', true, submissionDuration);
+
       setSubmitStatus('success');
+      dispatch({ type: 'SET_SUCCESS_MESSAGE', payload: 'Message sent successfully!' });
       reset();
+      clearStorage();
     } catch (error) {
       if (import.meta.env.DEV) {
         console.error('Form submission error:', error);
       }
-      setErrorMessage(
-        error instanceof Error ? error.message : 'Failed to send message. Please try again.'
-      );
+      const errorMsg =
+        error instanceof Error ? error.message : 'Failed to send message. Please try again.';
+      setErrorMessage(errorMsg);
       setSubmitStatus('error');
+      dispatch({
+        type: 'SET_ERROR',
+        payload: {
+          message: errorMsg,
+          type: 'error',
+          timestamp: Date.now(),
+        },
+      });
+
+      // Log failed submission
+      await analytics.logFormSubmission('contact_form', false, Date.now() - submissionStartTime);
+    } finally {
+      dispatch({ type: 'SET_FORM_SUBMITTING', payload: false });
     }
   };
 
@@ -379,16 +443,19 @@ export const ContactSection: React.FC = () => {
               {/* Submit Button */}
               <Button
                 type="submit"
-                disabled={!firebaseAvailable || isSubmitting || submitStatus === 'loading'}
-                isLoading={isSubmitting || submitStatus === 'loading'}
+                disabled={!firebaseAvailable || isSubmitting || submitStatus === 'loading' || state.isFormSubmitting}
+                isLoading={isSubmitting || submitStatus === 'loading' || state.isFormSubmitting}
                 className="w-full"
               >
-                {submitStatus === 'loading' ? 'Sending...' : 'Send Message'}
+                {submitStatus === 'loading' || state.isFormSubmitting ? 'Sending...' : 'Send Message'}
               </Button>
             </form>
           </Card>
         </div>
       </div>
+
+      {/* Loading Overlay */}
+      <LoadingOverlay isVisible={state.isFormSubmitting} message="Sending your message..." />
     </section>
   );
 };

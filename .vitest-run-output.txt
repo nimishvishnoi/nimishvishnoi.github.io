@@ -1,0 +1,88 @@
+
+> nimish-portfolio@1.0.0 test
+> vitest --run
+
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.5 [39m[90mD:/Nimish Vishnoi/nimishvishnoi.github.io[39m
+
+ [32mΓ£ô[39m src/utils/seo.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 109[2mms[22m[39m
+stderr | src/components/ErrorBoundary.test.tsx > ErrorBoundary > should render error UI when child component throws
+Error: Test error
+    at ThrowError (D:/Nimish Vishnoi/nimishvishnoi.github.io/src/components/ErrorBoundary.test.tsx:17:13)
+    at Object.react_stack_bottom_frame (D:\Nimish Vishnoi\nimishvishnoi.github.io\node_modules\react-dom\cjs\react-dom-client.development.js:25904:20)
+    at renderWithHooks (D:\Nimish Vishnoi\nimishvishnoi.github.io\node_modules\react-dom\cjs\react-dom-client.development.js:7662:22)
+    at updateFunctionComponent (D:\Nimish Vishnoi\nimishvishnoi.github.io\node_modules\react-dom\cjs\react-dom-client.development.js:10166:19)
+    at beginWork (D:\Nimish Vishnoi\nimishvishnoi.github.io\node_modules\react-dom\cjs\react-dom-client.development.js:11778:18)
+    at runWithFiberInDEV (D:\Nimish Vishnoi\nimishvishnoi.github.io\node_modules\react-dom\cjs\react-dom-client.development.js:874:13)
+    at performUnitOfWork (D:\Nimish Vishnoi\nimishvishnoi.github.io\node_modules\react-dom\cjs\react-dom-client.development.js:17641:22)
+    at workLoopSync (D:\Nimish Vishnoi\nimishvishnoi.github.io\node_modules\react-dom\cjs\react-dom-client.development.js:17469:41)
+    at renderRootSync (D:\Nimish Vishnoi\nimishvishnoi.github.io\node_modules\react-dom\cjs\react-dom-client.development.js:17450:11)
+    at performWorkOnRoot (D:\Nimish Vishnoi\nimishvishnoi.github.io\node_modules\react-dom\cjs\react-dom-client.development.js:16583:35) {
+  [stack]: [Getter/Setter],
+  [message]: 'Test error'
+}
+
+The above error occurred in the <ThrowError> component.
+
+React will try to recreate this component tree from scratch using the error boundary you provided, ErrorBoundary.
+
+Error caught by boundary: Error: Test error
+    at ThrowError (D:/Nimish Vishnoi/nimishvishnoi.github.io/src/components/ErrorBoundary.test.tsx:17:13)
+    at Object.react_stack_bottom_frame (D:\Nimish Vishnoi\nimishvishnoi.github.io\node_modules\react-dom\cjs\react-dom-client.development.js:25904:20)
+    at renderWithHooks (D:\Nimish Vishnoi\nimishvishnoi.github.io\node_modules\react-dom\cjs\react-dom-client.development.js:7662:22)
+    at updateFunctionComponent (D:\Nimish Vishnoi\nimishvishnoi.github.io\node_modules\react-dom\cjs\react-dom-client.development.js:10166:19)
+    at beginWork (D:\Nimish Vishnoi\nimishvishnoi.github.io\node_modules\react-dom\cjs\react-dom-client.development.js:11778:18)
+    at runWithFiberInDEV (D:\Nimish Vishnoi\nimishvishnoi.github.io\node_modules\react-dom\cjs\react-dom-client.development.js:874:13)
+    at performUnitOfWork (D:\Nimish Vishnoi\nimishvishnoi.github.io\node_modules\react-dom\cjs\react-dom-client.development.js:17641:22)
+    at workLoopSync (D:\Nimish Vishnoi\nimishvishnoi.github.io\node_modules\react-dom\cjs\react-dom-client.development.js:17469:41)
+    at renderRootSync (D:\Nimish Vishnoi\nimishvishnoi.github.io\node_modules\react-dom\cjs\react-dom-client.development.js:17450:11)
+    at performWorkOnRoot (D:\Nimish Vishnoi\nimishvishnoi.github.io\node_modules\react-dom\cjs\react-dom-client.development.js:16583:35) {
+  componentStack: '\n' +
+    '    at ThrowError (D:/Nimish Vishnoi/nimishvishnoi.github.io/src/components/ErrorBoundary.test.tsx:25:10)\n' +
+    '    at ErrorBoundary (D:/Nimish Vishnoi/nimishvishnoi.github.io/src/components/ErrorBoundary.tsx:9:3)'
+}
+
+stderr | src/components/ErrorBoundary.test.tsx > ErrorBoundary > should render custom fallback if provided
+Error: Test error
+    at ThrowError (D:/Nimish Vishnoi/nimishvishnoi.github.io/src/components/ErrorBoundary.test.tsx:32:13)
+    at Object.react_stack_bottom_frame (D:\Nimish Vishnoi\nimishvishnoi.github.io\node_modules\react-dom\cjs\react-dom-client.development.js:25904:20)
+    at renderWithHooks (D:\Nimish Vishnoi\nimishvishnoi.github.io\node_modules\react-dom\cjs\react-dom-client.development.js:7662:22)
+    at updateFunctionComponent (D:\Nimish Vishnoi\nimishvishnoi.github.io\node_modules\react-dom\cjs\react-dom-client.development.js:10166:19)
+    at beginWork (D:\Nimish Vishnoi\nimishvishnoi.github.io\node_modules\react-dom\cjs\react-dom-client.development.js:11778:18)
+    at runWithFiberInDEV (D:\Nimish Vishnoi\nimishvishnoi.github.io\node_modules\react-dom\cjs\react-dom-client.development.js:874:13)
+    at performUnitOfWork (D:\Nimish Vishnoi\nimishvishnoi.github.io\node_modules\react-dom\cjs\react-dom-client.development.js:17641:22)
+    at workLoopSync (D:\Nimish Vishnoi\nimishvishnoi.github.io\node_modules\react-dom\cjs\react-dom-client.development.js:17469:41)
+    at renderRootSync (D:\Nimish Vishnoi\nimishvishnoi.github.io\node_modules\react-dom\cjs\react-dom-client.development.js:17450:11)
+    at performWorkOnRoot (D:\Nimish Vishnoi\nimishvishnoi.github.io\node_modules\react-dom\cjs\react-dom-client.development.js:16583:35) {
+  [stack]: [Getter/Setter],
+  [message]: 'Test error'
+}
+
+The above error occurred in the <ThrowError> component.
+
+React will try to recreate this component tree from scratch using the error boundary you provided, ErrorBoundary.
+
+Error caught by boundary: Error: Test error
+    at ThrowError (D:/Nimish Vishnoi/nimishvishnoi.github.io/src/components/ErrorBoundary.test.tsx:32:13)
+    at Object.react_stack_bottom_frame (D:\Nimish Vishnoi\nimishvishnoi.github.io\node_modules\react-dom\cjs\react-dom-client.development.js:25904:20)
+    at renderWithHooks (D:\Nimish Vishnoi\nimishvishnoi.github.io\node_modules\react-dom\cjs\react-dom-client.development.js:7662:22)
+    at updateFunctionComponent (D:\Nimish Vishnoi\nimishvishnoi.github.io\node_modules\react-dom\cjs\react-dom-client.development.js:10166:19)
+    at beginWork (D:\Nimish Vishnoi\nimishvishnoi.github.io\node_modules\react-dom\cjs\react-dom-client.development.js:11778:18)
+    at runWithFiberInDEV (D:\Nimish Vishnoi\nimishvishnoi.github.io\node_modules\react-dom\cjs\react-dom-client.development.js:874:13)
+    at performUnitOfWork (D:\Nimish Vishnoi\nimishvishnoi.github.io\node_modules\react-dom\cjs\react-dom-client.development.js:17641:22)
+    at workLoopSync (D:\Nimish Vishnoi\nimishvishnoi.github.io\node_modules\react-dom\cjs\react-dom-client.development.js:17469:41)
+    at renderRootSync (D:\Nimish Vishnoi\nimishvishnoi.github.io\node_modules\react-dom\cjs\react-dom-client.development.js:17450:11)
+    at performWorkOnRoot (D:\Nimish Vishnoi\nimishvishnoi.github.io\node_modules\react-dom\cjs\react-dom-client.development.js:16583:35) {
+  componentStack: '\n' +
+    '    at ThrowError (D:/Nimish Vishnoi/nimishvishnoi.github.io/src/components/ErrorBoundary.test.tsx:41:10)\n' +
+    '    at ErrorBoundary (D:/Nimish Vishnoi/nimishvishnoi.github.io/src/components/ErrorBoundary.tsx:9:3)'
+}
+
+ [32mΓ£ô[39m src/components/ErrorBoundary.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[32m 157[2mms[22m[39m
+ [32mΓ£ô[39m src/utils/storage.test.ts [2m([22m[2m7 tests[22m[2m)[22m[33m 349[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m3 passed[39m[22m[90m (3)[39m
+[2m      Tests [22m [1m[32m17 passed[39m[22m[90m (17)[39m
+[2m   Start at [22m 12:26:25
+[2m   Duration [22m 5.11s[2m (transform 526ms, setup 3.06s, import 464ms, tests 615ms, environment 8.90s)[22m
+
