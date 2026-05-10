@@ -131,7 +131,8 @@ export const ContactSection: React.FC = () => {
 
       // Rate limiting check: max 3 submissions per hour per device
       if (!checkRateLimit(3, 3600000)) {
-        const errorMsg = 'You have exceeded the maximum number of submissions. Please try again in 1 hour.';
+        const errorMsg =
+          'You have exceeded the maximum number of submissions. Please try again in 1 hour.';
         setErrorMessage(errorMsg);
         setSubmitStatus('error');
         dispatch({
@@ -443,11 +444,18 @@ export const ContactSection: React.FC = () => {
               {/* Submit Button */}
               <Button
                 type="submit"
-                disabled={!firebaseAvailable || isSubmitting || submitStatus === 'loading' || state.isFormSubmitting}
+                disabled={
+                  !firebaseAvailable ||
+                  isSubmitting ||
+                  submitStatus === 'loading' ||
+                  state.isFormSubmitting
+                }
                 isLoading={isSubmitting || submitStatus === 'loading' || state.isFormSubmitting}
                 className="w-full"
               >
-                {submitStatus === 'loading' || state.isFormSubmitting ? 'Sending...' : 'Send Message'}
+                {submitStatus === 'loading' || state.isFormSubmitting
+                  ? 'Sending...'
+                  : 'Send Message'}
               </Button>
             </form>
           </Card>

@@ -46,7 +46,10 @@ export type AppAction =
   | { type: 'CLEAR_MESSAGES' };
 
 const initialState: AppState = {
-  isDarkMode: typeof window !== 'undefined' ? window.matchMedia('(prefers-color-scheme: dark)').matches : false,
+  isDarkMode:
+    typeof window !== 'undefined'
+      ? window.matchMedia('(prefers-color-scheme: dark)').matches
+      : false,
   activeSection: 'home',
   isMobileNavOpen: false,
   isLoading: false,

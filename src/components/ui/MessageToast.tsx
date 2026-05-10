@@ -26,10 +26,7 @@ export function MessageToast({
     >
       <span className="text-xl font-bold">{icon}</span>
       <span>{message}</span>
-      <button
-        onClick={onClose}
-        className="ml-4 text-white hover:text-gray-200 transition-colors"
-      >
+      <button onClick={onClose} className="ml-4 text-white hover:text-gray-200 transition-colors">
         ✕
       </button>
     </div>

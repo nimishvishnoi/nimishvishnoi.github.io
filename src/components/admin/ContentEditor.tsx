@@ -113,9 +113,7 @@ export function ContentEditor() {
               <textarea
                 value={formData?.description || ''}
                 onChange={(e) =>
-                  setFormData((prev) =>
-                    prev ? { ...prev, description: e.target.value } : null
-                  )
+                  setFormData((prev) => (prev ? { ...prev, description: e.target.value } : null))
                 }
                 rows={4}
                 className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-gray-900 dark:text-white"

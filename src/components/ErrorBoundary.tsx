@@ -22,7 +22,7 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     console.error('Error caught by boundary:', error, errorInfo);
-    
+
     // Log to Firebase or external service in production
     if (import.meta.env.PROD) {
       // Integrate with Sentry or Firebase error logging here
@@ -61,7 +61,8 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
                 Something went wrong
               </h2>
               <p className="text-gray-600 dark:text-gray-300 mb-4">
-                {this.state.error?.message || 'An unexpected error occurred. Please try refreshing the page.'}
+                {this.state.error?.message ||
+                  'An unexpected error occurred. Please try refreshing the page.'}
               </p>
               <button
                 onClick={() => window.location.reload()}

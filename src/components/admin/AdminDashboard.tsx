@@ -28,13 +28,12 @@ export function AdminDashboard() {
   const loadAnalytics = async () => {
     setIsLoading(true);
     try {
-      const [pageViews, formSubmissions, projectClicks, resumeDownloads] =
-        await Promise.all([
-          analytics.getAnalyticsData('page_view'),
-          analytics.getAnalyticsData('form_submission'),
-          analytics.getAnalyticsData('project_click'),
-          analytics.getAnalyticsData('resume_download'),
-        ]);
+      const [pageViews, formSubmissions, projectClicks, resumeDownloads] = await Promise.all([
+        analytics.getAnalyticsData('page_view'),
+        analytics.getAnalyticsData('form_submission'),
+        analytics.getAnalyticsData('project_click'),
+        analytics.getAnalyticsData('resume_download'),
+      ]);
 
       setStats([
         { label: 'Page Views', value: pageViews.length, change: 12 },
@@ -86,9 +85,7 @@ export function AdminDashboard() {
       )}
 
       <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-6">
-        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
-          Recent Activity
-        </h2>
+        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Recent Activity</h2>
         <p className="text-gray-600 dark:text-gray-400">
           Activity timeline and detailed analytics would be displayed here.
         </p>

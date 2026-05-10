@@ -35,7 +35,7 @@ const AppContent: React.FC = () => {
     const sectionKey = activeSection as keyof typeof seoSections;
     const metadata = seoSections[sectionKey] || seoDefaults;
     updateSEOMetadata(metadata);
-    
+
     // Log page view to analytics
     analytics.logPageView(activeSection || 'home');
   }, [activeSection]);

@@ -93,11 +93,7 @@ const analytics = {
     });
   },
 
-  async logFormSubmission(
-    formType: string,
-    success: boolean,
-    duration: number
-  ): Promise<void> {
+  async logFormSubmission(formType: string, success: boolean, duration: number): Promise<void> {
     return this.logEvent({
       eventType: 'form_submission',
       data: { formType, success, duration },
@@ -140,11 +136,7 @@ const analytics = {
 
       const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
       const db = getDatabase(app);
-      query(
-        ref(db, `analytics/${eventType}`),
-        orderByChild('timestamp'),
-        limitToLast(limit)
-      );
+      query(ref(db, `analytics/${eventType}`), orderByChild('timestamp'), limitToLast(limit));
       // Query execution would happen here in real Firebase implementation
       return [];
     } catch (error) {

@@ -6,7 +6,13 @@ export function LoadingSpinner() {
   );
 }
 
-export function LoadingOverlay({ isVisible, message = 'Loading...' }: { isVisible: boolean; message?: string }) {
+export function LoadingOverlay({
+  isVisible,
+  message = 'Loading...',
+}: {
+  isVisible: boolean;
+  message?: string;
+}) {
   if (!isVisible) return null;
 
   return (

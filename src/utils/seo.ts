@@ -31,13 +31,7 @@ export const seoSections: Record<string, SEOMetadata> = {
     title: 'Nimish Vishnoi | Full Stack Developer Portfolio',
     description:
       'Welcome to my portfolio. Full-stack developer with expertise in modern web technologies.',
-    keywords: [
-      'portfolio',
-      'developer',
-      'full stack',
-      'react',
-      'typescript',
-    ],
+    keywords: ['portfolio', 'developer', 'full stack', 'react', 'typescript'],
   },
   about: {
     title: 'About Nimish Vishnoi | Developer Profile',
@@ -49,14 +43,7 @@ export const seoSections: Record<string, SEOMetadata> = {
     title: 'Skills & Technologies | Nimish Vishnoi',
     description:
       'Comprehensive list of technical skills including React, TypeScript, Firebase, Node.js, and more.',
-    keywords: [
-      'skills',
-      'technologies',
-      'react',
-      'node.js',
-      'firebase',
-      'typescript',
-    ],
+    keywords: ['skills', 'technologies', 'react', 'node.js', 'firebase', 'typescript'],
   },
   resume: {
     title: 'Professional Resume | Nimish Vishnoi',
@@ -66,7 +53,8 @@ export const seoSections: Record<string, SEOMetadata> = {
   },
   projects: {
     title: 'Portfolio Projects | Nimish Vishnoi',
-    description: 'Explore my recent projects and case studies demonstrating my development expertise.',
+    description:
+      'Explore my recent projects and case studies demonstrating my development expertise.',
     keywords: ['projects', 'portfolio', 'case studies', 'web applications'],
   },
   contact: {
@@ -86,11 +74,11 @@ export function updateSEOMetadata(metadata: SEOMetadata) {
   // Update or create meta tags
   updateMetaTag('description', metadata.description);
   updateMetaTag('keywords', metadata.keywords.join(', '));
-  
+
   if (metadata.author) {
     updateMetaTag('author', metadata.author);
   }
-  
+
   // Open Graph tags
   if (metadata.ogImage) {
     updateMetaTag('og:image', metadata.ogImage, 'property');
@@ -100,14 +88,14 @@ export function updateSEOMetadata(metadata: SEOMetadata) {
   }
   updateMetaTag('og:title', metadata.title, 'property');
   updateMetaTag('og:description', metadata.description, 'property');
-  
+
   // Twitter Card tags
   if (metadata.twitterCard) {
     updateMetaTag('twitter:card', metadata.twitterCard);
   }
   updateMetaTag('twitter:title', metadata.title);
   updateMetaTag('twitter:description', metadata.description);
-  
+
   // Canonical URL
   if (metadata.canonicalUrl) {
     updateCanonicalURL(metadata.canonicalUrl);
