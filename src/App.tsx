@@ -28,6 +28,7 @@ const AppContent: React.FC = () => {
   const { darkMode, toggleDarkMode } = useDarkMode();
   const { state, dispatch } = useAppState();
   const { i18n } = useTranslation();
+  const { language: i18nLanguage, changeLanguage } = i18n;
   const currentYear = new Date().getFullYear();
 
   // Update SEO metadata when section changes
@@ -42,10 +43,10 @@ const AppContent: React.FC = () => {
 
   // Handle language changes
   useEffect(() => {
-    if (state.selectedLanguage !== i18n.language) {
-      void i18n.changeLanguage(state.selectedLanguage);
+    if (state.selectedLanguage !== i18nLanguage) {
+      void changeLanguage(state.selectedLanguage);
     }
-  }, [state.selectedLanguage, i18n.language, i18n.changeLanguage]);
+  }, [state.selectedLanguage, i18nLanguage, changeLanguage]);
 
   // Close messages after 5 seconds
   useEffect(() => {
