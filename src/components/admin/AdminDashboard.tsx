@@ -85,7 +85,10 @@ export function AdminDashboard() {
       {isLoading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-6 animate-pulse">
+            <div
+              key={i}
+              className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-6 animate-pulse"
+            >
               <div className="h-4 bg-gray-200 dark:bg-slate-600 rounded mb-3 w-3/4" />
               <div className="h-8 bg-gray-200 dark:bg-slate-600 rounded w-1/2" />
             </div>
@@ -119,7 +122,9 @@ function StatCard({ stat }: { stat: AnalyticsStat }) {
   return (
     <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-6">
       <div className="flex items-center gap-2 mb-2">
-        <span className="text-2xl" aria-hidden="true">{stat.icon}</span>
+        <span className="text-2xl" aria-hidden="true">
+          {stat.icon}
+        </span>
         <p className="text-gray-600 dark:text-gray-400 text-sm">{stat.label}</p>
       </div>
       <p className="text-3xl font-bold text-gray-900 dark:text-white">{stat.value}</p>

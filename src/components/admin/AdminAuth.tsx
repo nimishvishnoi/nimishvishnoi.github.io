@@ -136,7 +136,11 @@ export function AdminAuth() {
     } catch {
       dispatch({
         type: 'SET_ERROR',
-        payload: { message: 'Logout failed. Please try again.', type: 'error', timestamp: Date.now() },
+        payload: {
+          message: 'Logout failed. Please try again.',
+          type: 'error',
+          timestamp: Date.now(),
+        },
       });
     }
   };

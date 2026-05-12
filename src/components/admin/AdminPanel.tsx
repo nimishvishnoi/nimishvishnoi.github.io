@@ -119,10 +119,7 @@ export function AdminPanel() {
         <div className="bg-white dark:bg-slate-800 w-full max-w-4xl rounded-lg shadow-xl">
           {/* Header */}
           <div className="flex justify-between items-center border-b border-gray-200 dark:border-slate-700 p-6">
-            <h1
-              id="admin-panel-title"
-              className="text-2xl font-bold text-gray-900 dark:text-white"
-            >
+            <h1 id="admin-panel-title" className="text-2xl font-bold text-gray-900 dark:text-white">
               Admin Panel
             </h1>
             <button
