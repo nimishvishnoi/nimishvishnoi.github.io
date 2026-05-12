@@ -9,7 +9,7 @@ describe('Storage Utilities', () => {
 
   describe('useFormPersistence', () => {
     it('should save form data to localStorage', () => {
-      const persistence = useFormPersistence('test-form', { name: '' });
+      const persistence = useFormPersistence('test-form');
 
       act(() => {
         persistence.saveToStorage({ name: 'John', email: 'john@test.com' });
@@ -22,7 +22,7 @@ describe('Storage Utilities', () => {
     });
 
     it('should retrieve form data from localStorage', () => {
-      const persistence = useFormPersistence('test-form', { name: '' });
+      const persistence = useFormPersistence('test-form');
 
       act(() => {
         persistence.saveToStorage({ name: 'Jane', email: 'jane@test.com' });
@@ -35,7 +35,7 @@ describe('Storage Utilities', () => {
     });
 
     it('should clear localStorage', () => {
-      const persistence = useFormPersistence('test-form', { name: '' });
+      const persistence = useFormPersistence('test-form');
 
       act(() => {
         persistence.saveToStorage({ name: 'Test' });
@@ -45,6 +45,19 @@ describe('Storage Utilities', () => {
         persistence.clearStorage();
       });
 
+      expect(localStorage.getItem('test-form')).toBeNull();
+    });
+
+    it('should return null for expired data (7+ days old)', () => {
+      const persistence = useFormPersistence('test-form');
+      const eightDaysAgo = Date.now() - 8 * 24 * 60 * 60 * 1000;
+      localStorage.setItem(
+        'test-form',
+        JSON.stringify({ data: { name: 'Old' }, timestamp: eightDaysAgo })
+      );
+
+      const result = persistence.getFromStorage();
+      expect(result).toBeNull();
       expect(localStorage.getItem('test-form')).toBeNull();
     });
   });

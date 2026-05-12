@@ -1,25 +1,14 @@
 import { createContext, useContext, useReducer, ReactNode, Dispatch } from 'react';
 
 export interface AppState {
-  isDarkMode: boolean;
-  activeSection: string;
   isMobileNavOpen: boolean;
   isLoading: boolean;
   isFormSubmitting: boolean;
-  formData: FormState;
   isAdmin: boolean;
   adminPanelOpen: boolean;
   selectedLanguage: string;
   error: AppError | null;
   successMessage: string | null;
-}
-
-export interface FormState {
-  name: string;
-  email: string;
-  phone: string;
-  subject: string;
-  message: string;
 }
 
 export interface AppError {
@@ -29,15 +18,10 @@ export interface AppError {
 }
 
 export type AppAction =
-  | { type: 'TOGGLE_DARK_MODE' }
-  | { type: 'SET_ACTIVE_SECTION'; payload: string }
   | { type: 'TOGGLE_MOBILE_NAV' }
   | { type: 'SET_MOBILE_NAV'; payload: boolean }
   | { type: 'SET_LOADING'; payload: boolean }
   | { type: 'SET_FORM_SUBMITTING'; payload: boolean }
-  | { type: 'UPDATE_FORM_DATA'; payload: Partial<FormState> }
-  | { type: 'RESET_FORM_DATA' }
-  | { type: 'SET_FORM_DATA'; payload: FormState }
   | { type: 'SET_ADMIN'; payload: boolean }
   | { type: 'TOGGLE_ADMIN_PANEL' }
   | { type: 'SET_LANGUAGE'; payload: string }
@@ -46,21 +30,9 @@ export type AppAction =
   | { type: 'CLEAR_MESSAGES' };
 
 const initialState: AppState = {
-  isDarkMode:
-    typeof window !== 'undefined'
-      ? window.matchMedia('(prefers-color-scheme: dark)').matches
-      : false,
-  activeSection: 'home',
   isMobileNavOpen: false,
   isLoading: false,
   isFormSubmitting: false,
-  formData: {
-    name: '',
-    email: '',
-    phone: '',
-    subject: '',
-    message: '',
-  },
   isAdmin: false,
   adminPanelOpen: false,
   selectedLanguage: 'en',
@@ -70,10 +42,6 @@ const initialState: AppState = {
 
 function appReducer(state: AppState, action: AppAction): AppState {
   switch (action.type) {
-    case 'TOGGLE_DARK_MODE':
-      return { ...state, isDarkMode: !state.isDarkMode };
-    case 'SET_ACTIVE_SECTION':
-      return { ...state, activeSection: action.payload };
     case 'TOGGLE_MOBILE_NAV':
       return { ...state, isMobileNavOpen: !state.isMobileNavOpen };
     case 'SET_MOBILE_NAV':
@@ -82,18 +50,6 @@ function appReducer(state: AppState, action: AppAction): AppState {
       return { ...state, isLoading: action.payload };
     case 'SET_FORM_SUBMITTING':
       return { ...state, isFormSubmitting: action.payload };
-    case 'UPDATE_FORM_DATA':
-      return {
-        ...state,
-        formData: { ...state.formData, ...action.payload },
-      };
-    case 'RESET_FORM_DATA':
-      return {
-        ...state,
-        formData: initialState.formData,
-      };
-    case 'SET_FORM_DATA':
-      return { ...state, formData: action.payload };
     case 'SET_ADMIN':
       return { ...state, isAdmin: action.payload };
     case 'TOGGLE_ADMIN_PANEL':

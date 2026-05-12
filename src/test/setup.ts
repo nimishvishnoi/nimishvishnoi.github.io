@@ -10,7 +10,7 @@ afterEach(() => {
 // Mock window.matchMedia
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
-  value: vi.fn().mockImplementation((query) => ({
+  value: vi.fn().mockImplementation((query: string) => ({
     matches: false,
     media: query,
     onchange: null,
@@ -44,20 +44,37 @@ Object.defineProperty(window, 'localStorage', {
   value: localStorageMock,
 });
 
-// Mock Firebase
+// Mock Firebase — complete set of exports used across the codebase
 vi.mock('firebase/app', () => ({
-  initializeApp: vi.fn(),
+  initializeApp: vi.fn(() => ({})),
+  getApps: vi.fn(() => []),
+  getApp: vi.fn(() => ({})),
 }));
 
 vi.mock('firebase/auth', () => ({
-  getAuth: vi.fn(),
+  getAuth: vi.fn(() => ({})),
   signInWithEmailAndPassword: vi.fn(),
   signOut: vi.fn(),
+  onAuthStateChanged: vi.fn((_auth, callback) => {
+    // Simulate no user signed in
+    callback(null);
+    return vi.fn(); // unsubscribe
+  }),
 }));
 
 vi.mock('firebase/database', () => ({
-  getDatabase: vi.fn(),
-  ref: vi.fn(),
-  set: vi.fn(),
-  push: vi.fn(),
+  getDatabase: vi.fn(() => ({})),
+  ref: vi.fn(() => ({})),
+  set: vi.fn(() => Promise.resolve()),
+  push: vi.fn(() => ({})),
+  get: vi.fn(() =>
+    Promise.resolve({
+      exists: () => false,
+      val: () => null,
+      forEach: vi.fn(),
+    })
+  ),
+  query: vi.fn((...args) => args[0]),
+  orderByChild: vi.fn(() => ({})),
+  limitToLast: vi.fn(() => ({})),
 }));

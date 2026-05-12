@@ -7,27 +7,42 @@ export function MessageToast({
   type: 'success' | 'error' | 'info';
   onClose: () => void;
 }) {
-  const bgColor = {
-    success: 'bg-green-500',
-    error: 'bg-red-500',
-    info: 'bg-blue-500',
-  }[type];
-
-  const icon = {
-    success: '✓',
-    error: '✕',
-    info: 'ℹ',
+  const styles = {
+    success: {
+      bg: 'bg-green-600',
+      icon: '✓',
+      label: 'Success',
+    },
+    error: {
+      bg: 'bg-red-600',
+      icon: '✕',
+      label: 'Error',
+    },
+    info: {
+      bg: 'bg-blue-600',
+      icon: 'ℹ',
+      label: 'Info',
+    },
   }[type];
 
   return (
     <div
-      className={`fixed top-4 right-4 ${bgColor} text-white px-6 py-4 rounded-lg shadow-lg flex items-center gap-3 animate-in fade-in slide-in-from-right-4 z-50`}
-      role="alert"
+      className={`fixed top-4 right-4 ${styles.bg} text-white px-5 py-4 rounded-lg shadow-xl flex items-center gap-3 z-50 max-w-sm`}
+      // success = polite (role="status"), error/info = assertive (role="alert")
+      role={type === 'success' ? 'status' : 'alert'}
+      aria-live={type === 'success' ? 'polite' : 'assertive'}
+      aria-atomic="true"
     >
-      <span className="text-xl font-bold">{icon}</span>
-      <span>{message}</span>
-      <button onClick={onClose} className="ml-4 text-white hover:text-gray-200 transition-colors">
-        ✕
+      <span className="text-lg font-bold shrink-0" aria-hidden="true">
+        {styles.icon}
+      </span>
+      <span className="text-sm leading-snug">{message}</span>
+      <button
+        onClick={onClose}
+        aria-label={`Close ${styles.label.toLowerCase()} notification`}
+        className="ml-2 shrink-0 text-white/80 hover:text-white transition-colors focus:outline-none focus:ring-2 focus:ring-white/50 rounded"
+      >
+        <span aria-hidden="true">✕</span>
       </button>
     </div>
   );

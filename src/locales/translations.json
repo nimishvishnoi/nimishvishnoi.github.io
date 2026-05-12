@@ -1,185 +1,242 @@
 {
   "en": {
-    "nav": {
-      "home": "Home",
-      "about": "About",
-      "skills": "Skills",
-      "resume": "Resume",
-      "projects": "Projects",
-      "contact": "Contact",
-      "downloadResume": "Download Resume"
-    },
-    "header": {
-      "title": "Full Stack Developer",
-      "subtitle": "Building innovative solutions with modern technologies"
-    },
-    "about": {
-      "title": "About Me",
-      "description": "I'm a passionate full-stack developer with expertise in web technologies, cloud services, and mobile development."
-    },
-    "skills": {
-      "title": "Skills & Technologies",
-      "frontend": "Frontend",
-      "backend": "Backend",
-      "database": "Database",
-      "tools": "Tools & Platforms"
-    },
-    "resume": {
-      "title": "Professional History",
-      "education": "Education",
-      "experience": "Experience",
-      "achievements": "Achievements"
-    },
-    "projects": {
-      "title": "Portfolio Projects",
-      "viewProject": "View Project",
-      "technologies": "Technologies"
-    },
-    "contact": {
-      "title": "Get In Touch",
-      "form": {
-        "name": "Name",
-        "email": "Email",
-        "phone": "Phone",
-        "subject": "Subject",
-        "message": "Message",
-        "submit": "Send Message",
-        "sending": "Sending...",
-        "success": "Message sent successfully!",
-        "error": "Failed to send message. Please try again."
+    "translation": {
+      "nav": {
+        "home": "Home",
+        "about": "About",
+        "skills": "Skills",
+        "resume": "Resume",
+        "projects": "Projects",
+        "contact": "Contact",
+        "downloadResume": "Download Resume"
+      },
+      "header": {
+        "title": "Full Stack Developer",
+        "subtitle": "Building innovative solutions with modern technologies"
+      },
+      "about": {
+        "title": "About Me",
+        "description": "I'm a passionate full-stack developer with expertise in web technologies, cloud services, and mobile development."
+      },
+      "skills": {
+        "title": "Skills & Technologies",
+        "frontend": "Frontend",
+        "backend": "Backend",
+        "database": "Database",
+        "tools": "Tools & Platforms"
+      },
+      "resume": {
+        "title": "Professional History",
+        "education": "Education",
+        "experience": "Experience",
+        "achievements": "Achievements"
+      },
+      "projects": {
+        "title": "Portfolio Projects",
+        "viewProject": "View Project",
+        "technologies": "Technologies"
+      },
+      "contact": {
+        "title": "Get In Touch",
+        "form": {
+          "name": "Name",
+          "email": "Email",
+          "phone": "Phone",
+          "subject": "Subject",
+          "message": "Message",
+          "submit": "Send Message",
+          "sending": "Sending...",
+          "success": "Message sent successfully!",
+          "error": "Failed to send message. Please try again."
+        }
+      },
+      "admin": {
+        "login": "Admin Login",
+        "logout": "Logout",
+        "dashboard": "Dashboard",
+        "content": "Content",
+        "settings": "Settings",
+        "loginSuccess": "Admin login successful!",
+        "logoutSuccess": "Logged out successfully",
+        "noPrivileges": "You do not have admin privileges",
+        "loginFailed": "Login failed. Please check your credentials.",
+        "accessDenied": "Access denied. Admin privileges required."
+      },
+      "common": {
+        "loading": "Loading...",
+        "error": "An error occurred",
+        "success": "Success!",
+        "cancel": "Cancel",
+        "save": "Save",
+        "delete": "Delete",
+        "edit": "Edit",
+        "back": "Back",
+        "refresh": "Refresh",
+        "close": "Close",
+        "somethingWentWrong": "Something went wrong",
+        "refreshPage": "Refresh Page",
+        "tryAgain": "Try Again"
       }
-    },
-    "common": {
-      "loading": "Loading...",
-      "error": "An error occurred",
-      "success": "Success!",
-      "cancel": "Cancel",
-      "save": "Save",
-      "delete": "Delete",
-      "edit": "Edit",
-      "back": "Back"
     }
   },
   "es": {
-    "nav": {
-      "home": "Inicio",
-      "about": "Acerca de",
-      "skills": "Habilidades",
-      "resume": "Currículum",
-      "projects": "Proyectos",
-      "contact": "Contacto",
-      "downloadResume": "Descargar Currículum"
-    },
-    "header": {
-      "title": "Desarrollador Full Stack",
-      "subtitle": "Construyendo soluciones innovadoras con tecnologías modernas"
-    },
-    "about": {
-      "title": "Acerca de Mí",
-      "description": "Soy un desarrollador full-stack apasionado con experiencia en tecnologías web, servicios en la nube y desarrollo móvil."
-    },
-    "skills": {
-      "title": "Habilidades y Tecnologías",
-      "frontend": "Frontend",
-      "backend": "Backend",
-      "database": "Base de Datos",
-      "tools": "Herramientas y Plataformas"
-    },
-    "resume": {
-      "title": "Historial Profesional",
-      "education": "Educación",
-      "experience": "Experiencia",
-      "achievements": "Logros"
-    },
-    "projects": {
-      "title": "Proyectos del Portafolio",
-      "viewProject": "Ver Proyecto",
-      "technologies": "Tecnologías"
-    },
-    "contact": {
-      "title": "Ponte en Contacto",
-      "form": {
-        "name": "Nombre",
-        "email": "Correo",
-        "phone": "Teléfono",
-        "subject": "Asunto",
-        "message": "Mensaje",
-        "submit": "Enviar Mensaje",
-        "sending": "Enviando...",
-        "success": "¡Mensaje enviado exitosamente!",
-        "error": "Error al enviar el mensaje. Por favor intenta de nuevo."
+    "translation": {
+      "nav": {
+        "home": "Inicio",
+        "about": "Acerca de",
+        "skills": "Habilidades",
+        "resume": "Currículum",
+        "projects": "Proyectos",
+        "contact": "Contacto",
+        "downloadResume": "Descargar Currículum"
+      },
+      "header": {
+        "title": "Desarrollador Full Stack",
+        "subtitle": "Construyendo soluciones innovadoras con tecnologías modernas"
+      },
+      "about": {
+        "title": "Acerca de Mí",
+        "description": "Soy un desarrollador full-stack apasionado con experiencia en tecnologías web, servicios en la nube y desarrollo móvil."
+      },
+      "skills": {
+        "title": "Habilidades y Tecnologías",
+        "frontend": "Frontend",
+        "backend": "Backend",
+        "database": "Base de Datos",
+        "tools": "Herramientas y Plataformas"
+      },
+      "resume": {
+        "title": "Historial Profesional",
+        "education": "Educación",
+        "experience": "Experiencia",
+        "achievements": "Logros"
+      },
+      "projects": {
+        "title": "Proyectos del Portafolio",
+        "viewProject": "Ver Proyecto",
+        "technologies": "Tecnologías"
+      },
+      "contact": {
+        "title": "Ponte en Contacto",
+        "form": {
+          "name": "Nombre",
+          "email": "Correo",
+          "phone": "Teléfono",
+          "subject": "Asunto",
+          "message": "Mensaje",
+          "submit": "Enviar Mensaje",
+          "sending": "Enviando...",
+          "success": "¡Mensaje enviado exitosamente!",
+          "error": "Error al enviar el mensaje. Por favor intenta de nuevo."
+        }
+      },
+      "admin": {
+        "login": "Inicio de Sesión Admin",
+        "logout": "Cerrar Sesión",
+        "dashboard": "Panel",
+        "content": "Contenido",
+        "settings": "Configuración",
+        "loginSuccess": "¡Inicio de sesión admin exitoso!",
+        "logoutSuccess": "Sesión cerrada exitosamente",
+        "noPrivileges": "No tienes privilegios de administrador",
+        "loginFailed": "Error al iniciar sesión. Por favor verifica tus credenciales.",
+        "accessDenied": "Acceso denegado. Se requieren privilegios de administrador."
+      },
+      "common": {
+        "loading": "Cargando...",
+        "error": "Ocurrió un error",
+        "success": "¡Éxito!",
+        "cancel": "Cancelar",
+        "save": "Guardar",
+        "delete": "Eliminar",
+        "edit": "Editar",
+        "back": "Atrás",
+        "refresh": "Actualizar",
+        "close": "Cerrar",
+        "somethingWentWrong": "Algo salió mal",
+        "refreshPage": "Actualizar Página",
+        "tryAgain": "Intentar de Nuevo"
       }
-    },
-    "common": {
-      "loading": "Cargando...",
-      "error": "Ocurrió un error",
-      "success": "¡Éxito!",
-      "cancel": "Cancelar",
-      "save": "Guardar",
-      "delete": "Eliminar",
-      "edit": "Editar",
-      "back": "Atrás"
     }
   },
   "fr": {
-    "nav": {
-      "home": "Accueil",
-      "about": "À Propos",
-      "skills": "Compétences",
-      "resume": "CV",
-      "projects": "Projets",
-      "contact": "Contact",
-      "downloadResume": "Télécharger le CV"
-    },
-    "header": {
-      "title": "Développeur Full Stack",
-      "subtitle": "Construire des solutions innovantes avec des technologies modernes"
-    },
-    "about": {
-      "title": "À Propos de Moi",
-      "description": "Je suis un développeur full-stack passionné avec une expertise en technologies web, services cloud et développement mobile."
-    },
-    "skills": {
-      "title": "Compétences et Technologies",
-      "frontend": "Frontend",
-      "backend": "Backend",
-      "database": "Base de Données",
-      "tools": "Outils et Plateformes"
-    },
-    "resume": {
-      "title": "Historique Professionnel",
-      "education": "Éducation",
-      "experience": "Expérience",
-      "achievements": "Réalisations"
-    },
-    "projects": {
-      "title": "Projets du Portefeuille",
-      "viewProject": "Voir le Projet",
-      "technologies": "Technologies"
-    },
-    "contact": {
-      "title": "Contactez-Moi",
-      "form": {
-        "name": "Nom",
-        "email": "E-mail",
-        "phone": "Téléphone",
-        "subject": "Sujet",
-        "message": "Message",
-        "submit": "Envoyer",
-        "sending": "Envoi...",
-        "success": "Message envoyé avec succès !",
-        "error": "Erreur lors de l'envoi du message. Veuillez réessayer."
+    "translation": {
+      "nav": {
+        "home": "Accueil",
+        "about": "À Propos",
+        "skills": "Compétences",
+        "resume": "CV",
+        "projects": "Projets",
+        "contact": "Contact",
+        "downloadResume": "Télécharger le CV"
+      },
+      "header": {
+        "title": "Développeur Full Stack",
+        "subtitle": "Construire des solutions innovantes avec des technologies modernes"
+      },
+      "about": {
+        "title": "À Propos de Moi",
+        "description": "Je suis un développeur full-stack passionné avec une expertise en technologies web, services cloud et développement mobile."
+      },
+      "skills": {
+        "title": "Compétences et Technologies",
+        "frontend": "Frontend",
+        "backend": "Backend",
+        "database": "Base de Données",
+        "tools": "Outils et Plateformes"
+      },
+      "resume": {
+        "title": "Historique Professionnel",
+        "education": "Éducation",
+        "experience": "Expérience",
+        "achievements": "Réalisations"
+      },
+      "projects": {
+        "title": "Projets du Portefeuille",
+        "viewProject": "Voir le Projet",
+        "technologies": "Technologies"
+      },
+      "contact": {
+        "title": "Contactez-Moi",
+        "form": {
+          "name": "Nom",
+          "email": "E-mail",
+          "phone": "Téléphone",
+          "subject": "Sujet",
+          "message": "Message",
+          "submit": "Envoyer",
+          "sending": "Envoi...",
+          "success": "Message envoyé avec succès !",
+          "error": "Erreur lors de l'envoi du message. Veuillez réessayer."
+        }
+      },
+      "admin": {
+        "login": "Connexion Admin",
+        "logout": "Déconnexion",
+        "dashboard": "Tableau de Bord",
+        "content": "Contenu",
+        "settings": "Paramètres",
+        "loginSuccess": "Connexion admin réussie !",
+        "logoutSuccess": "Déconnexion réussie",
+        "noPrivileges": "Vous n'avez pas les privilèges administrateur",
+        "loginFailed": "Échec de la connexion. Veuillez vérifier vos identifiants.",
+        "accessDenied": "Accès refusé. Privilèges administrateur requis."
+      },
+      "common": {
+        "loading": "Chargement...",
+        "error": "Une erreur s'est produite",
+        "success": "Succès!",
+        "cancel": "Annuler",
+        "save": "Enregistrer",
+        "delete": "Supprimer",
+        "edit": "Modifier",
+        "back": "Retour",
+        "refresh": "Actualiser",
+        "close": "Fermer",
+        "somethingWentWrong": "Quelque chose s'est mal passé",
+        "refreshPage": "Actualiser la Page",
+        "tryAgain": "Réessayer"
       }
-    },
-    "common": {
-      "loading": "Chargement...",
-      "error": "Une erreur s'est produite",
-      "success": "Succès!",
-      "cancel": "Annuler",
-      "save": "Enregistrer",
-      "delete": "Supprimer",
-      "edit": "Modifier",
-      "back": "Retour"
     }
   }
 }

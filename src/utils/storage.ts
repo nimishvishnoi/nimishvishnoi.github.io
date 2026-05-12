@@ -1,8 +1,8 @@
 /**
- * useFormPersistence - Auto-save form data to localStorage
- * Recovers on component mount if available
+ * createFormPersistence - Auto-save form data to localStorage with 7-day expiry.
+ * Not a React hook — renamed from useFormPersistence to avoid misleading the linter.
  */
-export function useFormPersistence(key: string, _initialData: Record<string, unknown>) {
+export function createFormPersistence(key: string) {
   const saveToStorage = (data: Record<string, unknown>) => {
     try {
       localStorage.setItem(key, JSON.stringify({ data, timestamp: Date.now() }));
@@ -15,7 +15,7 @@ export function useFormPersistence(key: string, _initialData: Record<string, unk
     try {
       const item = localStorage.getItem(key);
       if (item) {
-        const parsed = JSON.parse(item);
+        const parsed = JSON.parse(item) as { data: Record<string, unknown>; timestamp: number };
         const age = Date.now() - parsed.timestamp;
         // Expire after 7 days
         if (age < 7 * 24 * 60 * 60 * 1000) {
@@ -39,6 +39,12 @@ export function useFormPersistence(key: string, _initialData: Record<string, unk
 
   return { saveToStorage, getFromStorage, clearStorage };
 }
+
+/**
+ * Keep the old name as an alias so existing call-sites don't break.
+ * @deprecated Use createFormPersistence instead.
+ */
+export const useFormPersistence = createFormPersistence;
 
 /**
  * Cache for generated PDFs and expensive computations
@@ -88,7 +94,8 @@ export function preloadImage(src: string): Promise<HTMLImageElement> {
 }
 
 /**
- * Debounce function for auto-save
+ * Debounce function for auto-save and other high-frequency events.
+ * The inner clearTimeout is intentionally removed — it was a no-op.
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function debounce<T extends (...args: any[]) => any>(
@@ -97,12 +104,8 @@ export function debounce<T extends (...args: any[]) => any>(
 ): (...args: Parameters<T>) => void {
   let timeout: ReturnType<typeof setTimeout>;
   return function executedFunction(...args: Parameters<T>) {
-    const later = () => {
-      clearTimeout(timeout);
-      func(...args);
-    };
     clearTimeout(timeout);
-    timeout = setTimeout(later, wait);
+    timeout = setTimeout(() => func(...args), wait);
   };
 }
 

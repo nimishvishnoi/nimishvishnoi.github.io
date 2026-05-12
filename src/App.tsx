@@ -43,9 +43,9 @@ const AppContent: React.FC = () => {
   // Handle language changes
   useEffect(() => {
     if (state.selectedLanguage !== i18n.language) {
-      i18n.changeLanguage(state.selectedLanguage);
+      void i18n.changeLanguage(state.selectedLanguage);
     }
-  }, [state.selectedLanguage, i18n]);
+  }, [state.selectedLanguage, i18n.language, i18n.changeLanguage]);
 
   // Close messages after 5 seconds
   useEffect(() => {

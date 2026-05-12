@@ -1,7 +1,7 @@
 /**
  * Contact Section Component
  */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef, useMemo } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -74,14 +74,9 @@ export const ContactSection: React.FC = () => {
   );
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [recaptchaLoaded, setRecaptchaLoaded] = useState(false);
-  const { saveToStorage, getFromStorage, clearStorage } = useFormPersistence('contact-form', {
-    name: '',
-    email: '',
-    phone: '',
-    subject: '',
-    message: '',
-  });
-  const [submissionStartTime] = useState(getTimestamp());
+  const { saveToStorage, getFromStorage, clearStorage } = useFormPersistence('contact-form');
+  // Track when the user actually starts filling the form, not page load time
+  const submissionStartRef = useRef<number>(0);
 
   const {
     register,
@@ -98,14 +93,16 @@ export const ContactSection: React.FC = () => {
   const firebaseAvailable = isFirebaseEnabled;
   const recaptchaAvailable = isRecaptchaEnabled();
 
+  // Memoize the debounced save so it isn't recreated on every render
+  const debouncedSave = useMemo(
+    () => debounce((data: typeof formValues) => saveToStorage(data), 1000),
+    [saveToStorage]
+  );
+
   // Auto-save form data with debouncing
   useEffect(() => {
-    const debouncedSave = debounce(() => {
-      saveToStorage(formValues);
-    }, 1000);
-
-    debouncedSave();
-  }, [formValues, saveToStorage]);
+    debouncedSave(formValues);
+  }, [formValues, debouncedSave]);
 
   // Load reCAPTCHA script on component mount
   useEffect(() => {
@@ -117,6 +114,8 @@ export const ContactSection: React.FC = () => {
   }, [recaptchaAvailable]);
 
   const onSubmit = async (data: ContactFormInputs): Promise<void> => {
+    // Record when the user actually submits — not page load time
+    submissionStartRef.current = getTimestamp();
     try {
       setSubmitStatus('loading');
       setErrorMessage('');
@@ -127,7 +126,7 @@ export const ContactSection: React.FC = () => {
         setSubmitStatus('success');
         reset();
         clearStorage();
-        dispatch({ type: 'SET_SUCCESS_MESSAGE', payload: 'Message sent successfully!' });
+        // No global toast for honeypot — silently succeed
         return;
       }
 
@@ -137,14 +136,7 @@ export const ContactSection: React.FC = () => {
           'You have exceeded the maximum number of submissions. Please try again in 1 hour.';
         setErrorMessage(errorMsg);
         setSubmitStatus('error');
-        dispatch({
-          type: 'SET_ERROR',
-          payload: {
-            message: errorMsg,
-            type: 'error',
-            timestamp: getTimestamp(),
-          },
-        });
+        // Only set local error — no global toast to avoid double feedback
         return;
       }
 
@@ -153,14 +145,6 @@ export const ContactSection: React.FC = () => {
       if (!validation.isValid) {
         setErrorMessage('Please check all fields');
         setSubmitStatus('error');
-        dispatch({
-          type: 'SET_ERROR',
-          payload: {
-            message: 'Please check all fields',
-            type: 'error',
-            timestamp: getTimestamp(),
-          },
-        });
         return;
       }
 
@@ -173,14 +157,14 @@ export const ContactSection: React.FC = () => {
       await submitContactForm(data, recaptchaToken);
       recordContactFormSubmission();
 
-      // Calculate submission duration
-      const submissionDuration = getTimestamp() - submissionStartTime;
+      // Calculate submission duration from when user clicked submit
+      const submissionDuration = getTimestamp() - submissionStartRef.current;
 
       // Log analytics
       await analytics.logFormSubmission('contact_form', true, submissionDuration);
 
       setSubmitStatus('success');
-      dispatch({ type: 'SET_SUCCESS_MESSAGE', payload: 'Message sent successfully!' });
+      // Only show inline success — no global toast to avoid double feedback
       reset();
       clearStorage();
     } catch (error) {
@@ -191,20 +175,13 @@ export const ContactSection: React.FC = () => {
         error instanceof Error ? error.message : 'Failed to send message. Please try again.';
       setErrorMessage(errorMsg);
       setSubmitStatus('error');
-      dispatch({
-        type: 'SET_ERROR',
-        payload: {
-          message: errorMsg,
-          type: 'error',
-          timestamp: getTimestamp(),
-        },
-      });
+      // Only show inline error — no global toast to avoid double feedback
 
       // Log failed submission
       await analytics.logFormSubmission(
         'contact_form',
         false,
-        getTimestamp() - submissionStartTime
+        getTimestamp() - submissionStartRef.current
       );
     } finally {
       dispatch({ type: 'SET_FORM_SUBMITTING', payload: false });
@@ -287,6 +264,7 @@ export const ContactSection: React.FC = () => {
           <Card>
             <h3 className="font-[Raleway] font-bold text-xl mb-6">Send Me a Message</h3>
 
+            {/* eslint-disable-next-line react-hooks/refs */}
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               {!firebaseAvailable && (
                 <div className="mb-6 rounded-xl border border-yellow-300 bg-yellow-50 p-4 text-sm text-yellow-900 dark:border-yellow-600 dark:bg-yellow-900/10 dark:text-yellow-200">
