@@ -132,7 +132,8 @@ const analytics = {
         const d = doc.data();
         return {
           eventType: d.eventType as string,
-          timestamp: d.timestamp instanceof Timestamp ? d.timestamp.toMillis() : (d.timestamp as number),
+          timestamp:
+            d.timestamp instanceof Timestamp ? d.timestamp.toMillis() : (d.timestamp as number),
           data: d.data as Record<string, unknown>,
           userAgent: d.userAgent as string,
           url: d.url as string,
