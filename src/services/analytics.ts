@@ -1,15 +1,23 @@
+/**
+ * Analytics service — stores events in Firestore.
+ *
+ * Collection structure:
+ *   analytics/{eventType}/events  (sub-collection of documents)
+ *
+ * Each document:
+ *   { eventType, timestamp, data, userAgent, url }
+ */
 import {
-  getDatabase,
-  ref,
-  set,
-  push,
+  collection,
+  addDoc,
   query,
-  orderByChild,
-  limitToLast,
-  get,
-} from 'firebase/database';
-import { getApps, getApp, initializeApp } from 'firebase/app';
-import { getOptionalEnvValue } from '../utils/env';
+  orderBy,
+  limit,
+  getDocs,
+  serverTimestamp,
+  Timestamp,
+} from 'firebase/firestore';
+import { getDb } from './firebase.firestore';
 
 interface AnalyticsEvent {
   eventType: string;
@@ -21,35 +29,22 @@ interface AnalyticsEvent {
 
 interface PageViewEvent extends AnalyticsEvent {
   eventType: 'page_view';
-  data: {
-    section: string;
-    duration?: number;
-  };
+  data: { section: string; duration?: number };
 }
 
 interface FormSubmissionEvent extends AnalyticsEvent {
   eventType: 'form_submission';
-  data: {
-    formType: string;
-    success: boolean;
-    duration: number;
-  };
+  data: { formType: string; success: boolean; duration: number };
 }
 
 interface ProjectClickEvent extends AnalyticsEvent {
   eventType: 'project_click';
-  data: {
-    projectId: string;
-    projectName: string;
-  };
+  data: { projectId: string; projectName: string };
 }
 
 interface ResumeDownloadEvent extends AnalyticsEvent {
   eventType: 'resume_download';
-  data: {
-    format: string;
-    method: string;
-  };
+  data: { format: string; method: string };
 }
 
 export type AnalyticsEventType =
@@ -58,37 +53,22 @@ export type AnalyticsEventType =
   | ProjectClickEvent
   | ResumeDownloadEvent;
 
-/**
- * Initialize Firebase once at module level — not on every call.
- */
-function getFirebaseApp() {
-  const firebaseConfig = {
-    apiKey: getOptionalEnvValue(import.meta.env.VITE_FIREBASE_API_KEY),
-    authDomain: getOptionalEnvValue(import.meta.env.VITE_FIREBASE_AUTH_DOMAIN),
-    databaseURL: getOptionalEnvValue(import.meta.env.VITE_FIREBASE_DATABASE_URL),
-    projectId: getOptionalEnvValue(import.meta.env.VITE_FIREBASE_PROJECT_ID),
-    appId: getOptionalEnvValue(import.meta.env.VITE_FIREBASE_APP_ID),
-  };
-  return getApps().length ? getApp() : initializeApp(firebaseConfig);
-}
-
 const analytics = {
   async logEvent(event: AnalyticsEventType): Promise<void> {
     try {
-      const app = getFirebaseApp();
-      const db = getDatabase(app);
+      const db = getDb();
 
-      const eventWithMetadata: AnalyticsEvent = {
-        ...event,
+      // analytics/<eventType>/events/<auto-id>
+      const eventsCol = collection(db, 'analytics', event.eventType, 'events');
+      await addDoc(eventsCol, {
+        eventType: event.eventType,
+        data: event.data,
+        // serverTimestamp for accurate ordering; also store ms for reads
+        createdAt: serverTimestamp(),
         timestamp: Date.now(),
-        // Only store a hashed/truncated UA to reduce PII exposure
         userAgent: navigator.userAgent.substring(0, 100),
         url: window.location.pathname,
-      };
-
-      const eventsRef = ref(db, `analytics/${event.eventType}`);
-      const newEventRef = push(eventsRef);
-      await set(newEventRef, eventWithMetadata);
+      });
 
       if (import.meta.env.DEV) {
         console.log(`[Analytics] ${event.eventType}:`, event.data);
@@ -141,31 +121,23 @@ const analytics = {
     });
   },
 
-  async getAnalyticsData(eventType: string, limit: number = 100): Promise<AnalyticsEvent[]> {
+  async getAnalyticsData(eventType: string, limitCount: number = 100): Promise<AnalyticsEvent[]> {
     try {
-      const app = getFirebaseApp();
-      const db = getDatabase(app);
+      const db = getDb();
+      const eventsCol = collection(db, 'analytics', eventType, 'events');
+      const q = query(eventsCol, orderBy('timestamp', 'desc'), limit(limitCount));
+      const snapshot = await getDocs(q);
 
-      // Build and EXECUTE the query — previously the result was discarded
-      const analyticsQuery = query(
-        ref(db, `analytics/${eventType}`),
-        orderByChild('timestamp'),
-        limitToLast(limit)
-      );
-
-      const snapshot = await get(analyticsQuery);
-
-      if (!snapshot.exists()) {
-        return [];
-      }
-
-      const events: AnalyticsEvent[] = [];
-      snapshot.forEach((child) => {
-        events.push(child.val() as AnalyticsEvent);
+      return snapshot.docs.map((doc) => {
+        const d = doc.data();
+        return {
+          eventType: d.eventType as string,
+          timestamp: d.timestamp instanceof Timestamp ? d.timestamp.toMillis() : (d.timestamp as number),
+          data: d.data as Record<string, unknown>,
+          userAgent: d.userAgent as string,
+          url: d.url as string,
+        };
       });
-
-      // Return in chronological order (Firebase returns oldest-first with limitToLast)
-      return events.reverse();
     } catch (error) {
       if (import.meta.env.DEV) {
         console.error('Failed to fetch analytics data:', error);

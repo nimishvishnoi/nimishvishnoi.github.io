@@ -3,9 +3,11 @@
  */
 import React from 'react';
 import { SectionTitle, Card, Badge } from '@components/ui';
-import { projects } from '@data/projects';
+import { useContent } from '@hooks/useContent';
 
 export const ProjectsSection: React.FC = () => {
+  const { content } = useContent();
+  const { projects } = content;
   return (
     <section
       id="projects"

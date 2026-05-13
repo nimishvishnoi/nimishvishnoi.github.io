@@ -3,6 +3,7 @@ import { useAppState } from '../../hooks/useAppState';
 import { AdminDashboard } from './AdminDashboard';
 import { ContentEditor } from './ContentEditor';
 import { AdminAuth } from './AdminAuth';
+import { SeedFirestore } from './SeedFirestore';
 
 type AdminTab = 'dashboard' | 'content' | 'settings';
 
@@ -172,16 +173,7 @@ export function AdminPanel() {
               >
                 {activeTab === 'dashboard' && <AdminDashboard />}
                 {activeTab === 'content' && <ContentEditor />}
-                {activeTab === 'settings' && (
-                  <div>
-                    <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-                      Settings
-                    </h2>
-                    <p className="text-gray-600 dark:text-gray-400">
-                      Admin settings and configurations will be available here in a future update.
-                    </p>
-                  </div>
-                )}
+                {activeTab === 'settings' && <SeedFirestore />}
               </div>
             </>
           )}

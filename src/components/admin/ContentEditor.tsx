@@ -1,66 +1,135 @@
-import { useState } from 'react';
+/**
+ * ContentEditor — full CRUD admin panel for all portfolio content.
+ * Reads from and writes to Firestore.
+ */
+import { useState, useEffect } from 'react';
 import { useAppState } from '../../hooks/useAppState';
-import { getDatabase, ref, set } from 'firebase/database';
-import { getApps, getApp, initializeApp } from 'firebase/app';
-import { getOptionalEnvValue } from '../../utils/env';
+import {
+  collection,
+  doc,
+  getDocs,
+  setDoc,
+  deleteDoc,
+  addDoc,
+  serverTimestamp,
+  orderBy,
+  query,
+} from 'firebase/firestore';
+import { getDb } from '../../services/firebase.firestore';
 
-export interface EditableContent {
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+type ContentSection =
+  | 'about'
+  | 'skills'
+  | 'projects'
+  | 'experience'
+  | 'education'
+  | 'achievements'
+  | 'contact';
+
+interface FirestoreDoc {
   id: string;
-  type: 'project' | 'skill' | 'experience' | 'education';
-  title: string;
-  description: string;
-  metadata: Record<string, unknown>;
+  [key: string]: unknown;
 }
 
-function getFirebaseApp() {
-  const firebaseConfig = {
-    apiKey: getOptionalEnvValue(import.meta.env.VITE_FIREBASE_API_KEY),
-    authDomain: getOptionalEnvValue(import.meta.env.VITE_FIREBASE_AUTH_DOMAIN),
-    databaseURL: getOptionalEnvValue(import.meta.env.VITE_FIREBASE_DATABASE_URL),
-    projectId: getOptionalEnvValue(import.meta.env.VITE_FIREBASE_PROJECT_ID),
-    appId: getOptionalEnvValue(import.meta.env.VITE_FIREBASE_APP_ID),
-  };
-  return getApps().length ? getApp() : initializeApp(firebaseConfig);
-}
-
-const CONTENT_ITEMS: EditableContent[] = [
-  {
-    id: 'projects',
-    type: 'project',
-    title: 'Projects',
-    description: 'Manage your portfolio projects.',
-    metadata: {},
-  },
-  {
-    id: 'skills',
-    type: 'skill',
-    title: 'Skills',
-    description: 'Manage your technical skills.',
-    metadata: {},
-  },
-  {
-    id: 'experience',
-    type: 'experience',
-    title: 'Experience',
-    description: 'Manage your work experience.',
-    metadata: {},
-  },
-  {
-    id: 'education',
-    type: 'education',
-    title: 'Education',
-    description: 'Manage your education history.',
-    metadata: {},
-  },
+const SECTIONS: { key: ContentSection; label: string; icon: string }[] = [
+  { key: 'about', label: 'About', icon: '👤' },
+  { key: 'contact', label: 'Contact', icon: '📬' },
+  { key: 'skills', label: 'Skills', icon: '⚡' },
+  { key: 'projects', label: 'Projects', icon: '🗂️' },
+  { key: 'experience', label: 'Experience', icon: '💼' },
+  { key: 'education', label: 'Education', icon: '🎓' },
+  { key: 'achievements', label: 'Achievements', icon: '🏆' },
 ];
+
+// Singleton sections stored under /portfolio/<key>
+const SINGLETON_SECTIONS: ContentSection[] = ['about', 'contact'];
+
+// ─── Field configs per section ────────────────────────────────────────────────
+
+const FIELD_CONFIGS: Record<
+  ContentSection,
+  { key: string; label: string; type: 'text' | 'textarea' | 'array' | 'number' }[]
+> = {
+  about: [
+    { key: 'title', label: 'Title', type: 'text' },
+    { key: 'description', label: 'Short Description', type: 'textarea' },
+    { key: 'fullDescription', label: 'Full Description (one paragraph per line)', type: 'array' },
+  ],
+  contact: [
+    { key: 'email', label: 'Email', type: 'text' },
+    { key: 'phone', label: 'Phone', type: 'text' },
+    { key: 'location', label: 'Location', type: 'text' },
+  ],
+  skills: [
+    { key: 'name', label: 'Skill Name', type: 'text' },
+    { key: 'category', label: 'Category (frontend/backend/database/tools)', type: 'text' },
+    { key: 'proficiency', label: 'Proficiency (expert/advanced/intermediate)', type: 'text' },
+  ],
+  projects: [
+    { key: 'title', label: 'Title', type: 'text' },
+    { key: 'year', label: 'Year', type: 'number' },
+    { key: 'category', label: 'Category (app/web/card)', type: 'text' },
+    { key: 'description', label: 'Description', type: 'textarea' },
+    { key: 'technologies', label: 'Technologies (comma-separated)', type: 'array' },
+    { key: 'url', label: 'URL (optional)', type: 'text' },
+  ],
+  experience: [
+    { key: 'title', label: 'Job Title', type: 'text' },
+    { key: 'company', label: 'Company', type: 'text' },
+    { key: 'location', label: 'Location', type: 'text' },
+    { key: 'startDate', label: 'Start Date (YYYY-MM-DD)', type: 'text' },
+    { key: 'endDate', label: 'End Date (YYYY-MM-DD or leave blank for current)', type: 'text' },
+    { key: 'description', label: 'Responsibilities (one per line)', type: 'array' },
+    { key: 'technologies', label: 'Technologies (comma-separated)', type: 'array' },
+  ],
+  education: [
+    { key: 'degree', label: 'Degree', type: 'text' },
+    { key: 'institution', label: 'Institution', type: 'text' },
+    { key: 'location', label: 'Location', type: 'text' },
+    { key: 'field', label: 'Field of Study', type: 'text' },
+    { key: 'periodLabel', label: 'Period (e.g. 2014 - 2018)', type: 'text' },
+    { key: 'startDate', label: 'Start Date (YYYY-MM-DD)', type: 'text' },
+    { key: 'endDate', label: 'End Date (YYYY-MM-DD)', type: 'text' },
+  ],
+  achievements: [
+    { key: 'title', label: 'Title', type: 'text' },
+    { key: 'organization', label: 'Organization', type: 'text' },
+    { key: 'year', label: 'Year', type: 'text' },
+    { key: 'description', label: 'Description', type: 'textarea' },
+  ],
+};
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
+function fieldToString(value: unknown): string {
+  if (Array.isArray(value)) return value.join('\n');
+  if (value === null || value === undefined) return '';
+  return String(value);
+}
+
+function stringToField(value: string, type: 'text' | 'textarea' | 'array' | 'number'): unknown {
+  if (type === 'array')
+    return value
+      .split('\n')
+      .map((s) => s.trim())
+      .filter(Boolean);
+  if (type === 'number') return value === '' ? 0 : Number(value);
+  return value;
+}
+
+// ─── Component ────────────────────────────────────────────────────────────────
 
 export function ContentEditor() {
   const { state, dispatch } = useAppState();
-  const [selectedContent, setSelectedContent] = useState<EditableContent | null>(null);
-  const [formData, setFormData] = useState<EditableContent | null>(null);
+  const [activeSection, setActiveSection] = useState<ContentSection>('about');
+  const [docs, setDocs] = useState<FirestoreDoc[]>([]);
+  const [isLoadingDocs, setIsLoadingDocs] = useState(false);
+  const [editingDoc, setEditingDoc] = useState<FirestoreDoc | null>(null);
+  const [formValues, setFormValues] = useState<Record<string, string>>({});
   const [isSaving, setIsSaving] = useState(false);
-  const [titleError, setTitleError] = useState('');
-  const [descError, setDescError] = useState('');
+  const [isDeleting, setIsDeleting] = useState<string | null>(null);
 
   if (!state.isAdmin) {
     return (
@@ -70,56 +139,93 @@ export function ContentEditor() {
     );
   }
 
-  const handleEdit = (content: EditableContent) => {
-    setSelectedContent(content);
-    setFormData({ ...content });
-    setTitleError('');
-    setDescError('');
-  };
+  // ── Load docs for selected section ──────────────────────────────────────────
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  useEffect(() => {
+    loadSection(activeSection);
+    setEditingDoc(null);
+    setFormValues({});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeSection]);
 
-  const validate = (): boolean => {
-    let valid = true;
-    if (!formData?.title.trim()) {
-      setTitleError('Title is required.');
-      valid = false;
-    } else {
-      setTitleError('');
+  async function loadSection(section: ContentSection) {
+    setIsLoadingDocs(true);
+    try {
+      const db = getDb();
+      if (SINGLETON_SECTIONS.includes(section)) {
+        const { getDoc, doc: firestoreDoc } = await import('firebase/firestore');
+        const snap = await getDoc(firestoreDoc(db, 'portfolio', section));
+        setDocs(snap.exists() ? [{ id: section, ...snap.data() }] : []);
+      } else {
+        const colRef = collection(db, section === 'experience' ? 'experience' : section);
+        const q = query(colRef, orderBy('id'));
+        const snap = await getDocs(q);
+        setDocs(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
+      }
+    } catch (err) {
+      console.error('Failed to load section:', err);
+    } finally {
+      setIsLoadingDocs(false);
     }
-    if (!formData?.description.trim()) {
-      setDescError('Description is required.');
-      valid = false;
-    } else {
-      setDescError('');
+  }
+
+  function startEdit(docData: FirestoreDoc) {
+    setEditingDoc(docData);
+    const fields = FIELD_CONFIGS[activeSection];
+    const values: Record<string, string> = {};
+    for (const field of fields) {
+      values[field.key] = fieldToString(docData[field.key]);
     }
-    return valid;
-  };
+    setFormValues(values);
+  }
 
-  const handleSave = async () => {
-    if (!formData || !validate()) return;
+  function startNew() {
+    setEditingDoc({ id: '' });
+    const fields = FIELD_CONFIGS[activeSection];
+    const values: Record<string, string> = {};
+    for (const field of fields) values[field.key] = '';
+    setFormValues(values);
+  }
 
+  async function handleSave() {
+    if (!editingDoc) return;
     setIsSaving(true);
     try {
-      // Save to Firebase Realtime Database under /content/<type>/<id>
-      const app = getFirebaseApp();
-      const db = getDatabase(app);
-      const contentRef = ref(db, `content/${formData.type}/${formData.id}`);
-      await set(contentRef, {
-        ...formData,
-        updatedAt: Date.now(),
-      });
+      const db = getDb();
+      const fields = FIELD_CONFIGS[activeSection];
+      const data: Record<string, unknown> = { updatedAt: serverTimestamp() };
 
-      dispatch({ type: 'SET_SUCCESS_MESSAGE', payload: 'Content updated successfully!' });
+      for (const field of fields) {
+        const raw = formValues[field.key] ?? '';
+        if (field.key === 'endDate' && raw.trim() === '') {
+          data[field.key] = null;
+        } else {
+          data[field.key] = stringToField(raw, field.type);
+        }
+      }
 
-      setTimeout(() => {
-        setSelectedContent(null);
-        setFormData(null);
-      }, 1500);
-    } catch (error) {
-      console.error('Error saving content:', error);
+      if (SINGLETON_SECTIONS.includes(activeSection)) {
+        await setDoc(doc(getDb(), 'portfolio', activeSection), data, { merge: true });
+      } else if (editingDoc.id) {
+        // Update existing
+        data.id = editingDoc.id;
+        await setDoc(doc(db, activeSection, editingDoc.id), data, { merge: true });
+      } else {
+        // New document — auto-generate ID
+        const newRef = await addDoc(collection(db, activeSection), data);
+        await setDoc(newRef, { ...data, id: newRef.id }, { merge: true });
+      }
+
+      dispatch({ type: 'SET_SUCCESS_MESSAGE', payload: 'Saved successfully!' });
+      setEditingDoc(null);
+      setFormValues({});
+      await loadSection(activeSection);
+    } catch (err) {
+      console.error('Save error:', err);
       dispatch({
         type: 'SET_ERROR',
         payload: {
-          message: 'Failed to save content. Please try again.',
+          message: 'Failed to save. Please try again.',
           type: 'error',
           timestamp: Date.now(),
         },
@@ -127,126 +233,183 @@ export function ContentEditor() {
     } finally {
       setIsSaving(false);
     }
-  };
+  }
+
+  async function handleDelete(id: string) {
+    if (!confirm('Delete this item? This cannot be undone.')) return;
+    setIsDeleting(id);
+    try {
+      await deleteDoc(doc(getDb(), activeSection, id));
+      dispatch({ type: 'SET_SUCCESS_MESSAGE', payload: 'Deleted successfully.' });
+      await loadSection(activeSection);
+    } catch (err) {
+      console.error('Delete error:', err);
+      dispatch({
+        type: 'SET_ERROR',
+        payload: { message: 'Failed to delete.', type: 'error', timestamp: Date.now() },
+      });
+    } finally {
+      setIsDeleting(null);
+    }
+  }
+
+  const isSingleton = SINGLETON_SECTIONS.includes(activeSection);
+  const fields = FIELD_CONFIGS[activeSection];
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Content Manager</h1>
+    <div className="space-y-4">
+      <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Content Manager</h1>
 
-      {selectedContent ? (
-        <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-6">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white capitalize">
-              Edit {selectedContent.type}
+      {/* Section tabs */}
+      <div className="flex flex-wrap gap-2">
+        {SECTIONS.map((s) => (
+          <button
+            key={s.key}
+            onClick={() => setActiveSection(s.key)}
+            className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+              activeSection === s.key
+                ? 'bg-teal-600 text-white'
+                : 'bg-gray-100 dark:bg-slate-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-600'
+            }`}
+          >
+            {s.icon} {s.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Edit form */}
+      {editingDoc ? (
+        <div className="bg-white dark:bg-slate-800 rounded-lg border border-gray-200 dark:border-slate-700 p-5 space-y-4">
+          <div className="flex justify-between items-center">
+            <h2 className="font-semibold text-gray-900 dark:text-white capitalize">
+              {editingDoc.id ? `Edit ${activeSection}` : `New ${activeSection}`}
             </h2>
             <button
               onClick={() => {
-                setSelectedContent(null);
-                setFormData(null);
+                setEditingDoc(null);
+                setFormValues({});
               }}
-              aria-label="Close editor"
-              className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 text-xl leading-none"
+              aria-label="Close"
+              className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 text-xl leading-none"
             >
               ✕
             </button>
           </div>
 
-          <div className="space-y-4">
-            <div>
-              <label
-                htmlFor="content-title"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-              >
-                Title <span className="text-red-500">*</span>
+          {fields.map((field) => (
+            <div key={field.key}>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                {field.label}
               </label>
-              <input
-                id="content-title"
-                type="text"
-                value={formData?.title || ''}
-                onChange={(e) => {
-                  setFormData((prev) => (prev ? { ...prev, title: e.target.value } : null));
-                  if (e.target.value.trim()) setTitleError('');
-                }}
-                aria-describedby={titleError ? 'title-error' : undefined}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-500"
-              />
-              {titleError && (
-                <p id="title-error" className="text-red-500 text-sm mt-1">
-                  {titleError}
-                </p>
+              {field.type === 'textarea' || field.type === 'array' ? (
+                <textarea
+                  rows={field.type === 'array' ? 4 : 3}
+                  value={formValues[field.key] ?? ''}
+                  onChange={(e) => setFormValues((p) => ({ ...p, [field.key]: e.target.value }))}
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
+                />
+              ) : (
+                <input
+                  type={field.type === 'number' ? 'number' : 'text'}
+                  value={formValues[field.key] ?? ''}
+                  onChange={(e) => setFormValues((p) => ({ ...p, [field.key]: e.target.value }))}
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
+                />
               )}
             </div>
+          ))}
 
-            <div>
-              <label
-                htmlFor="content-description"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
-              >
-                Description <span className="text-red-500">*</span>
-              </label>
-              <textarea
-                id="content-description"
-                value={formData?.description || ''}
-                onChange={(e) => {
-                  setFormData((prev) => (prev ? { ...prev, description: e.target.value } : null));
-                  if (e.target.value.trim()) setDescError('');
-                }}
-                rows={4}
-                aria-describedby={descError ? 'desc-error' : undefined}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-500"
-              />
-              {descError && (
-                <p id="desc-error" className="text-red-500 text-sm mt-1">
-                  {descError}
-                </p>
-              )}
-            </div>
-
-            <div className="flex gap-2">
-              <button
-                onClick={handleSave}
-                disabled={isSaving}
-                className="bg-teal-600 hover:bg-teal-700 disabled:opacity-50 disabled:cursor-not-allowed text-white px-4 py-2 rounded-lg transition-colors"
-              >
-                {isSaving ? 'Saving…' : 'Save Changes'}
-              </button>
-              <button
-                onClick={() => {
-                  setSelectedContent(null);
-                  setFormData(null);
-                }}
-                className="bg-gray-400 hover:bg-gray-500 text-white px-4 py-2 rounded-lg transition-colors"
-              >
-                Cancel
-              </button>
-            </div>
+          <div className="flex gap-2 pt-2">
+            <button
+              onClick={handleSave}
+              disabled={isSaving}
+              className="bg-teal-600 hover:bg-teal-700 disabled:opacity-50 text-white px-4 py-2 rounded-lg text-sm transition-colors"
+            >
+              {isSaving ? 'Saving…' : 'Save'}
+            </button>
+            <button
+              onClick={() => {
+                setEditingDoc(null);
+                setFormValues({});
+              }}
+              className="bg-gray-200 hover:bg-gray-300 dark:bg-slate-600 dark:hover:bg-slate-500 text-gray-800 dark:text-white px-4 py-2 rounded-lg text-sm transition-colors"
+            >
+              Cancel
+            </button>
           </div>
         </div>
       ) : (
-        <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-6">
-          <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
-            Select Content to Edit
-          </h2>
-          <p className="text-gray-600 dark:text-gray-400 text-sm mb-6">
-            Click an item to edit its content. Changes are saved to Firebase immediately.
-          </p>
-
-          <div className="space-y-2">
-            {CONTENT_ITEMS.map((item) => (
+        /* Document list */
+        <div className="bg-white dark:bg-slate-800 rounded-lg border border-gray-200 dark:border-slate-700 p-5">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="font-semibold text-gray-900 dark:text-white capitalize">
+              {SECTIONS.find((s) => s.key === activeSection)?.icon}{' '}
+              {SECTIONS.find((s) => s.key === activeSection)?.label}
+            </h2>
+            {!isSingleton && (
               <button
-                key={item.id}
-                onClick={() => handleEdit(item)}
-                className="w-full text-left p-3 bg-gray-100 dark:bg-slate-700 rounded-lg hover:bg-gray-200 dark:hover:bg-slate-600 transition-colors flex items-center justify-between group"
+                onClick={startNew}
+                className="bg-teal-600 hover:bg-teal-700 text-white px-3 py-1.5 rounded-lg text-sm transition-colors"
               >
-                <span className="font-medium text-gray-900 dark:text-white capitalize">
-                  {item.title}
-                </span>
-                <span className="text-gray-400 group-hover:text-teal-600 transition-colors text-sm">
-                  Edit →
-                </span>
+                + Add New
               </button>
-            ))}
+            )}
           </div>
+
+          {isLoadingDocs ? (
+            <div className="space-y-2">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="h-10 bg-gray-100 dark:bg-slate-700 rounded animate-pulse" />
+              ))}
+            </div>
+          ) : docs.length === 0 ? (
+            <p className="text-gray-500 dark:text-gray-400 text-sm">
+              No data yet.{' '}
+              {!isSingleton && (
+                <button onClick={startNew} className="text-teal-600 underline">
+                  Add the first item
+                </button>
+              )}
+            </p>
+          ) : (
+            <div className="space-y-2">
+              {docs.map((d) => {
+                const label =
+                  (d.title as string) ||
+                  (d.name as string) ||
+                  (d.degree as string) ||
+                  (d.email as string) ||
+                  d.id;
+                return (
+                  <div
+                    key={d.id}
+                    className="flex items-center justify-between p-3 bg-gray-50 dark:bg-slate-700 rounded-lg"
+                  >
+                    <span className="text-sm text-gray-800 dark:text-gray-200 truncate flex-1 mr-4">
+                      {label as string}
+                    </span>
+                    <div className="flex gap-2 shrink-0">
+                      <button
+                        onClick={() => startEdit(d)}
+                        className="text-teal-600 hover:text-teal-700 text-sm font-medium"
+                      >
+                        Edit
+                      </button>
+                      {!isSingleton && (
+                        <button
+                          onClick={() => handleDelete(d.id)}
+                          disabled={isDeleting === d.id}
+                          className="text-red-500 hover:text-red-600 text-sm font-medium disabled:opacity-50"
+                        >
+                          {isDeleting === d.id ? '…' : 'Delete'}
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
       )}
     </div>
