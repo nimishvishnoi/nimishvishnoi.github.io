@@ -1,18 +1,22 @@
 /**
  * Content service — reads portfolio content from Firestore.
- * Falls back to static data if Firestore is unavailable (e.g. offline / not configured).
+ *
+ * Fallback priority:
+ *   1. Firestore (live, editable via admin panel)
+ *   2. site-content.json (edit this file + sync from admin panel)
+ *   3. Individual TS data files (compile-time safety net)
  *
  * Firestore structure:
- *   portfolio/about                    → { title, description, fullDescription[] }
- *   portfolio/contact                  → { email, phone, location }
- *   portfolio/summary                  → { name, title, bio }
- *   portfolio/skillCategories          → { frontend, backend, database, tools }
- *   skills/{id}                        → Skill
- *   projects/{id}                      → Project  (technologies stored as array)
- *   experience/{id}                    → Experience (dates stored as ISO strings)
- *   education/{id}                     → Education  (dates stored as ISO strings)
- *   achievements/{id}                  → Achievement
- *   socialLinks/{id}                   → SocialLink
+ *   portfolio/about            → { title, description, fullDescription[] }
+ *   portfolio/contact          → { email, phone, location }
+ *   portfolio/summary          → { name, title, bio }
+ *   portfolio/skillCategories  → { frontend, backend, database, tools }
+ *   skills/{id}                → Skill
+ *   projects/{id}              → Project
+ *   experience/{id}            → Experience  (dates as ISO strings)
+ *   education/{id}             → Education   (dates as ISO strings)
+ *   achievements/{id}          → Achievement
+ *   socialLinks/{id}           → SocialLink
  */
 import { collection, doc, getDoc, getDocs, orderBy, query } from 'firebase/firestore';
 import { getDb } from './firebase.firestore';
@@ -27,7 +31,10 @@ import type {
   ResumeSummary,
 } from '../types';
 
-// ─── Static fallbacks ────────────────────────────────────────────────────────
+// ─── JSON fallback (single source of truth for offline / pre-seed) ────────────
+import siteContent from '../data/site-content.json';
+
+// ─── TS fallbacks (compile-time safety net) ───────────────────────────────────
 import { aboutContent as staticAbout } from '../data/about';
 import { skills as staticSkills, skillCategories as staticSkillCategories } from '../data/skills';
 import { projects as staticProjects } from '../data/projects';
@@ -36,9 +43,8 @@ import { education as staticEducation, summary as staticSummary } from '../data/
 import { achievements as staticAchievements } from '../data/achievements';
 import { contactInfo as staticContact, socialLinks as staticSocialLinks } from '../data/contact';
 
-// ─── Helpers ─────────────────────────────────────────────────────────────────
+// ─── Helpers ──────────────────────────────────────────────────────────────────
 
-/** Firestore stores dates as ISO strings; convert back to Date objects */
 function toDate(value: unknown): Date {
   if (value instanceof Date) return value;
   if (typeof value === 'string') return new Date(value);
@@ -51,13 +57,15 @@ function toDateOrNull(value: unknown): Date | null {
   return toDate(value);
 }
 
-// ─── About ───────────────────────────────────────────────────────────────────
+// ─── Types ────────────────────────────────────────────────────────────────────
 
 export interface AboutContent {
   title: string;
   description: string;
   fullDescription: string[];
 }
+
+// ─── About ────────────────────────────────────────────────────────────────────
 
 export async function getAbout(): Promise<AboutContent> {
   try {
@@ -66,10 +74,10 @@ export async function getAbout(): Promise<AboutContent> {
   } catch {
     /* fall through */
   }
-  return staticAbout;
+  return (siteContent.about as AboutContent) ?? staticAbout;
 }
 
-// ─── Contact ─────────────────────────────────────────────────────────────────
+// ─── Contact ──────────────────────────────────────────────────────────────────
 
 export async function getContactInfo(): Promise<ContactInfo> {
   try {
@@ -78,7 +86,7 @@ export async function getContactInfo(): Promise<ContactInfo> {
   } catch {
     /* fall through */
   }
-  return staticContact;
+  return (siteContent.contact as ContactInfo) ?? staticContact;
 }
 
 export async function getSocialLinks(): Promise<SocialLink[]> {
@@ -88,10 +96,10 @@ export async function getSocialLinks(): Promise<SocialLink[]> {
   } catch {
     /* fall through */
   }
-  return staticSocialLinks;
+  return (siteContent.socialLinks as SocialLink[]) ?? staticSocialLinks;
 }
 
-// ─── Summary ─────────────────────────────────────────────────────────────────
+// ─── Summary ──────────────────────────────────────────────────────────────────
 
 export async function getSummary(): Promise<ResumeSummary> {
   try {
@@ -100,10 +108,10 @@ export async function getSummary(): Promise<ResumeSummary> {
   } catch {
     /* fall through */
   }
-  return staticSummary;
+  return (siteContent.summary as ResumeSummary) ?? staticSummary;
 }
 
-// ─── Skills ──────────────────────────────────────────────────────────────────
+// ─── Skills ───────────────────────────────────────────────────────────────────
 
 export async function getSkills(): Promise<Skill[]> {
   try {
@@ -112,7 +120,7 @@ export async function getSkills(): Promise<Skill[]> {
   } catch {
     /* fall through */
   }
-  return staticSkills;
+  return (siteContent.skills as Skill[]) ?? staticSkills;
 }
 
 export async function getSkillCategories(): Promise<Record<string, string>> {
@@ -122,10 +130,10 @@ export async function getSkillCategories(): Promise<Record<string, string>> {
   } catch {
     /* fall through */
   }
-  return staticSkillCategories;
+  return (siteContent.skillCategories as Record<string, string>) ?? staticSkillCategories;
 }
 
-// ─── Projects ────────────────────────────────────────────────────────────────
+// ─── Projects ─────────────────────────────────────────────────────────────────
 
 export async function getProjects(): Promise<Project[]> {
   try {
@@ -134,10 +142,10 @@ export async function getProjects(): Promise<Project[]> {
   } catch {
     /* fall through */
   }
-  return staticProjects;
+  return (siteContent.projects as Project[]) ?? staticProjects;
 }
 
-// ─── Experience ──────────────────────────────────────────────────────────────
+// ─── Experience ───────────────────────────────────────────────────────────────
 
 export async function getExperiences(): Promise<Experience[]> {
   try {
@@ -157,10 +165,20 @@ export async function getExperiences(): Promise<Experience[]> {
   } catch {
     /* fall through */
   }
+  // JSON fallback — dates are ISO strings, convert to Date
+  if (siteContent.experience?.length) {
+    return (
+      siteContent.experience as Array<
+        Omit<Experience, 'startDate' | 'endDate'> & { startDate: string; endDate: string | null }
+      >
+    )
+      .map((e) => ({ ...e, startDate: toDate(e.startDate), endDate: toDateOrNull(e.endDate) }))
+      .sort((a, b) => b.startDate.getTime() - a.startDate.getTime());
+  }
   return staticExperiences;
 }
 
-// ─── Education ───────────────────────────────────────────────────────────────
+// ─── Education ────────────────────────────────────────────────────────────────
 
 export async function getEducation(): Promise<Education[]> {
   try {
@@ -180,6 +198,15 @@ export async function getEducation(): Promise<Education[]> {
   } catch {
     /* fall through */
   }
+  if (siteContent.education?.length) {
+    return (
+      siteContent.education as Array<
+        Omit<Education, 'startDate' | 'endDate'> & { startDate: string; endDate: string }
+      >
+    )
+      .map((e) => ({ ...e, startDate: toDate(e.startDate), endDate: toDate(e.endDate) }))
+      .sort((a, b) => b.startDate.getTime() - a.startDate.getTime());
+  }
   return staticEducation;
 }
 
@@ -192,5 +219,5 @@ export async function getAchievements(): Promise<Achievement[]> {
   } catch {
     /* fall through */
   }
-  return staticAchievements;
+  return (siteContent.achievements as Achievement[]) ?? staticAchievements;
 }
