@@ -80,10 +80,12 @@ export function SeedFirestore() {
       const socialLinksData = src?.socialLinks ?? socialLinks;
 
       // Experience & education: JSON has ISO strings, TS has Date objects
-      const experienceData =
+      type FirestoreRecord = { id: string } & Record<string, unknown>;
+
+      const experienceData: FirestoreRecord[] =
         src?.experience ??
         experiences.map((e: unknown) => {
-          const ex = e as { startDate: Date; endDate?: Date; [k: string]: unknown };
+          const ex = e as { id: string; startDate: Date; endDate?: Date; [k: string]: unknown };
           return {
             ...ex,
             startDate: ex.startDate.toISOString(),
@@ -91,10 +93,10 @@ export function SeedFirestore() {
           };
         });
 
-      const educationData =
+      const educationData: FirestoreRecord[] =
         src?.education ??
         education.map((e: unknown) => {
-          const ed = e as { startDate: Date; endDate: Date; [k: string]: unknown };
+          const ed = e as { id: string; startDate: Date; endDate: Date; [k: string]: unknown };
           return {
             ...ed,
             startDate: ed.startDate.toISOString(),
