@@ -160,8 +160,13 @@ export const ContactSection: React.FC = () => {
       // Calculate submission duration from when user clicked submit
       const submissionDuration = getTimestamp() - submissionStartRef.current;
 
-      // Log analytics
-      await analytics.logFormSubmission('contact_form', true, submissionDuration);
+      // Log analytics (non-blocking) — don't let analytics failures stop success path
+      try {
+        await analytics.logFormSubmission('contact_form', true, submissionDuration);
+      } catch (err) {
+        // Swallow analytics errors — they should not affect UX
+        if (import.meta.env.DEV) console.error('Analytics logging failed:', err);
+      }
 
       setSubmitStatus('success');
       // Only show inline success — no global toast to avoid double feedback

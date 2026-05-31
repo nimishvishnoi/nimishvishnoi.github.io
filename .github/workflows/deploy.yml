@@ -119,24 +119,39 @@ jobs:
         with:
           fetch-depth: 2
 
-      - name: Check for database rules changes
+      - name: Check for Firebase rules changes
         id: rules-check
         run: |
-          if git diff-tree --no-commit-id --name-only -r HEAD | grep -xq 'database.rules.json'; then
+          CHANGED_FILES=$(git diff-tree --no-commit-id --name-only -r HEAD)
+          if echo "$CHANGED_FILES" | grep -qE '(database\.rules\.json|firestore\.rules)'; then
             echo "rules_changed=true" >> "$GITHUB_OUTPUT"
           else
             echo "rules_changed=false" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Deploy Firebase database rules
+      - name: Deploy Firebase rules
         if: steps.rules-check.outputs.rules_changed == 'true'
         run: |
           npm install -g firebase-tools@latest
           PROJECT_ID="${{ secrets.VITE_FIREBASE_PROJECT_ID }}"
+
+          # Determine which rules to deploy
+          RULES_TO_DEPLOY=""
+          if git diff-tree --no-commit-id --name-only -r HEAD | grep -q 'database\.rules\.json'; then
+            RULES_TO_DEPLOY="database:rules"
+          fi
+          if git diff-tree --no-commit-id --name-only -r HEAD | grep -q 'firestore\.rules'; then
+            if [ -n "$RULES_TO_DEPLOY" ]; then
+              RULES_TO_DEPLOY="$RULES_TO_DEPLOY,firestore:rules"
+            else
+              RULES_TO_DEPLOY="firestore:rules"
+            fi
+          fi
+
           if [ -n "$PROJECT_ID" ]; then
-            firebase deploy --only database:rules --project "$PROJECT_ID"
+            firebase deploy --only "$RULES_TO_DEPLOY" --project "$PROJECT_ID"
           else
-            firebase deploy --only database:rules
+            firebase deploy --only "$RULES_TO_DEPLOY"
           fi
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
