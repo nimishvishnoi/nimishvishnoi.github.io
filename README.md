@@ -69,3 +69,5 @@ Portfolio content is maintained in `src/data/`.
   - `VITE_RECAPTCHA_SITE_KEY` (optional)
   - `FIREBASE_TOKEN` (only needed when deploying `database.rules.json`)
 - Production output is generated into `dist/`.
+
+  <!-- CI trigger: no-op commit to deploy updated Firebase rules -->
