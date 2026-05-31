@@ -82,7 +82,7 @@ export function SeedFirestore() {
       // Experience & education: JSON has ISO strings, TS has Date objects
       const experienceData =
         src?.experience ??
-        experiences.map((e) => ({
+        experiences.map((e: any) => ({
           ...e,
           startDate: e.startDate.toISOString(),
           endDate: e.endDate ? e.endDate.toISOString() : null,
@@ -90,7 +90,7 @@ export function SeedFirestore() {
 
       const educationData =
         src?.education ??
-        education.map((e) => ({
+        education.map((e: any) => ({
           ...e,
           startDate: e.startDate.toISOString(),
           endDate: e.endDate.toISOString(),

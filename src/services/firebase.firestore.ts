@@ -9,10 +9,12 @@ export function getFirebaseApp() {
   const firebaseConfig = {
     apiKey: getOptionalEnvValue(import.meta.env.VITE_FIREBASE_API_KEY),
     authDomain: getOptionalEnvValue(import.meta.env.VITE_FIREBASE_AUTH_DOMAIN),
+    databaseURL: getOptionalEnvValue(import.meta.env.VITE_FIREBASE_DATABASE_URL),
     projectId: getOptionalEnvValue(import.meta.env.VITE_FIREBASE_PROJECT_ID),
     storageBucket: getOptionalEnvValue(import.meta.env.VITE_FIREBASE_STORAGE_BUCKET),
     messagingSenderId: getOptionalEnvValue(import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID),
     appId: getOptionalEnvValue(import.meta.env.VITE_FIREBASE_APP_ID),
+    measurementId: getOptionalEnvValue(import.meta.env.VITE_FIREBASE_MEASUREMENT_ID),
   };
   return getApps().length ? getApp() : initializeApp(firebaseConfig);
 }
