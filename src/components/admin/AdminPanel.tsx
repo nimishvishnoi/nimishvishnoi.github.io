@@ -5,8 +5,9 @@ import { ContentEditor } from './ContentEditor';
 import { AdminAuth } from './AdminAuth';
 import { SeedFirestore } from './SeedFirestore';
 import { MessagesViewer } from './MessagesViewer';
+import { TrustedUsers } from './TrustedUsers';
 
-type AdminTab = 'dashboard' | 'messages' | 'content' | 'settings';
+type AdminTab = 'dashboard' | 'messages' | 'content' | 'users' | 'settings';
 
 /** Focusable element selector for focus-trap */
 const FOCUSABLE =
@@ -150,7 +151,7 @@ export function AdminPanel() {
                 className="flex border-b border-gray-200 dark:border-slate-700 overflow-x-auto"
                 role="tablist"
               >
-                {(['dashboard', 'messages', 'content', 'settings'] as const).map((tab) => (
+                {(['dashboard', 'messages', 'content', 'users', 'settings'] as const).map((tab) => (
                   <button
                     key={tab}
                     role="tab"
@@ -178,6 +179,7 @@ export function AdminPanel() {
                 {activeTab === 'dashboard' && <AdminDashboard />}
                 {activeTab === 'messages' && <MessagesViewer />}
                 {activeTab === 'content' && <ContentEditor />}
+                {activeTab === 'users' && <TrustedUsers />}
                 {activeTab === 'settings' && <SeedFirestore />}
               </div>
             </>
