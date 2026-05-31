@@ -4,15 +4,14 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { SectionTitle, Card, Badge } from '@components/ui';
-import { experiences } from '@data/experience';
-import { education, summary } from '@data/education';
-import { achievements } from '@data/achievements';
-import { contactInfo } from '@data/contact';
+import { useContent } from '@hooks/useContent';
 import { resumeFileUrl } from '@/constants/site';
 import { downloadGeneratedResume } from '@/utils/resume';
 import { getTotalExperience, formatExperience, formatDate, formatDateRange } from '@/utils';
 
 export const ResumeSection: React.FC = () => {
+  const { content } = useContent();
+  const { experiences, education, achievements, contactInfo, summary } = content;
   const totalExp = getTotalExperience(experiences);
 
   return (

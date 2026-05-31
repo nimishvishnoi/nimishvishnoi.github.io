@@ -1,13 +1,15 @@
 /**
  * Contact Section Component
  */
-import React, { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import React, { useEffect, useState, useRef, useMemo } from 'react';
+import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { motion } from 'framer-motion';
 import { SectionTitle, Card, Button, SocialLinks } from '@components/ui';
+import { LoadingOverlay } from '@components/ui/LoadingComponents';
 import { contactInfo, socialLinks } from '@data/contact';
+import { useAppState } from '@hooks/useAppState';
 import {
   validateContactForm,
   isFirebaseEnabled,
@@ -16,7 +18,11 @@ import {
   recordContactFormSubmission,
 } from '@services/firebase';
 import { loadRecaptchaScript, isRecaptchaEnabled, executeRecaptcha } from '@services/recaptcha';
+import { useFormPersistence, debounce } from '@/utils/storage';
+import analytics from '@services/analytics';
 import { FaPhone, FaEnvelope, FaMapMarkerAlt } from 'react-icons/fa';
+
+const getTimestamp = () => Date.now();
 
 const CONTACT_LIMITS = {
   nameMax: 100,
@@ -62,23 +68,41 @@ const contactFormSchema = z.object({
 type ContactFormInputs = z.infer<typeof contactFormSchema>;
 
 export const ContactSection: React.FC = () => {
+  const { state, dispatch } = useAppState();
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'loading' | 'success' | 'error'>(
     'idle'
   );
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [recaptchaLoaded, setRecaptchaLoaded] = useState(false);
+  const { saveToStorage, getFromStorage, clearStorage } = useFormPersistence('contact-form');
+  // Track when the user actually starts filling the form, not page load time
+  const submissionStartRef = useRef<number>(0);
 
   const {
     register,
     handleSubmit,
     reset,
+    control,
     formState: { errors, isSubmitting },
   } = useForm<ContactFormInputs>({
     resolver: zodResolver(contactFormSchema),
+    defaultValues: getFromStorage() || undefined,
   });
 
+  const formValues = useWatch({ control });
   const firebaseAvailable = isFirebaseEnabled;
   const recaptchaAvailable = isRecaptchaEnabled();
+
+  // Memoize the debounced save so it isn't recreated on every render
+  const debouncedSave = useMemo(
+    () => debounce((data: typeof formValues) => saveToStorage(data), 1000),
+    [saveToStorage]
+  );
+
+  // Auto-save form data with debouncing
+  useEffect(() => {
+    debouncedSave(formValues);
+  }, [formValues, debouncedSave]);
 
   // Load reCAPTCHA script on component mount
   useEffect(() => {
@@ -90,23 +114,29 @@ export const ContactSection: React.FC = () => {
   }, [recaptchaAvailable]);
 
   const onSubmit = async (data: ContactFormInputs): Promise<void> => {
+    // Record when the user actually submits — not page load time
+    submissionStartRef.current = getTimestamp();
     try {
       setSubmitStatus('loading');
       setErrorMessage('');
+      dispatch({ type: 'SET_FORM_SUBMITTING', payload: true });
 
       // Honeypot check: if website field is filled, it's a bot
       if (data.website && data.website.trim().length > 0) {
         setSubmitStatus('success');
         reset();
+        clearStorage();
+        // No global toast for honeypot — silently succeed
         return;
       }
 
       // Rate limiting check: max 3 submissions per hour per device
       if (!checkRateLimit(3, 3600000)) {
-        setErrorMessage(
-          'You have exceeded the maximum number of submissions. Please try again in 1 hour.'
-        );
+        const errorMsg =
+          'You have exceeded the maximum number of submissions. Please try again in 1 hour.';
+        setErrorMessage(errorMsg);
         setSubmitStatus('error');
+        // Only set local error — no global toast to avoid double feedback
         return;
       }
 
@@ -127,16 +157,34 @@ export const ContactSection: React.FC = () => {
       await submitContactForm(data, recaptchaToken);
       recordContactFormSubmission();
 
+      // Calculate submission duration from when user clicked submit
+      const submissionDuration = getTimestamp() - submissionStartRef.current;
+
+      // Log analytics
+      await analytics.logFormSubmission('contact_form', true, submissionDuration);
+
       setSubmitStatus('success');
+      // Only show inline success — no global toast to avoid double feedback
       reset();
+      clearStorage();
     } catch (error) {
       if (import.meta.env.DEV) {
         console.error('Form submission error:', error);
       }
-      setErrorMessage(
-        error instanceof Error ? error.message : 'Failed to send message. Please try again.'
-      );
+      const errorMsg =
+        error instanceof Error ? error.message : 'Failed to send message. Please try again.';
+      setErrorMessage(errorMsg);
       setSubmitStatus('error');
+      // Only show inline error — no global toast to avoid double feedback
+
+      // Log failed submission
+      await analytics.logFormSubmission(
+        'contact_form',
+        false,
+        getTimestamp() - submissionStartRef.current
+      );
+    } finally {
+      dispatch({ type: 'SET_FORM_SUBMITTING', payload: false });
     }
   };
 
@@ -216,6 +264,7 @@ export const ContactSection: React.FC = () => {
           <Card>
             <h3 className="font-[Raleway] font-bold text-xl mb-6">Send Me a Message</h3>
 
+            {/* eslint-disable-next-line react-hooks/refs */}
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               {!firebaseAvailable && (
                 <div className="mb-6 rounded-xl border border-yellow-300 bg-yellow-50 p-4 text-sm text-yellow-900 dark:border-yellow-600 dark:bg-yellow-900/10 dark:text-yellow-200">
@@ -379,16 +428,26 @@ export const ContactSection: React.FC = () => {
               {/* Submit Button */}
               <Button
                 type="submit"
-                disabled={!firebaseAvailable || isSubmitting || submitStatus === 'loading'}
-                isLoading={isSubmitting || submitStatus === 'loading'}
+                disabled={
+                  !firebaseAvailable ||
+                  isSubmitting ||
+                  submitStatus === 'loading' ||
+                  state.isFormSubmitting
+                }
+                isLoading={isSubmitting || submitStatus === 'loading' || state.isFormSubmitting}
                 className="w-full"
               >
-                {submitStatus === 'loading' ? 'Sending...' : 'Send Message'}
+                {submitStatus === 'loading' || state.isFormSubmitting
+                  ? 'Sending...'
+                  : 'Send Message'}
               </Button>
             </form>
           </Card>
         </div>
       </div>
+
+      {/* Loading Overlay */}
+      <LoadingOverlay isVisible={state.isFormSubmitting} message="Sending your message..." />
     </section>
   );
 };
