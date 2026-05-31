@@ -145,7 +145,9 @@ export function TrustedUsers() {
       <div className="rounded-lg border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-6">
         <div className="flex items-center justify-between gap-4">
           <div>
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Current Trusted Users</h3>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+              Current Trusted Users
+            </h3>
             <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
               These users have admin privileges in the app.
             </p>
@@ -163,11 +165,16 @@ export function TrustedUsers() {
         {loading ? (
           <div className="mt-6 space-y-3">
             {[1, 2, 3].map((item) => (
-              <div key={item} className="h-12 rounded-lg bg-gray-100 dark:bg-slate-800 animate-pulse" />
+              <div
+                key={item}
+                className="h-12 rounded-lg bg-gray-100 dark:bg-slate-800 animate-pulse"
+              />
             ))}
           </div>
         ) : users.length === 0 ? (
-          <div className="mt-6 text-sm text-gray-500 dark:text-gray-400">No trusted users found.</div>
+          <div className="mt-6 text-sm text-gray-500 dark:text-gray-400">
+            No trusted users found.
+          </div>
         ) : (
           <div className="mt-6 space-y-3">
             {users.map((user) => (
@@ -180,9 +187,7 @@ export function TrustedUsers() {
                     <p className="text-sm font-semibold text-gray-900 dark:text-white">
                       {user.email ?? user.uid ?? user.id}
                     </p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">
-                      Doc ID: {user.id}
-                    </p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">Doc ID: {user.id}</p>
                   </div>
                   <button
                     type="button"
@@ -196,7 +201,9 @@ export function TrustedUsers() {
                 <div className="grid gap-2 sm:grid-cols-3 text-xs text-gray-500 dark:text-gray-400">
                   <div>UID: {user.uid || 'Not provided'}</div>
                   <div>Admin: {user.isAdmin ? 'Yes' : 'No'}</div>
-                  <div>Added: {user.addedAt ? new Date(user.addedAt).toLocaleString() : 'Unknown'}</div>
+                  <div>
+                    Added: {user.addedAt ? new Date(user.addedAt).toLocaleString() : 'Unknown'}
+                  </div>
                 </div>
               </div>
             ))}
