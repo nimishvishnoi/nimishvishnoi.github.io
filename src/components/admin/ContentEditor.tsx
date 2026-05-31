@@ -130,6 +130,10 @@ export function ContentEditor() {
   const [formValues, setFormValues] = useState<Record<string, string>>({});
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState<string | null>(null);
+  // ── Load docs for selected section ──────────────────────────────────────────
+  useEffect(() => {
+    loadSection(activeSection);
+  }, [activeSection]);
 
   if (!state.isAdmin) {
     return (
@@ -139,16 +143,10 @@ export function ContentEditor() {
     );
   }
 
-  // ── Load docs for selected section ──────────────────────────────────────────
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  useEffect(() => {
-    loadSection(activeSection);
+  async function loadSection(section: ContentSection) {
+    // Reset editing state when switching sections
     setEditingDoc(null);
     setFormValues({});
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeSection]);
-
-  async function loadSection(section: ContentSection) {
     setIsLoadingDocs(true);
     try {
       const db = getDb();

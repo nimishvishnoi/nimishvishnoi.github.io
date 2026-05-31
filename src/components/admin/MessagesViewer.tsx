@@ -2,7 +2,7 @@
  * MessagesViewer — reads contact form submissions from Firebase Realtime Database.
  * Messages are stored under Message/{date}/{id}.
  */
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { getDatabase, ref, get, remove } from 'firebase/database';
 import { getFirebaseApp } from '../../services/firebase.firestore';
 
@@ -68,16 +68,24 @@ export function MessagesViewer() {
         return tb - ta;
       });
 
-      setMessages(all);
+      if (isMountedRef.current) setMessages(all);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load messages.');
+      if (isMountedRef.current) setError(err instanceof Error ? err.message : 'Failed to load messages.');
     } finally {
-      setIsLoading(false);
+      if (isMountedRef.current) setIsLoading(false);
     }
   }, []);
 
+  const isMountedRef = useRef(true);
+
   useEffect(() => {
-    loadMessages();
+    const t = setTimeout(() => {
+      void loadMessages();
+    }, 0);
+    return () => {
+      clearTimeout(t);
+      isMountedRef.current = false;
+    };
   }, [loadMessages]);
 
   async function handleDelete(msg: Message) {

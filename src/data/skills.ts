@@ -1,7 +1,8 @@
 /**
  * Skills data
  */
+import type { Skill } from '@types';
 import siteContent from './site-content.json';
 
-export const skills = (siteContent as any).skills;
-export const skillCategories = (siteContent as any).skillCategories;
+export const skills = (siteContent as Record<string, unknown>).skills as Skill[];
+export const skillCategories = (siteContent as Record<string, unknown>).skillCategories as Record<string, string>;

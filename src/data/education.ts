@@ -1,6 +1,7 @@
 /**
  * Education data
  */
+import type { Education, ResumeSummary } from '@types';
 import siteContent from './site-content.json';
 
 function toDate(value: unknown): Date {
@@ -9,10 +10,10 @@ function toDate(value: unknown): Date {
   return new Date();
 }
 
-export const education = ((siteContent as any).education ?? []).map((e: any) => ({
+export const education = ((siteContent as Record<string, unknown>).education as Record<string, unknown>[] ?? []).map((e: Record<string, unknown>) => ({
   ...e,
   startDate: toDate(e.startDate),
   endDate: toDate(e.endDate),
-}));
+})) as Education[];
 
-export const summary = (siteContent as any).summary;
+export const summary = (siteContent as Record<string, unknown>).summary as ResumeSummary;

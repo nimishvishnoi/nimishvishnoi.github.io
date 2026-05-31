@@ -376,10 +376,10 @@ async function seed() {
   await seedCollection('socialLinks', socialLinks);
 
   console.log('\nAll done! Your Firestore is seeded.');
-  process.exit(0);
+    if (typeof globalThis.process !== 'undefined' && typeof globalThis.process.exit === 'function') globalThis.process.exit(0);
 }
 
 seed().catch((err) => {
   console.error('Seed failed:', err);
-  process.exit(1);
+    if (typeof globalThis.process !== 'undefined' && typeof globalThis.process.exit === 'function') globalThis.process.exit(1);
 });

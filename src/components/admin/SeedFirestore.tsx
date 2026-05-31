@@ -82,19 +82,25 @@ export function SeedFirestore() {
       // Experience & education: JSON has ISO strings, TS has Date objects
       const experienceData =
         src?.experience ??
-        experiences.map((e: any) => ({
-          ...e,
-          startDate: e.startDate.toISOString(),
-          endDate: e.endDate ? e.endDate.toISOString() : null,
-        }));
+        experiences.map((e: unknown) => {
+          const ex = e as { startDate: Date; endDate?: Date; [k: string]: unknown };
+          return {
+            ...ex,
+            startDate: ex.startDate.toISOString(),
+            endDate: ex.endDate ? ex.endDate.toISOString() : null,
+          };
+        });
 
       const educationData =
         src?.education ??
-        education.map((e: any) => ({
-          ...e,
-          startDate: e.startDate.toISOString(),
-          endDate: e.endDate.toISOString(),
-        }));
+        education.map((e: unknown) => {
+          const ed = e as { startDate: Date; endDate: Date; [k: string]: unknown };
+          return {
+            ...ed,
+            startDate: ed.startDate.toISOString(),
+            endDate: ed.endDate.toISOString(),
+          };
+        });
 
       // ── Singletons ────────────────────────────────────────────────────────
       const singletons: [number, string, object][] = [
