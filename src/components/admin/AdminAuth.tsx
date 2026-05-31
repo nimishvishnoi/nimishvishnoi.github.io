@@ -9,7 +9,7 @@ import {
   onAuthStateChanged,
   User,
 } from 'firebase/auth';
-import { doc, getDoc } from 'firebase/firestore';
+import { collection, doc, getDoc, getDocs, query, where } from 'firebase/firestore';
 import { getFirebaseApp, getDb } from '../../services/firebase.firestore';
 
 /** Generic messages — never expose raw Firebase error strings to the UI */
@@ -27,18 +27,32 @@ const AUTH_ERRORS: Record<string, string> = {
 
 /**
  * Check admin status via Firestore.
- * Collection: admins / Document ID: <uid> / Field: isAdmin: true
+ * Collection: admins / Document ID: <uid> or email:<encoded-email> / Field: isAdmin: true
  *
- * To grant access, create the document in Firebase Console:
+ * To grant access, add the document in Firebase Console or via the app:
  *   Collection: admins
- *   Document ID: <your-uid>
- *   Field: isAdmin  (boolean) = true
+ *   Document ID: <your-uid> or email:<encoded-email>
+ *   Fields: isAdmin = true, email = <lowercase email>, uid = <uid if known>
  */
-async function checkAdminStatus(uid: string): Promise<boolean> {
+async function checkAdminStatus(uid: string, email?: string): Promise<boolean> {
   try {
     const db = getDb();
     const snap = await getDoc(doc(db, 'admins', uid));
-    return snap.exists() && snap.data()?.isAdmin === true;
+    if (snap.exists() && snap.data()?.isAdmin === true) {
+      return true;
+    }
+
+    if (!email) {
+      return false;
+    }
+
+    const emailQuery = query(
+      collection(db, 'admins'),
+      where('email', '==', email.toLowerCase()),
+      where('isAdmin', '==', true)
+    );
+    const emailSnap = await getDocs(emailQuery);
+    return !emailSnap.empty;
   } catch {
     return false;
   }
@@ -51,7 +65,9 @@ async function handleAuthResult(
   setCurrentUser: (u: User | null) => void,
   dispatch: ReturnType<typeof useAppState>['dispatch']
 ): Promise<boolean> {
-  const isAdminUser = await checkAdminStatus(user.uid);
+  const isAdminUser =
+    (await checkAdminStatus(user.uid)) ||
+    (user.email ? await checkAdminStatus(user.uid, user.email.toLowerCase()) : false);
   if (isAdminUser) {
     setCurrentUser(user);
     dispatch({ type: 'SET_ADMIN', payload: true });
@@ -88,7 +104,9 @@ export function AdminAuth() {
       const auth = getAuth(app);
       unsubscribe = onAuthStateChanged(auth, async (user) => {
         if (user) {
-          const isAdminUser = await checkAdminStatus(user.uid);
+          const isAdminUser =
+            (await checkAdminStatus(user.uid)) ||
+            (user.email ? await checkAdminStatus(user.uid, user.email.toLowerCase()) : false);
           if (isAdminUser) {
             setCurrentUser(user);
             dispatch({ type: 'SET_ADMIN', payload: true });
