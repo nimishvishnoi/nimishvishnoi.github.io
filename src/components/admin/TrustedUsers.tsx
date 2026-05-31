@@ -43,7 +43,10 @@ export function TrustedUsers() {
   }, []);
 
   useEffect(() => {
-    void loadUsers();
+    const t = setTimeout(() => {
+      void loadUsers();
+    }, 0);
+    return () => clearTimeout(t);
   }, [loadUsers]);
 
   const addUser = async () => {
