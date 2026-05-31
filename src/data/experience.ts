@@ -10,7 +10,9 @@ function toDate(value: unknown): Date {
   return new Date();
 }
 
-export const experiences = ((siteContent as Record<string, unknown>).experience as Record<string, unknown>[] ?? []).map((e: Record<string, unknown>) => ({
+export const experiences = (
+  ((siteContent as Record<string, unknown>).experience as Record<string, unknown>[]) ?? []
+).map((e: Record<string, unknown>) => ({
   ...e,
   startDate: toDate(e.startDate),
   endDate: e.endDate ? toDate(e.endDate) : null,

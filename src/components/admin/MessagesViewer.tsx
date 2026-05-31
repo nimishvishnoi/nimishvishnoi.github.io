@@ -70,7 +70,8 @@ export function MessagesViewer() {
 
       if (isMountedRef.current) setMessages(all);
     } catch (err) {
-      if (isMountedRef.current) setError(err instanceof Error ? err.message : 'Failed to load messages.');
+      if (isMountedRef.current)
+        setError(err instanceof Error ? err.message : 'Failed to load messages.');
     } finally {
       if (isMountedRef.current) setIsLoading(false);
     }
