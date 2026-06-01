@@ -17,16 +17,31 @@ service cloud.firestore {
     }
 
     // Content collections used by the app: public reads, writes only for admins
-    match /{collection=skills|projects|experience|education|achievements|socialLinks}/{docId} {
-      allow read: if true;
-      allow create, update, delete: if isAdmin();
+    match /{collection}/{docId} {
+      allow read: if collection in [
+        'portfolio',
+        'skills',
+        'projects',
+        'experience',
+        'education',
+        'achievements',
+        'socialLinks'
+      ];
+      allow create, update, delete: if isAdmin() && collection in [
+        'portfolio',
+        'skills',
+        'projects',
+        'experience',
+        'education',
+        'achievements',
+        'socialLinks'
+      ];
     }
 
     // Analytics events: allow clients to write, but only admins can read
-    match /analytics/{eventId} {
-      allow create: if request.auth == null || request.auth != null;
-      allow read: if isAdmin();
-      allow update, delete: if isAdmin();
+    match /analytics/{eventType}/events/{eventId} {
+      allow create: if true;
+      allow read, update, delete: if isAdmin();
     }
 
     // Fallback: deny by default
