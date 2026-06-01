@@ -27,10 +27,11 @@
         ".validate": "$date.matches(/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/)",
         "$messageId": {
           ".write": "(!data.exists() && newData.exists()) || (data.exists() && !newData.exists() && auth != null)",
-          ".validate": "newData.hasChildren(['name','email','subject','message','createdAt','submittedAt','origin','validationMethod','recaptchaStatus']) && newData.hasOnly(['name','email','phone','subject','message','createdAt','submittedAt','origin','validationMethod','recaptchaStatus'])",
+          ".validate": "newData.hasChildren(['name','email','subject','message','createdAt','submittedAt','origin','validationMethod','recaptchaStatus'])",
           "name": {
             ".validate": "newData.isString() && newData.val().length >= 4 && newData.val().length <= 100"
           },
+
           "email": {
             ".validate": "newData.isString() && newData.val().length <= 254 && newData.val().matches(/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/)"
           },
