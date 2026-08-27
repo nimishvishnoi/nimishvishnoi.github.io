@@ -6,8 +6,14 @@ import { AdminAuth } from './AdminAuth';
 import { SeedFirestore } from './SeedFirestore';
 import { MessagesViewer } from './MessagesViewer';
 import { TrustedUsers } from './TrustedUsers';
+import { getAuth, signOut } from 'firebase/auth';
+import { getFirebaseApp } from '../../services/firebase.firestore';
+import { logAuditEvent } from '../../services/auditLog';
 
 type AdminTab = 'dashboard' | 'messages' | 'content' | 'users' | 'settings';
+
+/** Session timeout in minutes (30 minutes for security) */
+const SESSION_TIMEOUT_MINUTES = 30;
 
 /** Focusable element selector for focus-trap */
 const FOCUSABLE =
@@ -18,6 +24,7 @@ export function AdminPanel() {
   const [activeTab, setActiveTab] = useState<AdminTab>('dashboard');
   const dialogRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
+  const inactivityTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const toggleAdminPanel = () => {
     dispatch({ type: 'TOGGLE_ADMIN_PANEL' });
@@ -87,6 +94,73 @@ export function AdminPanel() {
       document.body.style.overflow = '';
     };
   }, [state.adminPanelOpen]);
+
+  // Session timeout: auto-logout after 30 minutes of inactivity
+  useEffect(() => {
+    if (!state.isAdmin) {
+      if (inactivityTimerRef.current) {
+        clearTimeout(inactivityTimerRef.current);
+        inactivityTimerRef.current = null;
+      }
+      return;
+    }
+
+    const resetInactivityTimer = () => {
+      if (inactivityTimerRef.current) {
+        clearTimeout(inactivityTimerRef.current);
+      }
+
+      inactivityTimerRef.current = setTimeout(async () => {
+        try {
+          const auth = getAuth(getFirebaseApp());
+          const currentUser = auth.currentUser;
+
+          if (currentUser) {
+            // Log the timeout event
+            await logAuditEvent({
+              userId: currentUser.uid,
+              userEmail: currentUser.email || 'unknown',
+              action: 'admin_session_timeout',
+              resourceType: 'admin_session',
+              resourceId: 'session_timeout',
+              details: {
+                timeoutMinutes: SESSION_TIMEOUT_MINUTES,
+                reason: 'inactivity',
+              },
+            });
+          }
+
+          await signOut(auth);
+          dispatch({ type: 'SET_ADMIN', payload: false });
+          dispatch({
+            type: 'SET_SUCCESS_MESSAGE',
+            payload: `Session expired after ${SESSION_TIMEOUT_MINUTES} minutes of inactivity. Please log in again.`,
+          });
+        } catch (error) {
+          if (import.meta.env.DEV) {
+            console.error('Session timeout logout failed:', error);
+          }
+        }
+      }, SESSION_TIMEOUT_MINUTES * 60 * 1000);
+    };
+
+    // Reset timer on mouse move, key press, or click
+    window.addEventListener('mousemove', resetInactivityTimer);
+    window.addEventListener('keydown', resetInactivityTimer);
+    window.addEventListener('click', resetInactivityTimer);
+
+    // Initial timer setup
+    resetInactivityTimer();
+
+    return () => {
+      window.removeEventListener('mousemove', resetInactivityTimer);
+      window.removeEventListener('keydown', resetInactivityTimer);
+      window.removeEventListener('click', resetInactivityTimer);
+      if (inactivityTimerRef.current) {
+        clearTimeout(inactivityTimerRef.current);
+      }
+    };
+  }, [state.isAdmin, dispatch]);
 
   if (!state.adminPanelOpen) {
     return (

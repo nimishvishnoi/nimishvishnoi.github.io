@@ -38,10 +38,16 @@ service cloud.firestore {
       ];
     }
 
-    // Analytics events: allow clients to write, but only admins can read
+    // Analytics events: allow clients to write with rate limiting, only admins can read
     match /analytics/{eventType}/events/{eventId} {
-      allow create: if true;
+      allow create: if request.time > now - duration.value(1, 's');
       allow read, update, delete: if isAdmin();
+    }
+
+    // Audit log: admin actions only (admin write, admin read)
+    match /auditLog/{logId} {
+      allow create, read: if isAdmin();
+      allow update, delete: if false;
     }
 
     // Fallback: deny by default

@@ -11,6 +11,7 @@ import {
 } from 'firebase/auth';
 import { collection, doc, getDoc, getDocs, query, where } from 'firebase/firestore';
 import { getFirebaseApp, getDb } from '../../services/firebase.firestore';
+import { logAdminLogin, logAdminLogout } from '../../services/auditLog';
 
 /** Generic messages — never expose raw Firebase error strings to the UI */
 const AUTH_ERRORS: Record<string, string> = {
@@ -72,6 +73,16 @@ async function handleAuthResult(
     setCurrentUser(user);
     dispatch({ type: 'SET_ADMIN', payload: true });
     dispatch({ type: 'SET_SUCCESS_MESSAGE', payload: 'Admin login successful!' });
+
+    // Log the successful login (non-blocking)
+    try {
+      await logAdminLogin(user.uid, user.email || 'unknown');
+    } catch (error) {
+      if (import.meta.env.DEV) {
+        console.error('Failed to log admin login:', error);
+      }
+    }
+
     return true;
   } else {
     await signOut(auth);
@@ -179,6 +190,19 @@ export function AdminAuth() {
     try {
       const app = getFirebaseApp();
       const auth = getAuth(app);
+      const user = auth.currentUser;
+
+      // Log the logout (non-blocking)
+      if (user) {
+        try {
+          await logAdminLogout(user.uid, user.email || 'unknown');
+        } catch (error) {
+          if (import.meta.env.DEV) {
+            console.error('Failed to log admin logout:', error);
+          }
+        }
+      }
+
       await signOut(auth);
       setCurrentUser(null);
       dispatch({ type: 'SET_ADMIN', payload: false });
