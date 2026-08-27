@@ -110,38 +110,41 @@ export function AdminPanel() {
         clearTimeout(inactivityTimerRef.current);
       }
 
-      inactivityTimerRef.current = setTimeout(async () => {
-        try {
-          const auth = getAuth(getFirebaseApp());
-          const currentUser = auth.currentUser;
+      inactivityTimerRef.current = setTimeout(
+        async () => {
+          try {
+            const auth = getAuth(getFirebaseApp());
+            const currentUser = auth.currentUser;
 
-          if (currentUser) {
-            // Log the timeout event
-            await logAuditEvent({
-              userId: currentUser.uid,
-              userEmail: currentUser.email || 'unknown',
-              action: 'admin_session_timeout',
-              resourceType: 'admin_session',
-              resourceId: 'session_timeout',
-              details: {
-                timeoutMinutes: SESSION_TIMEOUT_MINUTES,
-                reason: 'inactivity',
-              },
+            if (currentUser) {
+              // Log the timeout event
+              await logAuditEvent({
+                userId: currentUser.uid,
+                userEmail: currentUser.email || 'unknown',
+                action: 'admin_session_timeout',
+                resourceType: 'admin_session',
+                resourceId: 'session_timeout',
+                details: {
+                  timeoutMinutes: SESSION_TIMEOUT_MINUTES,
+                  reason: 'inactivity',
+                },
+              });
+            }
+
+            await signOut(auth);
+            dispatch({ type: 'SET_ADMIN', payload: false });
+            dispatch({
+              type: 'SET_SUCCESS_MESSAGE',
+              payload: `Session expired after ${SESSION_TIMEOUT_MINUTES} minutes of inactivity. Please log in again.`,
             });
+          } catch (error) {
+            if (import.meta.env.DEV) {
+              console.error('Session timeout logout failed:', error);
+            }
           }
-
-          await signOut(auth);
-          dispatch({ type: 'SET_ADMIN', payload: false });
-          dispatch({
-            type: 'SET_SUCCESS_MESSAGE',
-            payload: `Session expired after ${SESSION_TIMEOUT_MINUTES} minutes of inactivity. Please log in again.`,
-          });
-        } catch (error) {
-          if (import.meta.env.DEV) {
-            console.error('Session timeout logout failed:', error);
-          }
-        }
-      }, SESSION_TIMEOUT_MINUTES * 60 * 1000);
+        },
+        SESSION_TIMEOUT_MINUTES * 60 * 1000
+      );
     };
 
     // Reset timer on mouse move, key press, or click

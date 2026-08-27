@@ -4,7 +4,8 @@
 
 This is a **production-grade personal portfolio website** for a Staff Engineer, built with modern frontend technologies and Firebase backend. The site features a responsive multi-section layout (About, Skills, Projects, Resume, Contact) with admin capabilities for content management without requiring code redeploys.
 
-**Key URLs**: 
+**Key URLs**:
+
 - Production: https://nimishvishnoi.github.io
 - Repository: https://github.com/nimishvishnoi/nimishvishnoi.github.io
 
@@ -35,6 +36,7 @@ yarn test:watch       # Watch mode for development
 ## Project Structure & Key Patterns
 
 ### Architecture Overview
+
 ```
 src/
 ├── components/        # React components (feature-based organization)
@@ -59,18 +61,21 @@ src/
 ### Component Organization Patterns
 
 **Section Components** (`src/components/sections/`):
+
 - Export default React.FC component
 - Use Framer Motion for entrance animations
 - Follow naming: `<SectionName>Section.tsx`
 - Example: [AboutSection.tsx](src/components/sections/AboutSection.tsx), [ContactSection.tsx](src/components/sections/ContactSection.tsx)
 
 **UI Components** (`src/components/ui/`):
+
 - Reusable, composable components
 - Tailwind CSS for styling
 - Accept `className` prop for customization
 - Example: [Card.tsx](src/components/ui/Card.tsx), [Button.tsx](src/components/ui/Button.tsx)
 
 **Admin Components** (`src/components/admin/`):
+
 - Require admin authentication check
 - Connected to Firestore for content updates
 - Example: [ContentEditor.tsx](src/components/admin/ContentEditor.tsx), [MessagesViewer.tsx](src/components/admin/MessagesViewer.tsx)
@@ -78,6 +83,7 @@ src/
 ### Data & Content Pattern
 
 **Single Source of Truth (SSoT)**:
+
 1. **Canonical source**: [src/data/site-content.json](src/data/site-content.json) — human-editable JSON
 2. **TypeScript re-exports**: Individual `.ts` files import JSON, provide type safety
 3. **Runtime fallback strategy**:
@@ -112,6 +118,7 @@ See [src/services/content.ts](src/services/content.ts) for the content service w
 ### Configuration
 
 Firebase config is loaded from **environment variables** following this pattern:
+
 ```env
 VITE_FIREBASE_API_KEY=...
 VITE_FIREBASE_AUTH_DOMAIN=...
@@ -132,7 +139,6 @@ VITE_RECAPTCHA_SITE_KEY=... (optional)
   - Server-side field validation (name, email, phone, subject, message)
   - Timestamp validation against server time (prevents tampering)
   - reCAPTCHA token storage (optional)
-  
 - **Cloud Firestore**: [firestore.rules](firestore.rules) — controls access to portfolio content
   - Public read access for portfolio content
   - Admin-only writes with isAdmin check
@@ -153,9 +159,9 @@ See README.md [Contact Form Security](README.md#contact-form-security) section f
 
 - **Use path aliases** from [vite.config.ts](vite.config.ts):
   ```typescript
-  import { Button } from '@components/ui';    // ✅ Use aliases
-  import { useAppState } from '@hooks';       // ✅ Shorter, cleaner
-  import type { Skill } from '@types';        // ✅ Use type imports
+  import { Button } from '@components/ui'; // ✅ Use aliases
+  import { useAppState } from '@hooks'; // ✅ Shorter, cleaner
+  import type { Skill } from '@types'; // ✅ Use type imports
   ```
 - **Organize imports**: Types first, then external packages, then local imports
 - **Use `index.ts` barrel exports** to keep import paths clean
@@ -185,44 +191,50 @@ See README.md [Contact Form Security](README.md#contact-form-security) section f
 ## Common Pitfalls & Gotchas
 
 ### Firebase Issues
+
 - ❌ **Placeholder env vars**: If `VITE_FIREBASE_API_KEY` is set to a placeholder value (e.g., `your_api_key`), Firebase will appear configured but requests will fail silently. Check [env.ts](src/utils/env.ts) for placeholder detection logic.
 - ❌ **Missing FIREBASE_TOKEN**: When deploying `database.rules.json` via GitHub Actions, the `FIREBASE_TOKEN` secret must be set.
 - ✅ **Graceful degradation**: Contact form degrades gracefully when Firebase is disabled; portfolio still loads.
 
 ### Build Issues
+
 - ❌ **TypeScript strict mode**: The build fails if there are unused variables/parameters. Run `yarn lint:fix` to auto-fix.
 - ❌ **CSP hash mismatch**: If inline scripts change, run `yarn check:csp` to generate new hashes for [index.html](index.html).
 - ✅ **Code splitting**: Vite automatically chunks React, Framer Motion, and PDF vendors to optimize load time.
 
 ### Content Management
+
 - ⚠️ **Admin-editable content**: Changes in Firestore don't require rebuilds, but the site must be refreshed (hard refresh to clear cache).
 - ⚠️ **Fallback priority**: If Firestore has stale data, check the fallback chain: Firestore → site-content.json → TS files.
 - ✅ **Seed data**: Use [SeedFirestore.tsx](src/components/admin/SeedFirestore.tsx) to populate initial Firestore data.
 
 ### Mobile & Responsive
+
 - ❌ **Hardcoded breakpoints**: Use Tailwind's responsive modifiers (`md:`, `lg:`, etc.) instead.
 - ✅ **Mobile navigation**: [MobileNav.tsx](src/components/layout/MobileNav.tsx) handles menu toggle; test on actual mobile devices.
 
 ### Performance
+
 - ❌ **Unoptimized images**: No `Image` optimization currently; use optimized JPG/PNG files.
 - ⚠️ **Analytics logging**: Heavy analytics events can slow down interactions; debounce if necessary.
 - ✅ **Tree-shaking**: Vite automatically removes unused code; don't add unnecessary dependencies.
 
 ## Key Files & When to Edit
 
-| File | Purpose | When to Edit |
-|------|---------|--------------|
-| [src/data/site-content.json](src/data/site-content.json) | Canonical portfolio content | Adding/updating about, skills, projects, experience |
-| [src/components/sections/](src/components/sections/) | Main portfolio sections | Changing layout or adding new sections |
-| [firestore.rules](firestore.rules) | Content access control | Changing admin permissions or adding new collections |
-| [database.rules.json](database.rules.json) | Contact form validation | Updating form submission rules or field validation |
-| [tailwind.config.ts](tailwind.config.ts) | Tailwind customization | Adding custom colors, animations, or breakpoints |
-| [vite.config.ts](vite.config.ts) | Build configuration | Changing bundle chunks, dev server port, or aliases |
-| [tsconfig.json](tsconfig.json) | TypeScript options | Only if changing type checking or compilation target |
+| File                                                     | Purpose                     | When to Edit                                         |
+| -------------------------------------------------------- | --------------------------- | ---------------------------------------------------- |
+| [src/data/site-content.json](src/data/site-content.json) | Canonical portfolio content | Adding/updating about, skills, projects, experience  |
+| [src/components/sections/](src/components/sections/)     | Main portfolio sections     | Changing layout or adding new sections               |
+| [firestore.rules](firestore.rules)                       | Content access control      | Changing admin permissions or adding new collections |
+| [database.rules.json](database.rules.json)               | Contact form validation     | Updating form submission rules or field validation   |
+| [tailwind.config.ts](tailwind.config.ts)                 | Tailwind customization      | Adding custom colors, animations, or breakpoints     |
+| [vite.config.ts](vite.config.ts)                         | Build configuration         | Changing bundle chunks, dev server port, or aliases  |
+| [tsconfig.json](tsconfig.json)                           | TypeScript options          | Only if changing type checking or compilation target |
 
 ## Deployment & CI/CD
 
 ### GitHub Pages Deployment
+
 - Configured via `.github/workflows/deploy.yml`
 - Triggered on push to `main` branch
 - Requires environment secrets in GitHub (see [README.md Deployment](README.md#deployment) section)
@@ -230,6 +242,7 @@ See README.md [Contact Form Security](README.md#contact-form-security) section f
 - Production URL: https://nimishvishnoi.github.io
 
 ### Local Testing
+
 ```bash
 yarn build          # Create production build
 yarn preview        # Serve dist/ locally on http://localhost:4173
@@ -261,6 +274,7 @@ yarn preview        # Serve dist/ locally on http://localhost:4173
 ## Asking for Help
 
 When working with this codebase, consider:
+
 - Is this a **frontend UI** change? → Focus on [src/components/](src/components/)
 - Is this a **content** change? → Update [src/data/site-content.json](src/data/site-content.json) or Firestore
 - Is this a **security** issue? → Review [firestore.rules](firestore.rules) and [database.rules.json](database.rules.json)
