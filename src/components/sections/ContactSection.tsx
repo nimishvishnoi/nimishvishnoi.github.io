@@ -49,7 +49,7 @@ const contactFormSchema = z.object({
     .string()
     .trim()
     .max(CONTACT_LIMITS.phoneMax, 'Please keep your phone under 30 characters')
-    .regex(/^[\d\s\-+()]*$/, 'Please enter a valid phone number')
+    .regex(/^[+]?[\d\s\-()]{7,30}$/, 'Please enter a valid phone number (7-30 characters)')
     .optional()
     .or(z.literal('')),
   subject: z
