@@ -19,7 +19,7 @@ const STOP_WORDS = new Set([
   'which',
 ]);
 const GREETING_PATTERN =
-  /^(?:hi|hello|hey|good morning|good afternoon|good evening)(?:[!,. ]+how are you(?: doing)?[!?]*)?$/iu;
+  /^(?:hi|hello|hey|good morning|good afternoon|good evening)(?:[!,. ]+how are you(?: doing)?\s*[!?]*)?$/iu;
 
 interface Env {
   AI_API_KEY?: string;
