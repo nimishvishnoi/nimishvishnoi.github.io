@@ -71,3 +71,33 @@ Portfolio content is maintained in `src/data/`.
 - Production output is generated into `dist/`.
 
   <!-- CI trigger: no-op commit to deploy updated Firebase rules -->
+
+## Personal AI Portfolio Assistant
+
+The Cloudflare Worker for the portfolio assistant is in [`worker/`](worker/).
+Its editable, markdown-based context is [`worker/context/llms.txt`](worker/context/llms.txt)
+and [`worker/context/profile.md`](worker/context/profile.md).
+The deployed endpoint is
+`https://nimish-portfolio-assistant.nnimish75.workers.dev`.
+
+From the `worker/` directory:
+
+```bash
+npm install
+npm run typecheck
+npm run dev
+npm run deploy
+```
+
+Configure `AI_API_KEY` and `AI_API_URL` as Worker secrets when using an
+OpenAI-compatible provider. Without an API key, the endpoint uses deterministic
+context retrieval and does not call an external provider. `ALLOWED_ORIGIN`
+defaults to `https://nimishvishnoi.github.io` and should remain restricted to
+the deployed portfolio origin.
+
+The `Deploy Cloudflare Worker` GitHub Actions job runs on pushes to `main`.
+Add these repository secrets:
+
+- `CLOUDFLARE_API_TOKEN` — a token with Workers Scripts edit permission
+- `CLOUDFLARE_ACCOUNT_ID` — the Cloudflare account ID
+- `VITE_ASSISTANT_API_URL` — `https://nimish-portfolio-assistant.nnimish75.workers.dev`
