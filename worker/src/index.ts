@@ -4,6 +4,20 @@ const MAX_QUERY_LENGTH = 1000;
 const MAX_BODY_LENGTH = 12_000;
 const DEFAULT_ORIGIN = 'https://nimishvishnoi.github.io';
 const DEFAULT_MODEL = 'gpt-4o-mini';
+const STOP_WORDS = new Set([
+  'about',
+  'all',
+  'can',
+  'does',
+  'have',
+  'hi',
+  'how',
+  'nimish',
+  'tell',
+  'the',
+  'what',
+  'which',
+]);
 
 interface Env {
   AI_API_KEY?: string;
@@ -62,15 +76,19 @@ function retrieveContext(query: string, limit = 3): string {
   const terms = query
     .toLowerCase()
     .split(/[^a-z0-9+#.]+/u)
-    .filter((term) => term.length > 2);
+    .filter((term) => term.length > 2 && !STOP_WORDS.has(term))
+    .map((term) => (term === 'skills' ? 'skill' : term));
 
   const matches: ContextMatch[] = splitContext()
     .map((section) => {
-      const searchableSection = section.toLowerCase();
-      const score = terms.reduce(
-        (total, term) => total + (searchableSection.includes(term) ? 1 : 0),
-        0
-      );
+      const [heading = '', ...content] = section.split('\n');
+      const searchableHeading = heading.toLowerCase();
+      const searchableContent = content.join(' ').toLowerCase();
+      const score = terms.reduce((total, term) => {
+        if (searchableHeading.includes(term)) return total + 4;
+        if (searchableContent.includes(term)) return total + 1;
+        return total;
+      }, 0);
       return { section, score };
     })
     .filter(({ score }) => score > 0)

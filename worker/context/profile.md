@@ -8,7 +8,7 @@ Computer Science and Engineering. He builds reliable, scalable full-stack
 applications and provides technical leadership across architecture, implementation,
 delivery automation, and engineering quality.
 
-## Technical competencies
+## Technical skills and competencies
 
 ### Backend and APIs
 
