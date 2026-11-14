@@ -1,0 +1,13 @@
+name = "nimish-portfolio-assistant"
+main = "src/index.ts"
+compatibility_date = "2026-11-14"
+workers_dev = true
+
+[[rules]]
+type = "Text"
+globs = ["**/*.md"]
+fallthrough = true
+
+[vars]
+ALLOWED_ORIGIN = "https://nimishvishnoi.github.io"
+AI_MODEL = "gpt-4o-mini"

@@ -21,6 +21,7 @@ import { MessageToast } from '@components/ui/MessageToast';
 import { updateSEOMetadata, seoDefaults, seoSections } from '@/utils/seo';
 import analytics from '@services/analytics';
 import { useTranslation } from 'react-i18next';
+import { PersonalAssistant } from './components/PersonalAssistant';
 
 const AppContent: React.FC = () => {
   const { activeSection } = useScrollSpy(sectionIds);
@@ -152,6 +153,9 @@ const AppContent: React.FC = () => {
 
         {/* Scroll to Top Button */}
         <ScrollToTopButton />
+
+        {/* Personal AI Portfolio Assistant */}
+        <PersonalAssistant />
 
         {/* Admin Panel */}
         <AdminPanel />
