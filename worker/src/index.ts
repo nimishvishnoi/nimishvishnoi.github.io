@@ -74,7 +74,7 @@ function splitContext(): string[] {
     .filter(Boolean);
 }
 
-function retrieveContext(query: string, limit = 3): string {
+function retrieveContext(query: string, limit = 3): string | null {
   const terms = query
     .toLowerCase()
     .split(/[^a-z0-9+#.]+/u)
@@ -99,11 +99,9 @@ function retrieveContext(query: string, limit = 3): string {
   const topScore = matches[0]?.score ?? 0;
   const focusedMatches = matches.filter(({ score }) => score >= Math.max(2, topScore - 1));
 
-  return (
-    focusedMatches.length > 0
-      ? focusedMatches.map(({ section }) => section)
-      : splitContext().slice(0, 2)
-  ).join('\n\n');
+  return focusedMatches.length > 0
+    ? focusedMatches.map(({ section }) => section).join('\n\n')
+    : null;
 }
 
 function conversationalAnswer(query: string): string | null {
@@ -122,6 +120,10 @@ function isChatRequest(value: unknown): value is ChatRequest {
 async function generateAnswer(query: string, context: string, env: Env): Promise<string> {
   const conversationalResponse = conversationalAnswer(query);
   if (conversationalResponse) return conversationalResponse;
+
+  if (!context) {
+    return 'I can answer questions about Nimish’s professional experience, projects, and technical skills. I don’t have enough portfolio context to answer that question.';
+  }
 
   if (!env.AI_API_KEY) {
     return `Based on Nimish's portfolio:\n\n${context}`;
@@ -200,7 +202,7 @@ async function handleRequest(request: Request, env: Env): Promise<Response> {
 
   try {
     const query = body.query.trim();
-    const answer = await generateAnswer(query, retrieveContext(query), env);
+    const answer = await generateAnswer(query, retrieveContext(query) ?? '', env);
     return jsonResponse({ answer }, 200, origin);
   } catch (error) {
     console.error('Portfolio assistant request failed', error);
