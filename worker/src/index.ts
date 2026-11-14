@@ -94,9 +94,13 @@ function retrieveContext(query: string, limit = 3): string {
     .filter(({ score }) => score > 0)
     .sort((left, right) => right.score - left.score)
     .slice(0, limit);
+  const topScore = matches[0]?.score ?? 0;
+  const focusedMatches = matches.filter(({ score }) => score >= Math.max(2, topScore - 1));
 
   return (
-    matches.length > 0 ? matches.map(({ section }) => section) : splitContext().slice(0, 2)
+    focusedMatches.length > 0
+      ? focusedMatches.map(({ section }) => section)
+      : splitContext().slice(0, 2)
   ).join('\n\n');
 }
 
