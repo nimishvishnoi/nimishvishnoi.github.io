@@ -18,6 +18,8 @@ const STOP_WORDS = new Set([
   'what',
   'which',
 ]);
+const GREETING_PATTERN =
+  /^(?:hi|hello|hey|good morning|good afternoon|good evening)(?:[!,. ]+how are you(?: doing)?[!?]*)?$/iu;
 
 interface Env {
   AI_API_KEY?: string;
@@ -104,6 +106,13 @@ function retrieveContext(query: string, limit = 3): string {
   ).join('\n\n');
 }
 
+function conversationalAnswer(query: string): string | null {
+  if (GREETING_PATTERN.test(query.trim())) {
+    return 'Hi! I’m doing well, thanks for asking. I can tell you about Nimish’s experience, projects, and technical skills.';
+  }
+  return null;
+}
+
 function isChatRequest(value: unknown): value is ChatRequest {
   if (!value || typeof value !== 'object' || !('query' in value)) return false;
   const query = value.query;
@@ -111,6 +120,9 @@ function isChatRequest(value: unknown): value is ChatRequest {
 }
 
 async function generateAnswer(query: string, context: string, env: Env): Promise<string> {
+  const conversationalResponse = conversationalAnswer(query);
+  if (conversationalResponse) return conversationalResponse;
+
   if (!env.AI_API_KEY) {
     return `Based on Nimish's portfolio:\n\n${context}`;
   }
