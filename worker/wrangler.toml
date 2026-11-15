@@ -3,6 +3,19 @@ main = "src/index.ts"
 compatibility_date = "2026-11-14"
 workers_dev = true
 
+[observability]
+enabled = true
+head_sampling_rate = 1
+redact_query_string = true
+
+[observability.logs]
+enabled = true
+head_sampling_rate = 1
+
+[observability.traces]
+enabled = true
+head_sampling_rate = 0.1
+
 [[rules]]
 type = "Text"
 globs = ["**/*.md"]

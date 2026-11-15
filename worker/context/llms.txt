@@ -1,14 +1,16 @@
 # Nimish Vishnoi — AI Portfolio Context
 
 > This directory contains the source context for the Personal AI Portfolio Assistant.
-> The profile document is intended for retrieval and prompt grounding; it is not a
-> substitute for verifying current employment or project details with Nimish.
+> `llms.txt` is a documentation index; the Worker retrieves directly from
+> `profile.md`, `projects.md`, and `skills.md`. These documents are not a substitute
+> for verifying current employment or project details with Nimish.
 
 ## Context documents
 
-- [profile.md](./profile.md) — professional profile, experience, skills, projects, and assistant guidance.
+- [profile.md](./profile.md) — professional profile, experience, working style, education, and achievements.
 - [projects.md](./projects.md) — project history and technologies used.
 - [skills.md](./skills.md) — technical skills grouped by area.
+- [contact.md](./contact.md) — public contact details and professional profiles.
 
 ## Assistant scope
 

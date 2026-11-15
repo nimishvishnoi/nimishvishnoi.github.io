@@ -4,3 +4,4 @@ node_modules
 dist
 .vite
 coverage
+worker/worker-configuration.d.ts
