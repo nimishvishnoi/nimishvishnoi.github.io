@@ -9,8 +9,10 @@
 import { getApps, initializeApp, cert } from 'firebase-admin/app';
 import { getAuth } from 'firebase-admin/auth';
 
-const serviceAccountJson = process.env.FIREBASE_SERVICE_ACCOUNT_JSON?.trim();
-const adminUids = (process.env.FIREBASE_ADMIN_UIDS ?? '')
+const environment = globalThis.process?.env ?? {};
+
+const serviceAccountJson = environment.FIREBASE_SERVICE_ACCOUNT_JSON?.trim();
+const adminUids = (environment.FIREBASE_ADMIN_UIDS ?? '')
   .split(',')
   .map((uid) => uid.trim())
   .filter(Boolean);

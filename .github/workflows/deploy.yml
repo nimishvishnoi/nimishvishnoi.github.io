@@ -37,6 +37,9 @@ jobs:
       - name: Install dependencies
         run: yarn install --frozen-lockfile
 
+      - name: Audit frontend dependencies
+        run: yarn audit --groups dependencies --level high
+
       - name: Check formatting
         run: yarn format:check
 
@@ -72,6 +75,9 @@ jobs:
 
       - name: Install dependencies
         run: yarn install --frozen-lockfile
+
+      - name: Audit frontend dependencies
+        run: yarn audit --groups dependencies --level high
 
       - name: Check formatting
         run: yarn format:check
@@ -180,6 +186,10 @@ jobs:
       - name: Test Worker
         working-directory: worker
         run: npm test
+
+      - name: Audit Worker dependencies
+        working-directory: worker
+        run: npm audit --audit-level=high
 
       - name: Deploy Worker
         working-directory: worker
