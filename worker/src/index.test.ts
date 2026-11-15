@@ -9,12 +9,14 @@ afterEach(() => {
 
 function request(
   body: string,
-  headers: Record<string, string> = { 'Content-Type': 'application/json' }
+  headers: Record<string, string> = { 'Content-Type': 'application/json' },
+  client = 'default-client'
 ): Request {
   return new Request('https://assistant.example', {
     method: 'POST',
     headers: {
       Origin: env.ALLOWED_ORIGIN,
+      'CF-Connecting-IP': client,
       ...headers,
     },
     body,
@@ -60,7 +62,9 @@ describe('portfolio assistant Worker', () => {
 
   it('limits repeated requests from the same client', async () => {
     const responses = await Promise.all(
-      Array.from({ length: 11 }, () => worker.fetch(request('{"query":"hello"}'), env))
+      Array.from({ length: 11 }, () =>
+        worker.fetch(request('{"query":"hello"}', undefined, 'rate-limit-client'), env)
+      )
     );
 
     expect(responses.at(-1)?.status).toBe(429);
@@ -79,5 +83,43 @@ describe('portfolio assistant Worker', () => {
 
     expect(response.status).toBe(200);
     expect(payload.answer).not.toContain('Assistant response rules');
+  });
+
+  it('returns a conversational response for greetings', async () => {
+    const response = await worker.fetch(
+      request(JSON.stringify({ query: 'hi how are you ?' }), undefined, 'greeting-client'),
+      env
+    );
+    const payload = (await response.json()) as { answer?: string };
+
+    expect(payload.answer).toContain('I’m doing well');
+    expect(payload.answer).not.toContain('##');
+  });
+
+  it('returns focused context for technical skills questions', async () => {
+    const response = await worker.fetch(
+      request(
+        JSON.stringify({ query: 'What technical skills does Nimish have?' }),
+        undefined,
+        'skills-client'
+      ),
+      env
+    );
+    const payload = (await response.json()) as { answer?: string };
+
+    expect(payload.answer).toContain('Technical skills and competencies');
+    expect(payload.answer).not.toContain('## Experience');
+  });
+
+  it('does not dump context for unrelated questions', async () => {
+    const response = await worker.fetch(
+      request(JSON.stringify({ query: 'Is this person stupid?' }), undefined, 'unrelated-client'),
+      env
+    );
+    const payload = (await response.json()) as { answer?: string };
+
+    expect(payload.answer).toContain('I can answer questions about Nimish');
+    expect(payload.answer).not.toContain('Assistant response rules');
+    expect(payload.answer).not.toContain('## Overview');
   });
 });

@@ -2,8 +2,8 @@ import profileContext from '../context/profile.md';
 
 const MAX_QUERY_LENGTH = 1000;
 const MAX_BODY_LENGTH = 4_000;
-const MAX_ANSWER_LENGTH = 4_000;
-const MAX_CONTEXT_LENGTH = 2_000;
+const MAX_ANSWER_LENGTH = 1_500;
+const MAX_CONTEXT_LENGTH = 1_400;
 const RATE_LIMIT_WINDOW_MS = 60_000;
 const RATE_LIMIT_MAX_REQUESTS = 10;
 const PROVIDER_TIMEOUT_MS = 10_000;
@@ -167,7 +167,7 @@ async function generateAnswer(query: string, context: string, env: Env): Promise
       },
       body: JSON.stringify({
         model: env.AI_MODEL?.trim() || DEFAULT_MODEL,
-        max_tokens: 500,
+        max_tokens: 250,
         messages: [
           {
             role: 'system',

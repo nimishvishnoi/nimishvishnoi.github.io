@@ -12,6 +12,7 @@ const ASSISTANT_API_URL =
   import.meta.env.VITE_ASSISTANT_API_URL ||
   'https://nimish-portfolio-assistant.nnimish75.workers.dev';
 const MAX_QUERY_LENGTH = 1000;
+const MAX_MESSAGES = 40;
 
 interface ChatMessage {
   id: number;
@@ -36,19 +37,35 @@ const initialMessage: ChatMessage = {
 };
 
 function renderInlineMarkdown(content: string): ReactNode[] {
-  return content.split(/(\*\*[^*]+\*\*|`[^`]+`)/g).map((part, index) => {
-    if (part.startsWith('**') && part.endsWith('**')) {
-      return <strong key={`${part}-${index}`}>{part.slice(2, -2)}</strong>;
-    }
-    if (part.startsWith('`') && part.endsWith('`')) {
-      return (
-        <code key={`${part}-${index}`} className="rounded bg-black/10 px-1 dark:bg-white/10">
-          {part.slice(1, -1)}
-        </code>
-      );
-    }
-    return <React.Fragment key={`${part}-${index}`}>{part}</React.Fragment>;
-  });
+  return content
+    .split(/(\*\*[^*]+\*\*|`[^`]+`|\[[^\]]+\]\(https?:\/\/[^)\s]+\))/g)
+    .map((part, index) => {
+      if (part.startsWith('**') && part.endsWith('**')) {
+        return <strong key={`${part}-${index}`}>{part.slice(2, -2)}</strong>;
+      }
+      if (part.startsWith('`') && part.endsWith('`')) {
+        return (
+          <code key={`${part}-${index}`} className="rounded bg-black/10 px-1 dark:bg-white/10">
+            {part.slice(1, -1)}
+          </code>
+        );
+      }
+      const link = part.match(/^\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)$/u);
+      if (link) {
+        return (
+          <a
+            key={`${part}-${index}`}
+            href={link[2]}
+            target="_blank"
+            rel="noreferrer"
+            className="underline"
+          >
+            {link[1]}
+          </a>
+        );
+      }
+      return <React.Fragment key={`${part}-${index}`}>{part}</React.Fragment>;
+    });
 }
 
 function parseMarkdown(content: string): MarkdownBlock[] {
@@ -122,16 +139,35 @@ export const PersonalAssistant: React.FC = () => {
   const [messages, setMessages] = useState<ChatMessage[]>([initialMessage]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const messageIdRef = useRef(1);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    const messagesEnd = messagesEndRef.current;
+    if (messagesEnd && typeof messagesEnd.scrollIntoView === 'function') {
+      messagesEnd.scrollIntoView({ behavior: 'smooth' });
+    }
   }, [messages, isLoading]);
 
   useEffect(() => {
     if (isOpen) inputRef.current?.focus();
   }, [isOpen]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setIsOpen(false);
+    };
+    window.addEventListener('keydown', closeOnEscape);
+    return () => window.removeEventListener('keydown', closeOnEscape);
+  }, [isOpen]);
+
+  const appendMessage = (message: Omit<ChatMessage, 'id'>) => {
+    setMessages((currentMessages) =>
+      [...currentMessages, { ...message, id: messageIdRef.current++ }].slice(-MAX_MESSAGES)
+    );
+  };
 
   const submitQuery = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -140,10 +176,7 @@ export const PersonalAssistant: React.FC = () => {
 
     setError(null);
     setQuery('');
-    setMessages((currentMessages) => [
-      ...currentMessages,
-      { id: Date.now(), role: 'user', content: trimmedQuery },
-    ]);
+    appendMessage({ role: 'user', content: trimmedQuery });
     setIsLoading(true);
     const controller = new AbortController();
     const timeout = window.setTimeout(() => controller.abort(), 15_000);
@@ -157,7 +190,8 @@ export const PersonalAssistant: React.FC = () => {
       });
       const payload = (await response.json()) as AssistantResponse;
 
-      if (!response.ok || typeof payload.answer !== 'string') {
+      const answer = payload.answer;
+      if (!response.ok || typeof answer !== 'string') {
         throw new Error(
           typeof payload.error === 'string'
             ? payload.error
@@ -165,10 +199,7 @@ export const PersonalAssistant: React.FC = () => {
         );
       }
 
-      setMessages((currentMessages) => [
-        ...currentMessages,
-        { id: Date.now(), role: 'assistant', content: payload.answer as string },
-      ]);
+      appendMessage({ role: 'assistant', content: answer });
     } catch (requestError) {
       if (requestError instanceof DOMException && requestError.name === 'AbortError') {
         setError('The assistant took too long to respond. Please try again.');
