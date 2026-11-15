@@ -225,6 +225,26 @@ describe('portfolio assistant Worker', () => {
     expect(payload.answer).toContain('.NET MVC');
   });
 
+  it.each(['achievements', 'list of achievements', 'achievents', 'What has he accomplished?'])(
+    'retrieves achievement context for "%s"',
+    async (query) => {
+      const run = vi
+        .fn()
+        .mockResolvedValueOnce({ response: 'achievements' })
+        .mockRejectedValueOnce(new Error('model unavailable'));
+      const response = await worker.fetch(
+        request(JSON.stringify({ query }), undefined, `achievements-${query}`),
+        { ...env, AI: { run } }
+      );
+      const payload = (await response.json()) as { answer?: string; category?: string };
+
+      expect(response.status).toBe(200);
+      expect(payload.category).toBe('achievements');
+      expect(payload.answer).toContain('Smart India Hackathon 2017');
+      expect(payload.answer).toContain('Gyan Jyoti college fest');
+    }
+  );
+
   it('retrieves an overview for broad profile questions', async () => {
     const response = await worker.fetch(
       request(JSON.stringify({ query: 'Tell me about Nimish' }), undefined, 'overview-client'),

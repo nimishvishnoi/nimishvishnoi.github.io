@@ -259,6 +259,59 @@ function classifyQuestion(query: string): QuestionCategory {
   return 'out_of_scope';
 }
 
+async function inferQuestionCategory(query: string, env: Env): Promise<QuestionCategory> {
+  if (!env.AI) return 'out_of_scope';
+
+  try {
+    const response = (await env.AI.run(env.AI_MODEL?.trim() || DEFAULT_MODEL, {
+      messages: [
+        {
+          role: 'system',
+          content:
+            'Classify the visitor question for a portfolio assistant. Return exactly one label: skills, experience, projects, education, achievements, contact, or out_of_scope. Understand synonyms, natural language, and spelling mistakes. Use out_of_scope when the question is unrelated to Nimish’s portfolio.',
+        },
+        { role: 'user', content: query },
+      ],
+      max_tokens: 20,
+      temperature: 0,
+    })) as WorkersAiResponse;
+    const label = (
+      response.response?.trim() ||
+      response.choices?.[0]?.message?.content?.trim() ||
+      ''
+    )
+      .toLowerCase()
+      .replace(/[^a-z_]+/gu, '');
+    const validCategories: QuestionCategory[] = [
+      'skills',
+      'experience',
+      'projects',
+      'education',
+      'achievements',
+      'contact',
+      'out_of_scope',
+    ];
+    return validCategories.includes(label as QuestionCategory)
+      ? (label as QuestionCategory)
+      : 'out_of_scope';
+  } catch (error) {
+    console.error('Question classification failed:', error);
+    return 'out_of_scope';
+  }
+}
+
+async function resolveQuestionCategory(query: string, env: Env): Promise<QuestionCategory> {
+  const localCategory = classifyQuestion(query);
+  if (localCategory !== 'out_of_scope') return localCategory;
+  if (
+    UNRELATED_TASK_PATTERN.test(query.toLowerCase()) &&
+    !PORTFOLIO_REFERENCE_PATTERN.test(query.toLowerCase())
+  ) {
+    return 'out_of_scope';
+  }
+  return inferQuestionCategory(query, env);
+}
+
 function isChatRequest(value: unknown): value is ChatRequest {
   if (!value || typeof value !== 'object' || !('query' in value)) return false;
   const query = value.query;
@@ -444,7 +497,7 @@ async function handleRequest(request: Request, env: Env): Promise<Response> {
 
   try {
     const query = body.query.trim();
-    const category = classifyQuestion(query);
+    const category = await resolveQuestionCategory(query, env);
     const context = category === 'out_of_scope' ? '' : (retrieveContext(query, category) ?? '');
     const answer = await generateAnswer(query, category, context, env);
     return jsonResponse({ answer, category }, 200, origin);
