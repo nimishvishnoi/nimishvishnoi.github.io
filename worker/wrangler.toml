@@ -10,4 +10,7 @@ fallthrough = true
 
 [vars]
 ALLOWED_ORIGIN = "https://nimishvishnoi.github.io"
-AI_MODEL = "gpt-4o-mini"
+AI_MODEL = "@cf/openai/gpt-oss-20b"
+
+[ai]
+binding = "AI"

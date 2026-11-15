@@ -113,6 +113,25 @@ describe('portfolio assistant Worker', () => {
     expect(payload.answer).not.toContain('###');
   });
 
+  it('uses Workers AI to turn matched context into a direct answer', async () => {
+    const run = vi.fn().mockResolvedValue({
+      response: 'Nimish works with C#, .NET, React, and cloud technologies.',
+    });
+    const response = await worker.fetch(
+      request(
+        JSON.stringify({ query: 'What technical skills does Nimish have?' }),
+        undefined,
+        'workers-ai-client'
+      ),
+      { ...env, AI: { run } }
+    );
+    const payload = (await response.json()) as { answer?: string };
+
+    expect(response.status).toBe(200);
+    expect(payload.answer).toBe('Nimish works with C#, .NET, React, and cloud technologies.');
+    expect(run).toHaveBeenCalledOnce();
+  });
+
   it('returns focused context for technical skills questions', async () => {
     const response = await worker.fetch(
       request(

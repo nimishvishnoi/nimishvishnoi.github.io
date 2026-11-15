@@ -92,15 +92,18 @@ npm run dev
 npm run deploy
 ```
 
-Configure `AI_API_KEY` and `AI_API_URL` as Worker secrets when using an
-OpenAI-compatible provider. Without an API key, the endpoint uses deterministic
-context retrieval and does not call an external provider. `ALLOWED_ORIGIN`
-defaults to `https://nimishvishnoi.github.io` and should remain restricted to
-the deployed portfolio origin. The Worker enforces JSON requests, a bounded
-10-request-per-minute per-client limit, a 10-second provider timeout, and a
-maximum provider response size. These controls are intentionally in-memory and
-free-tier compatible; Cloudflare Rate Limiting or Durable Objects can provide
-stronger global enforcement later if traffic requires it.
+The Worker uses the native Cloudflare Workers AI binding with
+`@cf/openai/gpt-oss-20b` to turn retrieved portfolio context into concise,
+natural-language answers. No model API key is exposed to the frontend or
+required in GitHub Actions. An OpenAI-compatible provider can still be used by
+configuring `AI_API_KEY` and `AI_API_URL` as Worker secrets. If neither provider
+is available, the endpoint falls back to deterministic context retrieval.
+`ALLOWED_ORIGIN` defaults to `https://nimishvishnoi.github.io` and should remain
+restricted to the deployed portfolio origin. The Worker enforces JSON requests,
+a bounded 10-request-per-minute per-client limit, a 10-second external-provider
+timeout, and a maximum provider response size. These controls are intentionally
+in-memory and free-tier compatible; Cloudflare Rate Limiting or Durable Objects
+can provide stronger global enforcement later if traffic requires it.
 
 The first administrator must be provisioned outside the public application
 (for example, through the Firebase console). The public app cannot create the
