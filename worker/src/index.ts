@@ -39,6 +39,10 @@ const GREETING_PATTERN =
   /^(?:hi|hello|hey|good morning|good afternoon|good evening)(?:[!,. ]+how are you(?: doing)?\s*[!?]*)?$/iu;
 const EXPERIENCE_DURATION_PATTERN =
   /\b(?:how many years|years of experience|years experience|experience duration)\b/iu;
+const PORTFOLIO_REFERENCE_PATTERN =
+  /\b(?:nimish|his|portfolio|career|experience|project|skill|technology|education|achievement|contact)\b/iu;
+const UNRELATED_TASK_PATTERN =
+  /\b(?:write|build|create|solve|debug|implement|generate|draft|translate|calculate|homework|essay|assignment)\b/iu;
 
 interface Env {
   AI?: WorkersAiBinding;
@@ -51,6 +55,16 @@ interface Env {
 interface ChatRequest {
   query: string;
 }
+
+type QuestionCategory =
+  | 'greeting'
+  | 'skills'
+  | 'experience'
+  | 'projects'
+  | 'education'
+  | 'achievements'
+  | 'contact'
+  | 'out_of_scope';
 
 interface ProviderResponse {
   choices?: Array<{
@@ -171,6 +185,37 @@ function conversationalAnswer(query: string): string | null {
     return 'Nimish has 8+ years of professional software engineering experience.';
   }
   return null;
+}
+
+function classifyQuestion(query: string): QuestionCategory {
+  const normalizedQuery = query.toLowerCase();
+  if (GREETING_PATTERN.test(query.trim())) return 'greeting';
+  if (
+    UNRELATED_TASK_PATTERN.test(normalizedQuery) &&
+    !PORTFOLIO_REFERENCE_PATTERN.test(normalizedQuery)
+  ) {
+    return 'out_of_scope';
+  }
+  if (/\b(?:skill|skills|technology|technologies|tech|expertise)\b/u.test(normalizedQuery)) {
+    return 'skills';
+  }
+  if (/\b(?:experience|career|employment|job|role|work)\b/u.test(normalizedQuery)) {
+    return 'experience';
+  }
+  if (/\b(?:project|projects|built|developed|application|website)\b/u.test(normalizedQuery)) {
+    return 'projects';
+  }
+  if (/\b(?:education|degree|study|studied|college|university)\b/u.test(normalizedQuery)) {
+    return 'education';
+  }
+  if (/\b(?:achievement|award|recognition|hackathon)\b/u.test(normalizedQuery)) {
+    return 'achievements';
+  }
+  if (/\b(?:contact|hire|reach|email|resume|linkedin)\b/u.test(normalizedQuery)) {
+    return 'contact';
+  }
+  if (BROAD_QUERY_PATTERN.test(normalizedQuery)) return 'experience';
+  return 'out_of_scope';
 }
 
 function isChatRequest(value: unknown): value is ChatRequest {
@@ -336,8 +381,10 @@ async function handleRequest(request: Request, env: Env): Promise<Response> {
 
   try {
     const query = body.query.trim();
-    const answer = await generateAnswer(query, retrieveContext(query) ?? '', env);
-    return jsonResponse({ answer }, 200, origin);
+    const category = classifyQuestion(query);
+    const context = category === 'out_of_scope' ? '' : (retrieveContext(query) ?? '');
+    const answer = await generateAnswer(query, context, env);
+    return jsonResponse({ answer, category }, 200, origin);
   } catch (error) {
     console.error('Portfolio assistant request failed', error);
     return jsonResponse(

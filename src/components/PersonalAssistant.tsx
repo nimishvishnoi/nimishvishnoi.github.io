@@ -7,12 +7,15 @@ import React, {
   useState,
 } from 'react';
 import { FiCpu, FiMessageCircle, FiSend, FiUser, FiX } from 'react-icons/fi';
+import analytics from '@services/analytics';
 
 const ASSISTANT_API_URL =
   import.meta.env.VITE_ASSISTANT_API_URL ||
   'https://nimish-portfolio-assistant.nnimish75.workers.dev';
 const MAX_QUERY_LENGTH = 1000;
 const MAX_MESSAGES = 40;
+const MAX_SESSION_QUESTIONS = 12;
+const SESSION_QUESTION_COUNT_KEY = 'portfolio-assistant-question-count';
 
 interface ChatMessage {
   id: number;
@@ -22,6 +25,7 @@ interface ChatMessage {
 
 interface AssistantResponse {
   answer?: unknown;
+  category?: unknown;
   error?: unknown;
 }
 
@@ -35,6 +39,23 @@ const initialMessage: ChatMessage = {
   role: 'assistant',
   content: 'Hi! I can answer questions about Nimish’s experience, projects, and technical skills.',
 };
+
+function getSessionQuestionCount(): number {
+  try {
+    const storedCount = Number(sessionStorage.getItem(SESSION_QUESTION_COUNT_KEY));
+    return Number.isInteger(storedCount) && storedCount >= 0 ? storedCount : 0;
+  } catch {
+    return 0;
+  }
+}
+
+function saveSessionQuestionCount(count: number): void {
+  try {
+    sessionStorage.setItem(SESSION_QUESTION_COUNT_KEY, String(count));
+  } catch {
+    // Session limits remain enforced for the current component instance.
+  }
+}
 
 function renderInlineMarkdown(content: string): ReactNode[] {
   return content
@@ -139,6 +160,7 @@ export const PersonalAssistant: React.FC = () => {
   const [messages, setMessages] = useState<ChatMessage[]>([initialMessage]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [sessionQuestionCount, setSessionQuestionCount] = useState(getSessionQuestionCount);
   const messageIdRef = useRef(1);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -173,10 +195,19 @@ export const PersonalAssistant: React.FC = () => {
     event.preventDefault();
     const trimmedQuery = query.trim();
     if (!trimmedQuery || isLoading) return;
+    if (sessionQuestionCount >= MAX_SESSION_QUESTIONS) {
+      setError(
+        'This chat session has reached its question limit. Please continue exploring the portfolio.'
+      );
+      return;
+    }
 
     setError(null);
     setQuery('');
     appendMessage({ role: 'user', content: trimmedQuery });
+    const nextQuestionCount = sessionQuestionCount + 1;
+    setSessionQuestionCount(nextQuestionCount);
+    saveSessionQuestionCount(nextQuestionCount);
     setIsLoading(true);
     const controller = new AbortController();
     const timeout = window.setTimeout(() => controller.abort(), 15_000);
@@ -192,6 +223,10 @@ export const PersonalAssistant: React.FC = () => {
 
       const answer = payload.answer;
       if (!response.ok || typeof answer !== 'string') {
+        await analytics.logAssistantQuestion(
+          typeof payload.category === 'string' ? payload.category : 'out_of_scope',
+          response.status === 429 ? 'rate_limited' : 'error'
+        );
         throw new Error(
           typeof payload.error === 'string'
             ? payload.error
@@ -200,6 +235,11 @@ export const PersonalAssistant: React.FC = () => {
       }
 
       appendMessage({ role: 'assistant', content: answer });
+      await analytics.logAssistantQuestion(
+        typeof payload.category === 'string' ? payload.category : 'out_of_scope',
+        'answered',
+        answer.length
+      );
     } catch (requestError) {
       if (requestError instanceof DOMException && requestError.name === 'AbortError') {
         setError('The assistant took too long to respond. Please try again.');
@@ -306,12 +346,14 @@ export const PersonalAssistant: React.FC = () => {
                 maxLength={MAX_QUERY_LENGTH}
                 rows={1}
                 placeholder="Ask a question..."
-                disabled={isLoading}
+                disabled={isLoading || sessionQuestionCount >= MAX_SESSION_QUESTIONS}
                 className="max-h-24 min-h-10 flex-1 resize-none rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/30 disabled:opacity-60 dark:border-slate-600 dark:bg-slate-900 dark:text-white"
               />
               <button
                 type="submit"
-                disabled={!query.trim() || isLoading}
+                disabled={
+                  !query.trim() || isLoading || sessionQuestionCount >= MAX_SESSION_QUESTIONS
+                }
                 aria-label="Send question"
                 className="rounded-lg bg-primary-600 p-2.5 text-white transition-colors hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-50"
               >
@@ -320,6 +362,11 @@ export const PersonalAssistant: React.FC = () => {
             </div>
             <p className="mt-1 text-[11px] text-gray-500 dark:text-gray-400">
               Enter to send · Shift+Enter for a new line
+            </p>
+            <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
+              {sessionQuestionCount >= MAX_SESSION_QUESTIONS
+                ? 'Session question limit reached.'
+                : `${MAX_SESSION_QUESTIONS - sessionQuestionCount} questions remaining in this session.`}
             </p>
           </form>
         </section>

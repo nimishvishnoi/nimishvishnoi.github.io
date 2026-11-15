@@ -98,6 +98,11 @@ natural-language answers. No model API key is exposed to the frontend or
 required in GitHub Actions. An OpenAI-compatible provider can still be used by
 configuring `AI_API_KEY` and `AI_API_URL` as Worker secrets. If neither provider
 is available, the endpoint falls back to deterministic context retrieval.
+Questions are classified into portfolio categories and unrelated work requests
+are rejected before model execution. The widget permits 12 questions per
+browser session. The frontend stores only aggregate assistant analytics
+(category, outcome, and answer length) in the existing admin-only analytics
+collection; raw prompts, IP addresses, and visitor identifiers are not stored.
 `ALLOWED_ORIGIN` defaults to `https://nimishvishnoi.github.io` and should remain
 restricted to the deployed portfolio origin. The Worker enforces JSON requests,
 a bounded 10-request-per-minute per-client limit, a 10-second external-provider

@@ -47,7 +47,8 @@ service cloud.firestore {
           'page_view',
           'form_submission',
           'project_click',
-          'resume_download'
+          'resume_download',
+          'assistant_question'
         ]
         && request.resource.data.keys().hasOnly([
           'eventType',
@@ -59,6 +60,32 @@ service cloud.firestore {
         ])
         && request.resource.data.eventType == eventType
         && request.resource.data.data is map
+        && (eventType != 'assistant_question'
+          || (
+            request.resource.data.data.keys().hasOnly([
+              'category',
+              'outcome',
+              'answerLength'
+            ])
+            && request.resource.data.data.category in [
+              'greeting',
+              'skills',
+              'experience',
+              'projects',
+              'education',
+              'achievements',
+              'contact',
+              'out_of_scope'
+            ]
+            && request.resource.data.data.outcome in [
+              'answered',
+              'error',
+              'rate_limited'
+            ]
+            && request.resource.data.data.answerLength is number
+            && request.resource.data.data.answerLength >= 0
+            && request.resource.data.data.answerLength <= 1500
+          ))
         && request.resource.data.createdAt == request.time
         && request.resource.data.timestamp is number
         && request.resource.data.userAgent is string

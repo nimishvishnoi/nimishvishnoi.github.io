@@ -15,6 +15,7 @@ export function AdminDashboard() {
     { label: 'Form Submissions', value: 0, icon: '✉️' },
     { label: 'Project Clicks', value: 0, icon: '🖱️' },
     { label: 'Resume Downloads', value: 0, icon: '📄' },
+    { label: 'Assistant Questions', value: 0, icon: '🤖' },
   ]);
   const [isLoading, setIsLoading] = useState(true);
   const [hasData, setHasData] = useState(false);
@@ -22,18 +23,21 @@ export function AdminDashboard() {
   const loadAnalytics = useCallback(async () => {
     setIsLoading(true);
     try {
-      const [pageViews, formSubmissions, projectClicks, resumeDownloads] = await Promise.all([
-        analytics.getAnalyticsData('page_view'),
-        analytics.getAnalyticsData('form_submission'),
-        analytics.getAnalyticsData('project_click'),
-        analytics.getAnalyticsData('resume_download'),
-      ]);
+      const [pageViews, formSubmissions, projectClicks, resumeDownloads, assistantQuestions] =
+        await Promise.all([
+          analytics.getAnalyticsData('page_view'),
+          analytics.getAnalyticsData('form_submission'),
+          analytics.getAnalyticsData('project_click'),
+          analytics.getAnalyticsData('resume_download'),
+          analytics.getAnalyticsData('assistant_question'),
+        ]);
 
       const newStats = [
         { label: 'Page Views', value: pageViews.length, icon: '👁️' },
         { label: 'Form Submissions', value: formSubmissions.length, icon: '✉️' },
         { label: 'Project Clicks', value: projectClicks.length, icon: '🖱️' },
         { label: 'Resume Downloads', value: resumeDownloads.length, icon: '📄' },
+        { label: 'Assistant Questions', value: assistantQuestions.length, icon: '🤖' },
       ];
 
       setStats(newStats);

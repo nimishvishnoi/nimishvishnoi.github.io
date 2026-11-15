@@ -47,11 +47,21 @@ interface ResumeDownloadEvent extends AnalyticsEvent {
   data: { format: string; method: string };
 }
 
+interface AssistantQuestionEvent extends AnalyticsEvent {
+  eventType: 'assistant_question';
+  data: {
+    category: string;
+    outcome: 'answered' | 'error' | 'rate_limited';
+    answerLength: number;
+  };
+}
+
 export type AnalyticsEventType =
   | PageViewEvent
   | FormSubmissionEvent
   | ProjectClickEvent
-  | ResumeDownloadEvent;
+  | ResumeDownloadEvent
+  | AssistantQuestionEvent;
 
 const analytics = {
   async logEvent(event: AnalyticsEventType): Promise<void> {
@@ -115,6 +125,24 @@ const analytics = {
     return this.logEvent({
       eventType: 'resume_download',
       data: { format, method },
+      timestamp: 0,
+      userAgent: '',
+      url: '',
+    });
+  },
+
+  async logAssistantQuestion(
+    category: string,
+    outcome: AssistantQuestionEvent['data']['outcome'],
+    answerLength = 0
+  ): Promise<void> {
+    return this.logEvent({
+      eventType: 'assistant_question',
+      data: {
+        category: category.slice(0, 32),
+        outcome,
+        answerLength: Math.max(0, Math.min(answerLength, 1500)),
+      },
       timestamp: 0,
       userAgent: '',
       url: '',
