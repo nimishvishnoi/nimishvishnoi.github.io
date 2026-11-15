@@ -8,40 +8,6 @@ Computer Science and Engineering. He builds reliable, scalable full-stack
 applications and provides technical leadership across architecture, implementation,
 delivery automation, and engineering quality.
 
-## Technical skills and competencies
-
-### Backend and APIs
-
-- C#
-- .NET and .NET Core
-- ASP.NET MVC
-- RESTful web services
-- Python
-
-### Frontend
-
-- React
-- JavaScript
-- Stencil
-- HTML and CSS
-- jQuery
-- Bootstrap
-- Responsive web design
-
-### Data
-
-- SQL Server
-- MongoDB
-
-### Cloud and delivery
-
-- AWS
-- Azure architecture concepts
-- Git and GitHub Actions
-- Terraform
-- Software testing
-- CI/CD and delivery automation
-
 ## Experience
 
 ### Staff Engineer — Nagarro
@@ -76,29 +42,6 @@ delivery automation, and engineering quality.
 Before Nagarro, Nimish worked on .NET MVC, APIs, JavaScript, SQL Server, PHP,
 MySQL, Android, and Python projects, including customer-facing web applications
 and data analysis work.
-
-## Selected projects
-
-### ESI Synthesis — 2020
-
-A logistics and commercial application used by Oil and Gas companies to manage
-their order-to-cash cycle. Technologies: C#, ASP.NET, SQL Server, and JavaScript.
-
-### L & L Automotive — 2019
-
-An automotive catalog website for browsing and filtering vehicles by model,
-built with .NET MVC, jQuery, and SQL Server.
-
-### Bizzalley — 2019
-
-A customer engagement platform that helps businesses connect with prospects and
-manage customer inquiries. Technologies included .NET MVC, APIs, Firebase,
-JavaScript, and SQL Server.
-
-### Anomaly Detection in Data Center — 2018
-
-A Python and machine-learning project that identified unexpected items or events
-in datasets using unsupervised learning algorithms.
 
 ## Working style
 

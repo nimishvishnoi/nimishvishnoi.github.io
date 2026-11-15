@@ -1,3 +1,4 @@
+import contactContext from '../context/contact.md';
 import profileContext from '../context/profile.md';
 import projectsContext from '../context/projects.md';
 import skillsContext from '../context/skills.md';
@@ -45,13 +46,11 @@ const PORTFOLIO_REFERENCE_PATTERN =
 const UNRELATED_TASK_PATTERN =
   /\b(?:write|build|create|solve|debug|implement|generate|draft|translate|calculate|homework|essay|assignment)\b/iu;
 
-interface Env {
-  AI?: WorkersAiBinding;
+type AssistantEnv = Partial<Record<keyof Pick<Env, 'AI_MODEL' | 'ALLOWED_ORIGIN'>, string>> & {
+  AI?: Pick<Ai, 'run'>;
   AI_API_KEY?: string;
   AI_API_URL?: string;
-  AI_MODEL?: string;
-  ALLOWED_ORIGIN?: string;
-}
+};
 
 function deterministicFallback(category: QuestionCategory, context: string): string {
   if (category === 'out_of_scope') {
@@ -95,16 +94,6 @@ interface WorkersAiResponse {
   }>;
 }
 
-interface WorkersAiBinding {
-  run(
-    model: string,
-    input: {
-      messages: Array<{ role: 'system' | 'user'; content: string }>;
-      max_tokens: number;
-      temperature: number;
-    }
-  ): Promise<unknown>;
-}
 interface ContextMatch {
   section: string;
   score: number;
@@ -117,7 +106,7 @@ interface RateLimitEntry {
 
 const rateLimits = new Map<string, RateLimitEntry>();
 
-function allowedOrigin(request: Request, env: Env): string {
+function allowedOrigin(request: Request, env: AssistantEnv): string {
   const configuredOrigin = env.ALLOWED_ORIGIN?.trim() || DEFAULT_ORIGIN;
   return request.headers.get('Origin') === configuredOrigin ? configuredOrigin : '';
 }
@@ -148,7 +137,7 @@ function jsonResponse(
 }
 
 function splitContext(): string[] {
-  return [profileContext, projectsContext, skillsContext]
+  return [profileContext, projectsContext, skillsContext, contactContext]
     .flatMap((document) => document.split(/\n(?=## )/u))
     .map((section) => section.trim())
     .filter((section) => !section.startsWith('## Assistant response rules'))
@@ -156,6 +145,8 @@ function splitContext(): string[] {
 }
 
 function retrieveContext(query: string, category: QuestionCategory, limit = 3): string | null {
+  if (category === 'contact') return contactContext.trim();
+
   const rawTerms = query
     .toLowerCase()
     .split(/[^a-z0-9+#.]+/u)
@@ -181,7 +172,6 @@ function retrieveContext(query: string, category: QuestionCategory, limit = 3): 
     if (category === 'projects') return heading.includes('selected projects');
     if (category === 'education') return heading.includes('education');
     if (category === 'achievements') return heading.includes('achievements');
-    if (category === 'contact') return heading.includes('overview');
     return false;
   });
   const candidateSections = categorySections.length > 0 ? categorySections : splitContext();
@@ -251,7 +241,11 @@ function classifyQuestion(query: string): QuestionCategory {
   if (/\b(?:achievement|award|recognition|hackathon)\b/u.test(normalizedQuery)) {
     return 'achievements';
   }
-  if (/\b(?:contact|hire|reach|email|resume|linkedin)\b/u.test(normalizedQuery)) {
+  if (
+    /\b(?:contact|hire|reach|email|phone|mobile|call|resume|linkedin|github)\b/u.test(
+      normalizedQuery
+    )
+  ) {
     return 'contact';
   }
   if (BROAD_QUERY_PATTERN.test(normalizedQuery)) return 'experience';
@@ -259,7 +253,7 @@ function classifyQuestion(query: string): QuestionCategory {
   return 'out_of_scope';
 }
 
-async function inferQuestionCategory(query: string, env: Env): Promise<QuestionCategory> {
+async function inferQuestionCategory(query: string, env: AssistantEnv): Promise<QuestionCategory> {
   if (!env.AI) return 'out_of_scope';
 
   try {
@@ -295,12 +289,20 @@ async function inferQuestionCategory(query: string, env: Env): Promise<QuestionC
       ? (label as QuestionCategory)
       : 'out_of_scope';
   } catch (error) {
-    console.error('Question classification failed:', error);
+    console.error(
+      JSON.stringify({
+        message: 'Question classification failed',
+        error: error instanceof Error ? error.message : String(error),
+      })
+    );
     return 'out_of_scope';
   }
 }
 
-async function resolveQuestionCategory(query: string, env: Env): Promise<QuestionCategory> {
+async function resolveQuestionCategory(
+  query: string,
+  env: AssistantEnv
+): Promise<QuestionCategory> {
   const localCategory = classifyQuestion(query);
   if (localCategory !== 'out_of_scope') return localCategory;
   if (
@@ -322,7 +324,7 @@ async function generateAnswer(
   query: string,
   category: QuestionCategory,
   context: string,
-  env: Env
+  env: AssistantEnv
 ): Promise<string> {
   const conversationalResponse = conversationalAnswer(query);
   if (conversationalResponse) return conversationalResponse;
@@ -349,17 +351,22 @@ async function generateAnswer(
         temperature: 0.2,
       })) as WorkersAiResponse;
     } catch (error) {
-      console.error('Workers AI request failed:', error);
+      console.error(
+        JSON.stringify({
+          message: 'Workers AI request failed',
+          error: error instanceof Error ? error.message : String(error),
+        })
+      );
       return deterministicFallback(category, context);
     }
     const answer =
       response.response?.trim() || response.choices?.[0]?.message?.content?.trim() || '';
     if (!answer) {
-      console.error('Workers AI returned no visible answer.');
+      console.error(JSON.stringify({ message: 'Workers AI returned no visible answer' }));
       return deterministicFallback(category, context);
     }
     if (answer.length > MAX_ANSWER_LENGTH) {
-      console.warn('Workers AI returned an oversized answer; using grounded fallback.');
+      console.warn(JSON.stringify({ message: 'Workers AI returned an oversized answer' }));
       return deterministicFallback(category, context);
     }
     return answer;
@@ -371,7 +378,9 @@ async function generateAnswer(
 
   const endpoint = env.AI_API_URL?.trim();
   if (!endpoint) {
-    console.error('AI_API_URL is missing while AI_API_KEY is configured.');
+    console.error(
+      JSON.stringify({ message: 'AI_API_URL is missing while AI_API_KEY is configured' })
+    );
     return deterministicFallback(category, context);
   }
 
@@ -403,24 +412,32 @@ async function generateAnswer(
       signal: controller.signal,
     });
   } catch (error) {
-    console.error('External AI provider request failed:', error);
+    console.error(
+      JSON.stringify({
+        message: 'External AI provider request failed',
+        error: error instanceof Error ? error.message : String(error),
+      })
+    );
     return deterministicFallback(category, context);
   } finally {
     clearTimeout(timeout);
   }
 
   if (!response.ok) {
-    throw new Error(`AI provider returned HTTP ${response.status}.`);
+    console.error(
+      JSON.stringify({ message: 'External AI provider returned an error', status: response.status })
+    );
+    return deterministicFallback(category, context);
   }
 
   const payload = (await response.json()) as ProviderResponse;
   const answer = payload.choices?.[0]?.message?.content?.trim();
   if (!answer) {
-    console.error('AI provider returned no visible answer.');
+    console.error(JSON.stringify({ message: 'AI provider returned no visible answer' }));
     return deterministicFallback(category, context);
   }
   if (answer.length > MAX_ANSWER_LENGTH) {
-    console.warn('AI provider returned an oversized answer; using grounded fallback.');
+    console.warn(JSON.stringify({ message: 'AI provider returned an oversized answer' }));
     return deterministicFallback(category, context);
   }
   return answer;
@@ -450,7 +467,36 @@ function checkRateLimit(request: Request): number | null {
   return null;
 }
 
-async function handleRequest(request: Request, env: Env): Promise<Response> {
+async function readRequestBody(request: Request): Promise<string | null> {
+  if (!request.body) return '';
+
+  const reader = request.body.getReader();
+  const chunks: Uint8Array[] = [];
+  let length = 0;
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      length += value.byteLength;
+      if (length > MAX_BODY_LENGTH) {
+        await reader.cancel();
+        return null;
+      }
+      chunks.push(value);
+    }
+  } finally {
+    reader.releaseLock();
+  }
+  const body = new Uint8Array(length);
+  let offset = 0;
+  for (const chunk of chunks) {
+    body.set(chunk, offset);
+    offset += chunk.byteLength;
+  }
+  return new TextDecoder().decode(body);
+}
+
+async function handleRequest(request: Request, env: AssistantEnv): Promise<Response> {
   const origin = allowedOrigin(request, env);
   if (!origin) return jsonResponse({ error: 'Origin is not allowed.' }, 403, '');
 
@@ -478,8 +524,8 @@ async function handleRequest(request: Request, env: Env): Promise<Response> {
 
   let body: unknown;
   try {
-    const rawBody = await request.text();
-    if (rawBody.length > MAX_BODY_LENGTH) {
+    const rawBody = await readRequestBody(request);
+    if (rawBody === null) {
       return jsonResponse({ error: 'Request body is too large.' }, 413, origin);
     }
     body = JSON.parse(rawBody) as unknown;
@@ -502,7 +548,12 @@ async function handleRequest(request: Request, env: Env): Promise<Response> {
     const answer = await generateAnswer(query, category, context, env);
     return jsonResponse({ answer, category }, 200, origin);
   } catch (error) {
-    console.error('Portfolio assistant request failed', error);
+    console.error(
+      JSON.stringify({
+        message: 'Portfolio assistant request failed',
+        error: error instanceof Error ? error.message : String(error),
+      })
+    );
     return jsonResponse(
       { error: 'The assistant is temporarily unavailable. Please try again later.' },
       502,
@@ -512,7 +563,7 @@ async function handleRequest(request: Request, env: Env): Promise<Response> {
 }
 
 export default {
-  fetch(request: Request, env: Env): Promise<Response> {
+  fetch(request: Request, env: AssistantEnv): Promise<Response> {
     return handleRequest(request, env);
   },
-};
+} satisfies ExportedHandler<Env>;
