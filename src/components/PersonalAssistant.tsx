@@ -1,4 +1,11 @@
-import React, { FormEvent, useEffect, useRef, useState } from 'react';
+import React, {
+  FormEvent,
+  KeyboardEvent as ReactKeyboardEvent,
+  ReactNode,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { FiCpu, FiMessageCircle, FiSend, FiUser, FiX } from 'react-icons/fi';
 
 const ASSISTANT_API_URL =
@@ -17,11 +24,97 @@ interface AssistantResponse {
   error?: unknown;
 }
 
+type MarkdownBlock =
+  | { type: 'heading'; content: string }
+  | { type: 'paragraph'; content: string }
+  | { type: 'list'; content: string[] };
+
 const initialMessage: ChatMessage = {
   id: 0,
   role: 'assistant',
   content: 'Hi! I can answer questions about Nimish’s experience, projects, and technical skills.',
 };
+
+function renderInlineMarkdown(content: string): ReactNode[] {
+  return content.split(/(\*\*[^*]+\*\*|`[^`]+`)/g).map((part, index) => {
+    if (part.startsWith('**') && part.endsWith('**')) {
+      return <strong key={`${part}-${index}`}>{part.slice(2, -2)}</strong>;
+    }
+    if (part.startsWith('`') && part.endsWith('`')) {
+      return (
+        <code key={`${part}-${index}`} className="rounded bg-black/10 px-1 dark:bg-white/10">
+          {part.slice(1, -1)}
+        </code>
+      );
+    }
+    return <React.Fragment key={`${part}-${index}`}>{part}</React.Fragment>;
+  });
+}
+
+function parseMarkdown(content: string): MarkdownBlock[] {
+  const blocks: MarkdownBlock[] = [];
+  let paragraph: string[] = [];
+  let list: string[] = [];
+
+  const flush = () => {
+    if (paragraph.length > 0) {
+      blocks.push({ type: 'paragraph', content: paragraph.join(' ') });
+      paragraph = [];
+    }
+    if (list.length > 0) {
+      blocks.push({ type: 'list', content: list });
+      list = [];
+    }
+  };
+
+  content.split(/\r?\n/u).forEach((line) => {
+    const trimmedLine = line.trim();
+    const heading = trimmedLine.match(/^#{1,3}\s+(.+)$/u);
+    const listItem = trimmedLine.match(/^[-*]\s+(.+)$/u);
+
+    if (!trimmedLine) {
+      flush();
+    } else if (heading) {
+      flush();
+      blocks.push({ type: 'heading', content: heading[1] });
+    } else if (listItem) {
+      if (paragraph.length > 0) flush();
+      list.push(listItem[1]);
+    } else {
+      if (list.length > 0) flush();
+      paragraph.push(trimmedLine);
+    }
+  });
+  flush();
+  return blocks;
+}
+
+const AssistantMarkdown: React.FC<{ content: string }> = ({ content }) => (
+  <div className="space-y-2">
+    {parseMarkdown(content).map((block, index) => {
+      if (block.type === 'heading') {
+        return (
+          <h3
+            key={`${block.type}-${index}`}
+            className="font-semibold text-gray-900 dark:text-white"
+          >
+            {renderInlineMarkdown(block.content)}
+          </h3>
+        );
+      }
+      if (block.type === 'list') {
+        return (
+          <ul key={`${block.type}-${index}`} className="list-disc space-y-1 pl-4">
+            {block.content.map((item, itemIndex) => (
+              <li key={`${item}-${itemIndex}`}>{renderInlineMarkdown(item)}</li>
+            ))}
+          </ul>
+        );
+      }
+      return <p key={`${block.type}-${index}`}>{renderInlineMarkdown(block.content)}</p>;
+    })}
+  </div>
+);
 
 export const PersonalAssistant: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -92,6 +185,13 @@ export const PersonalAssistant: React.FC = () => {
     }
   };
 
+  const handleInputKeyDown = (event: ReactKeyboardEvent<HTMLTextAreaElement>) => {
+    if (event.key === 'Enter' && !event.shiftKey) {
+      event.preventDefault();
+      event.currentTarget.form?.requestSubmit();
+    }
+  };
+
   return (
     <div className="fixed bottom-5 right-5 z-50 sm:bottom-6 sm:right-6">
       {isOpen && (
@@ -131,15 +231,19 @@ export const PersonalAssistant: React.FC = () => {
                 >
                   {message.role === 'user' ? <FiUser /> : <FiCpu />}
                 </span>
-                <p
+                <div
                   className={`max-w-[85%] whitespace-pre-wrap rounded-xl px-3 py-2 text-sm ${
                     message.role === 'user'
                       ? 'bg-primary-600 text-white'
                       : 'bg-gray-100 text-gray-800 dark:bg-slate-700 dark:text-gray-100'
                   }`}
                 >
-                  {message.content}
-                </p>
+                  {message.role === 'assistant' ? (
+                    <AssistantMarkdown content={message.content} />
+                  ) : (
+                    message.content
+                  )}
+                </div>
               </div>
             ))}
 
@@ -165,6 +269,7 @@ export const PersonalAssistant: React.FC = () => {
                 id="assistant-query"
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
+                onKeyDown={handleInputKeyDown}
                 maxLength={MAX_QUERY_LENGTH}
                 rows={1}
                 placeholder="Ask a question..."
@@ -180,6 +285,9 @@ export const PersonalAssistant: React.FC = () => {
                 <FiSend aria-hidden="true" />
               </button>
             </div>
+            <p className="mt-1 text-[11px] text-gray-500 dark:text-gray-400">
+              Enter to send · Shift+Enter for a new line
+            </p>
           </form>
         </section>
       )}
