@@ -227,6 +227,8 @@ export const PersonalAssistant: React.FC = () => {
     <div className="fixed bottom-5 right-5 z-50 sm:bottom-6 sm:right-6">
       {isOpen && (
         <section
+          role="dialog"
+          aria-modal="true"
           aria-label="Personal AI portfolio assistant"
           className="mb-4 flex h-[min(34rem,calc(100vh-7rem))] w-[min(20rem,calc(100vw-2.5rem))] max-w-[calc(100vw-2.5rem)] flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xl dark:border-slate-700 dark:bg-slate-800 sm:w-80"
         >
