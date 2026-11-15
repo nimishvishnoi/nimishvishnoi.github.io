@@ -147,8 +147,12 @@ jobs:
 
       - name: Sync Firebase admin claims
         run: |
-          npm install --no-save --no-package-lock firebase-admin@13.6.0
-          node scripts/set-admin-claims.mjs
+          claims_dir="$(mktemp -d)"
+          trap 'rm -rf "$claims_dir"' EXIT
+          npm init --yes --prefix "$claims_dir" >/dev/null 2>&1
+          npm install --prefix "$claims_dir" --no-package-lock firebase-admin@13.6.0
+          cp scripts/set-admin-claims.mjs "$claims_dir/set-admin-claims.mjs"
+          node "$claims_dir/set-admin-claims.mjs"
         env:
           FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
           FIREBASE_ADMIN_UIDS: ${{ secrets.FIREBASE_ADMIN_UIDS }}
