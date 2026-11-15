@@ -15,7 +15,6 @@ const ASSISTANT_API_URL =
 const MAX_QUERY_LENGTH = 1000;
 const MAX_MESSAGES = 40;
 const MAX_SESSION_QUESTIONS = 12;
-const SESSION_QUESTION_COUNT_KEY = 'portfolio-assistant-question-count';
 
 interface ChatMessage {
   id: number;
@@ -39,23 +38,6 @@ const initialMessage: ChatMessage = {
   role: 'assistant',
   content: 'Hi! I can answer questions about Nimish’s experience, projects, and technical skills.',
 };
-
-function getSessionQuestionCount(): number {
-  try {
-    const storedCount = Number(sessionStorage.getItem(SESSION_QUESTION_COUNT_KEY));
-    return Number.isInteger(storedCount) && storedCount >= 0 ? storedCount : 0;
-  } catch {
-    return 0;
-  }
-}
-
-function saveSessionQuestionCount(count: number): void {
-  try {
-    sessionStorage.setItem(SESSION_QUESTION_COUNT_KEY, String(count));
-  } catch {
-    // Session limits remain enforced for the current component instance.
-  }
-}
 
 function renderInlineMarkdown(content: string): ReactNode[] {
   return content
@@ -160,7 +142,7 @@ export const PersonalAssistant: React.FC = () => {
   const [messages, setMessages] = useState<ChatMessage[]>([initialMessage]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [sessionQuestionCount, setSessionQuestionCount] = useState(getSessionQuestionCount);
+  const [sessionQuestionCount, setSessionQuestionCount] = useState(0);
   const messageIdRef = useRef(1);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -207,7 +189,6 @@ export const PersonalAssistant: React.FC = () => {
     appendMessage({ role: 'user', content: trimmedQuery });
     const nextQuestionCount = sessionQuestionCount + 1;
     setSessionQuestionCount(nextQuestionCount);
-    saveSessionQuestionCount(nextQuestionCount);
     setIsLoading(true);
     const controller = new AbortController();
     const timeout = window.setTimeout(() => controller.abort(), 15_000);
