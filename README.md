@@ -75,8 +75,11 @@ Portfolio content is maintained in `src/data/`.
 ## Personal AI Portfolio Assistant
 
 The Cloudflare Worker for the portfolio assistant is in [`worker/`](worker/).
-Its editable, markdown-based context is [`worker/context/llms.txt`](worker/context/llms.txt)
-and [`worker/context/profile.md`](worker/context/profile.md).
+Its editable, markdown-based context index is [`worker/context/llms.txt`](worker/context/llms.txt),
+with profile, project, and skill content in
+[`worker/context/profile.md`](worker/context/profile.md),
+[`worker/context/projects.md`](worker/context/projects.md), and
+[`worker/context/skills.md`](worker/context/skills.md).
 The deployed endpoint is
 `https://nimish-portfolio-assistant.nnimish75.workers.dev`.
 
@@ -93,7 +96,15 @@ Configure `AI_API_KEY` and `AI_API_URL` as Worker secrets when using an
 OpenAI-compatible provider. Without an API key, the endpoint uses deterministic
 context retrieval and does not call an external provider. `ALLOWED_ORIGIN`
 defaults to `https://nimishvishnoi.github.io` and should remain restricted to
-the deployed portfolio origin.
+the deployed portfolio origin. The Worker enforces JSON requests, a bounded
+10-request-per-minute per-client limit, a 10-second provider timeout, and a
+maximum provider response size. These controls are intentionally in-memory and
+free-tier compatible; Cloudflare Rate Limiting or Durable Objects can provide
+stronger global enforcement later if traffic requires it.
+
+The first administrator must be provisioned outside the public application
+(for example, through the Firebase console). The public app cannot create the
+first administrator or grant itself administrator access.
 
 The `Deploy Cloudflare Worker` GitHub Actions job runs on pushes to `main`.
 Add these repository secrets:

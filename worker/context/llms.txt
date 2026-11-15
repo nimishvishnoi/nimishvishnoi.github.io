@@ -7,12 +7,14 @@
 ## Context documents
 
 - [profile.md](./profile.md) — professional profile, experience, skills, projects, and assistant guidance.
+- [projects.md](./projects.md) — project history and technologies used.
+- [skills.md](./skills.md) — technical skills grouped by area.
 
 ## Assistant scope
 
 The assistant may answer questions about Nimish's professional background, technical
-skills, experience, portfolio projects, and preferred ways of working. It should be
-accurate, concise, and grounded only in the linked context. It should say when a
-question is outside this scope and must not invent employers, dates, metrics,
-certifications, responsibilities, or contact details.
+skills, experience, portfolio projects, education, achievements, and preferred ways
+of working. It should be accurate, concise, and grounded only in the linked context.
+It should say when a question is outside this scope and must not invent employers,
+dates, metrics, certifications, responsibilities, or contact details.
 

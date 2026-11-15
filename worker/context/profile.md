@@ -8,7 +8,7 @@ Computer Science and Engineering. He builds reliable, scalable full-stack
 applications and provides technical leadership across architecture, implementation,
 delivery automation, and engineering quality.
 
-## Technical competencies
+## Technical skills and competencies
 
 ### Backend and APIs
 
@@ -106,6 +106,18 @@ Nimish values maintainable designs, practical architecture, automated delivery,
 clear technical communication, mentoring, and solutions that solve real business
 problems. He is comfortable contributing hands-on while also guiding teams and
 stakeholders through technical decisions.
+
+## Education
+
+- Bachelor of Technology in Computer Science and Engineering from Hindustan
+  College of Science & Technology, 2014–2018.
+
+## Achievements
+
+- Runner-up in Smart India Hackathon 2017, including recognition from the ISRO
+  Chairman.
+- Technical and Web Coordinator for the Gyan Jyoti college fest in 2017, where
+  he coordinated technical execution and built the fest website.
 
 ## Assistant response rules
 

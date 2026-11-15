@@ -9,10 +9,11 @@ service cloud.firestore {
         && get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.isAdmin == true;
     }
 
-    // Admins collection: allow users to read their own admin doc; allow admins to manage admins
+    // Users may read their own record, but only an existing administrator may
+    // create, update, or delete administrator records.
     match /admins/{adminId} {
       allow read: if request.auth != null && (request.auth.uid == adminId || isAdmin());
-      allow create: if request.auth != null && (request.auth.uid == adminId || isAdmin());
+      allow create: if isAdmin();
       allow update, delete: if isAdmin();
     }
 
@@ -38,9 +39,32 @@ service cloud.firestore {
       ];
     }
 
-    // Analytics events: allow clients to write with rate limiting, only admins can read
+    // Analytics events: allow only the event shapes emitted by the frontend.
+    // Firestore rules cannot provide reliable per-client rate limiting; abuse
+    // protection must be handled through quotas or a dedicated ingestion service.
     match /analytics/{eventType}/events/{eventId} {
-      allow create: if request.time > now - duration.value(1, 's');
+      allow create: if eventType in [
+          'page_view',
+          'form_submission',
+          'project_click',
+          'resume_download'
+        ]
+        && request.resource.data.keys().hasOnly([
+          'eventType',
+          'data',
+          'createdAt',
+          'timestamp',
+          'userAgent',
+          'url'
+        ])
+        && request.resource.data.eventType == eventType
+        && request.resource.data.data is map
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.timestamp is number
+        && request.resource.data.userAgent is string
+        && request.resource.data.userAgent.size() <= 100
+        && request.resource.data.url is string
+        && request.resource.data.url.size() <= 2048;
       allow read, update, delete: if isAdmin();
     }
 
