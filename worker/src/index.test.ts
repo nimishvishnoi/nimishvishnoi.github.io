@@ -130,7 +130,13 @@ describe('portfolio assistant Worker', () => {
 
   it('uses Workers AI to turn matched context into a direct answer', async () => {
     const run = vi.fn().mockResolvedValue({
-      response: 'Nimish works with C#, .NET, React, and cloud technologies.',
+      choices: [
+        {
+          message: {
+            content: 'Nimish works with C#, .NET, React, and cloud technologies.',
+          },
+        },
+      ],
     });
     const response = await worker.fetch(
       request(
