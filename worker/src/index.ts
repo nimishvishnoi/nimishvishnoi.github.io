@@ -76,6 +76,11 @@ interface ProviderResponse {
 
 interface WorkersAiResponse {
   response?: string;
+  choices?: Array<{
+    message?: {
+      content?: string | null;
+    };
+  }>;
 }
 
 interface WorkersAiBinding {
@@ -247,7 +252,8 @@ async function generateAnswer(query: string, context: string, env: Env): Promise
       max_tokens: 250,
       temperature: 0.2,
     })) as WorkersAiResponse;
-    const answer = response.response?.trim();
+    const answer =
+      response.response?.trim() || response.choices?.[0]?.message?.content?.trim() || '';
     if (!answer) throw new Error('Workers AI returned an empty answer.');
     if (answer.length > MAX_ANSWER_LENGTH) {
       throw new Error('Workers AI returned an oversized answer.');
