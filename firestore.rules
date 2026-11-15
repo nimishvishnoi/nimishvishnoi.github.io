@@ -9,10 +9,11 @@ service cloud.firestore {
         && get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.isAdmin == true;
     }
 
-    // Admins collection: allow users to read their own admin doc; allow admins to manage admins
+    // Users may read their own record, but only an existing administrator may
+    // create, update, or delete administrator records.
     match /admins/{adminId} {
       allow read: if request.auth != null && (request.auth.uid == adminId || isAdmin());
-      allow create: if request.auth != null && (request.auth.uid == adminId || isAdmin());
+      allow create: if isAdmin();
       allow update, delete: if isAdmin();
     }
 

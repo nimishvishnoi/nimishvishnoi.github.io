@@ -46,6 +46,9 @@ jobs:
       - name: Check CSP hash
         run: yarn check:csp
 
+      - name: Run frontend tests
+        run: yarn test --run
+
       - name: Build React app
         run: yarn build
 
@@ -78,6 +81,9 @@ jobs:
 
       - name: Check CSP hash
         run: yarn check:csp
+
+      - name: Run frontend tests
+        run: yarn test --run
 
       - name: Build React app
         env:
@@ -122,7 +128,7 @@ jobs:
 
       - name: Deploy Firebase rules
         run: |
-          npm install -g firebase-tools@latest
+          npm install -g firebase-tools@13.35.1
           PROJECT_ID="${{ secrets.VITE_FIREBASE_PROJECT_ID }}"
 
           if [ -n "$PROJECT_ID" ]; then
@@ -162,6 +168,10 @@ jobs:
       - name: Type-check Worker
         working-directory: worker
         run: npm run typecheck
+
+      - name: Test Worker
+        working-directory: worker
+        run: npm test
 
       - name: Deploy Worker
         working-directory: worker

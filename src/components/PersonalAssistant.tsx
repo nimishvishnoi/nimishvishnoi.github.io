@@ -52,12 +52,15 @@ export const PersonalAssistant: React.FC = () => {
       { id: Date.now(), role: 'user', content: trimmedQuery },
     ]);
     setIsLoading(true);
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), 15_000);
 
     try {
       const response = await fetch(ASSISTANT_API_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ query: trimmedQuery }),
+        signal: controller.signal,
       });
       const payload = (await response.json()) as AssistantResponse;
 
@@ -74,12 +77,17 @@ export const PersonalAssistant: React.FC = () => {
         { id: Date.now(), role: 'assistant', content: payload.answer as string },
       ]);
     } catch (requestError) {
+      if (requestError instanceof DOMException && requestError.name === 'AbortError') {
+        setError('The assistant took too long to respond. Please try again.');
+        return;
+      }
       const message =
         requestError instanceof Error
           ? requestError.message
           : 'The assistant is temporarily unavailable.';
       setError(message);
     } finally {
+      window.clearTimeout(timeout);
       setIsLoading(false);
     }
   };
