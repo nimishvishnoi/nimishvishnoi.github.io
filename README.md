@@ -68,6 +68,10 @@ Portfolio content is maintained in `src/data/`.
   - `VITE_FIREBASE_MEASUREMENT_ID`
   - `VITE_RECAPTCHA_SITE_KEY` (optional)
   - `FIREBASE_TOKEN` (only needed when deploying `database.rules.json`)
+  - `FIREBASE_SERVICE_ACCOUNT_JSON` — GitHub Environment secret containing a Firebase
+    service-account JSON credential with Firebase Authentication Admin permission
+  - `FIREBASE_ADMIN_UIDS` — comma-separated Firebase Auth UIDs that should receive
+    the `admin: true` custom claim
 - Production output is generated into `dist/`.
 
   <!-- CI trigger: no-op commit to deploy updated Firebase rules -->
@@ -113,6 +117,16 @@ can provide stronger global enforcement later if traffic requires it.
 The first administrator must be provisioned outside the public application
 (for example, through the Firebase console). The public app cannot create the
 first administrator or grant itself administrator access.
+
+Contact messages remain in Realtime Database under `Message/{date}/{id}`.
+Message reads and deletes require a Firebase Auth custom claim named `admin`
+with the boolean value `true`; ordinary authenticated users cannot access
+messages. The deployment workflow automatically sets this claim for every UID in
+`FIREBASE_ADMIN_UIDS` using the trusted Firebase Admin SDK. Keep both values as
+GitHub Environment secrets, never client-exposed variables. Administrators
+must sign out and back in after deployment so a new ID token is issued. The
+Firestore `admins/{uid}` document is still required for portfolio admin-panel
+access.
 
 The `Deploy Cloudflare Worker` GitHub Actions job runs on pushes to `main`.
 Add these repository secrets:

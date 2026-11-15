@@ -28,7 +28,7 @@ const STOP_WORDS = new Set([
   'which',
 ]);
 const QUERY_ALIASES: Record<string, string[]> = {
-  achievement: ['achievement', 'award', 'recognition', 'hackathon'],
+  achievement: ['achievement', 'achievements', 'achieved', 'award', 'recognition', 'hackathon'],
   education: ['education', 'degree', 'study', 'studied', 'college', 'university'],
   experience: ['experience', 'career', 'employment', 'job', 'role', 'work'],
   project: ['project', 'projects', 'built', 'developed', 'application', 'website'],
@@ -58,6 +58,9 @@ function deterministicFallback(category: QuestionCategory, context: string): str
     return 'I can answer questions about Nimish’s professional experience, projects, education, achievements, and technical skills.';
   }
   const compactContext = context.replace(/\n{3,}/gu, '\n\n').trim();
+  if (!compactContext) {
+    return 'I do not have that specific information in Nimish’s portfolio context.';
+  }
   return `Here’s the relevant portfolio information:\n\n${compactContext.slice(0, MAX_CONTEXT_LENGTH)}`;
 }
 
@@ -197,8 +200,13 @@ function retrieveContext(query: string, category: QuestionCategory, limit = 3): 
     .filter(({ score }) => score > 0)
     .sort((left, right) => right.score - left.score)
     .slice(0, limit);
-  if (matches.length === 0 && BROAD_QUERY_PATTERN.test(query)) {
-    return candidateSections.find((section) => section.startsWith('## Overview')) ?? null;
+  if (matches.length === 0) {
+    if (BROAD_QUERY_PATTERN.test(query)) {
+      return candidateSections.find((section) => section.startsWith('## Overview')) ?? null;
+    }
+    if (categorySections.length > 0) {
+      return categorySections.join('\n\n');
+    }
   }
 
   const topScore = matches[0]?.score ?? 0;
@@ -228,14 +236,14 @@ function classifyQuestion(query: string): QuestionCategory {
   ) {
     return 'out_of_scope';
   }
+  if (/\b(?:project|projects|built|developed|application|website)\b/u.test(normalizedQuery)) {
+    return 'projects';
+  }
   if (/\b(?:skill|skills|technology|technologies|tech|expertise)\b/u.test(normalizedQuery)) {
     return 'skills';
   }
-  if (/\b(?:experience|career|employment|job|role|work)\b/u.test(normalizedQuery)) {
+  if (/\b(?:experience|career|employment|job|role|work|title|based)\b/u.test(normalizedQuery)) {
     return 'experience';
-  }
-  if (/\b(?:project|projects|built|developed|application|website)\b/u.test(normalizedQuery)) {
-    return 'projects';
   }
   if (/\b(?:education|degree|study|studied|college|university)\b/u.test(normalizedQuery)) {
     return 'education';
@@ -247,6 +255,7 @@ function classifyQuestion(query: string): QuestionCategory {
     return 'contact';
   }
   if (BROAD_QUERY_PATTERN.test(normalizedQuery)) return 'experience';
+  if (PORTFOLIO_REFERENCE_PATTERN.test(normalizedQuery)) return 'experience';
   return 'out_of_scope';
 }
 

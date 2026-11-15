@@ -204,7 +204,7 @@ export const PersonalAssistant: React.FC = () => {
 
       const answer = payload.answer;
       if (!response.ok || typeof answer !== 'string') {
-        await analytics.logAssistantQuestion(
+        void analytics.logAssistantQuestion(
           typeof payload.category === 'string' ? payload.category : 'out_of_scope',
           response.status === 429 ? 'rate_limited' : 'error'
         );
@@ -216,7 +216,7 @@ export const PersonalAssistant: React.FC = () => {
       }
 
       appendMessage({ role: 'assistant', content: answer });
-      await analytics.logAssistantQuestion(
+      void analytics.logAssistantQuestion(
         typeof payload.category === 'string' ? payload.category : 'out_of_scope',
         'answered',
         answer.length

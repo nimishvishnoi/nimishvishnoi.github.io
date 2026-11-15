@@ -139,6 +139,14 @@ jobs:
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
 
+      - name: Sync Firebase admin claims
+        run: |
+          npm install --no-save --no-package-lock firebase-admin@13.6.0
+          node scripts/set-admin-claims.mjs
+        env:
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
+          FIREBASE_ADMIN_UIDS: ${{ secrets.FIREBASE_ADMIN_UIDS }}
+
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4

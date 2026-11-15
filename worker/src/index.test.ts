@@ -236,6 +236,21 @@ describe('portfolio assistant Worker', () => {
     expect(payload.answer).not.toContain('Assistant response rules');
   });
 
+  it('answers valid profile questions that do not use a category keyword', async () => {
+    const response = await worker.fetch(
+      request(
+        JSON.stringify({ query: 'What is his current title?' }),
+        undefined,
+        'profile-title-client'
+      ),
+      env
+    );
+    const payload = (await response.json()) as { answer?: string; category?: string };
+
+    expect(payload.category).toBe('experience');
+    expect(payload.answer).toContain('Staff Engineer');
+  });
+
   it('does not dump context for unrelated questions', async () => {
     const response = await worker.fetch(
       request(JSON.stringify({ query: 'Is this person stupid?' }), undefined, 'unrelated-client'),
