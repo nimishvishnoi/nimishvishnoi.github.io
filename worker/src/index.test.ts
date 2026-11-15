@@ -96,6 +96,23 @@ describe('portfolio assistant Worker', () => {
     expect(payload.answer).not.toContain('##');
   });
 
+  it('answers experience-duration questions directly', async () => {
+    const response = await worker.fetch(
+      request(
+        JSON.stringify({ query: 'How many years of experience does Nimish have?' }),
+        undefined,
+        'experience-duration-client'
+      ),
+      env
+    );
+    const payload = (await response.json()) as { answer?: string };
+
+    expect(payload.answer).toBe(
+      'Nimish has 8+ years of professional software engineering experience.'
+    );
+    expect(payload.answer).not.toContain('###');
+  });
+
   it('returns focused context for technical skills questions', async () => {
     const response = await worker.fetch(
       request(

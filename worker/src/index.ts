@@ -36,6 +36,8 @@ const BROAD_QUERY_PATTERN =
   /\b(?:tell me about|who is|introduce|overview|background|professional profile|what does .+ do)\b/iu;
 const GREETING_PATTERN =
   /^(?:hi|hello|hey|good morning|good afternoon|good evening)(?:[!,. ]+how are you(?: doing)?\s*[!?]*)?$/iu;
+const EXPERIENCE_DURATION_PATTERN =
+  /\b(?:how many years|years of experience|years experience|experience duration)\b/iu;
 
 interface Env {
   AI_API_KEY?: string;
@@ -148,6 +150,9 @@ function retrieveContext(query: string, limit = 3): string | null {
 function conversationalAnswer(query: string): string | null {
   if (GREETING_PATTERN.test(query.trim())) {
     return 'Hi! I’m doing well, thanks for asking. I can tell you about Nimish’s experience, projects, and technical skills.';
+  }
+  if (EXPERIENCE_DURATION_PATTERN.test(query)) {
+    return 'Nimish has 8+ years of professional software engineering experience.';
   }
   return null;
 }
