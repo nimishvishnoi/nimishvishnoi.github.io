@@ -8,6 +8,11 @@ interface AnalyticsStat {
   icon: string;
 }
 
+interface CategoryStat {
+  category: string;
+  count: number;
+}
+
 export function AdminDashboard() {
   const { state, dispatch } = useAppState();
   const [stats, setStats] = useState<AnalyticsStat[]>([
@@ -17,6 +22,7 @@ export function AdminDashboard() {
     { label: 'Resume Downloads', value: 0, icon: '📄' },
     { label: 'Assistant Questions', value: 0, icon: '🤖' },
   ]);
+  const [assistantCategories, setAssistantCategories] = useState<CategoryStat[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [hasData, setHasData] = useState(false);
 
@@ -39,8 +45,20 @@ export function AdminDashboard() {
         { label: 'Resume Downloads', value: resumeDownloads.length, icon: '📄' },
         { label: 'Assistant Questions', value: assistantQuestions.length, icon: '🤖' },
       ];
+      const categoryCounts = assistantQuestions.reduce<Record<string, number>>((counts, event) => {
+        const category = event.data.category;
+        if (typeof category === 'string') {
+          counts[category] = (counts[category] ?? 0) + 1;
+        }
+        return counts;
+      }, {});
 
       setStats(newStats);
+      setAssistantCategories(
+        Object.entries(categoryCounts)
+          .map(([category, count]) => ({ category, count }))
+          .sort((left, right) => right.count - left.count)
+      );
       setHasData(newStats.some((s) => s.value > 0));
     } catch (error) {
       console.error('Failed to load analytics:', error);
@@ -103,6 +121,24 @@ export function AdminDashboard() {
           {stats.map((stat) => (
             <StatCard key={stat.label} stat={stat} />
           ))}
+        </div>
+      )}
+
+      {assistantCategories.length > 0 && (
+        <div className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-6">
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
+            Assistant question categories
+          </h2>
+          <div className="flex flex-wrap gap-3">
+            {assistantCategories.map(({ category, count }) => (
+              <span
+                key={category}
+                className="rounded-full bg-teal-100 px-3 py-1 text-sm text-teal-800 dark:bg-teal-900/40 dark:text-teal-200"
+              >
+                {category}: {count}
+              </span>
+            ))}
+          </div>
         </div>
       )}
 
