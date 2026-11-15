@@ -153,6 +153,48 @@ describe('portfolio assistant Worker', () => {
     expect(run).toHaveBeenCalledOnce();
   });
 
+  it('allows enough model output budget for experience technology questions', async () => {
+    const run = vi.fn().mockResolvedValue({
+      choices: [
+        {
+          message: {
+            content: 'C#, .NET, React, AWS, SQL Server, and JavaScript.',
+          },
+        },
+      ],
+    });
+    const response = await worker.fetch(
+      request(
+        JSON.stringify({ query: 'experience in what technology ?' }),
+        undefined,
+        'experience-technology-client'
+      ),
+      { ...env, AI: { run } }
+    );
+    const payload = (await response.json()) as { answer?: string };
+    const input = run.mock.calls[0][1] as { max_tokens: number };
+
+    expect(payload.answer).toContain('C#');
+    expect(input.max_tokens).toBe(500);
+  });
+
+  it('returns grounded fallback content when Workers AI is unavailable', async () => {
+    const run = vi.fn().mockRejectedValue(new Error('model unavailable'));
+    const response = await worker.fetch(
+      request(
+        JSON.stringify({ query: 'What technologies has Nimish used in his experience?' }),
+        undefined,
+        'ai-fallback-client'
+      ),
+      { ...env, AI: { run } }
+    );
+    const payload = (await response.json()) as { answer?: string };
+
+    expect(response.status).toBe(200);
+    expect(payload.answer).toContain('Here’s the relevant portfolio information:');
+    expect(payload.answer).toContain('C#');
+  });
+
   it('returns focused context for technical skills questions', async () => {
     const response = await worker.fetch(
       request(
@@ -192,6 +234,21 @@ describe('portfolio assistant Worker', () => {
 
     expect(payload.answer).toContain('Staff Engineer');
     expect(payload.answer).not.toContain('Assistant response rules');
+  });
+
+  it('answers valid profile questions that do not use a category keyword', async () => {
+    const response = await worker.fetch(
+      request(
+        JSON.stringify({ query: 'What is his current title?' }),
+        undefined,
+        'profile-title-client'
+      ),
+      env
+    );
+    const payload = (await response.json()) as { answer?: string; category?: string };
+
+    expect(payload.category).toBe('experience');
+    expect(payload.answer).toContain('Staff Engineer');
   });
 
   it('does not dump context for unrelated questions', async () => {

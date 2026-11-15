@@ -1,10 +1,13 @@
 /**
  * MessagesViewer — reads contact form submissions from Firebase Realtime Database.
- * Messages are stored under Message/{date}/{id}.
+ * Messages are stored under Message/{date}/{id} and protected by the Firebase Auth
+ * `admin` custom claim in database.rules.json.
  */
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { getDatabase, ref, get, remove } from 'firebase/database';
 import { getFirebaseApp } from '../../services/firebase.firestore';
+import { getAuth } from 'firebase/auth';
+import { logMessageOperation } from '../../services/auditLog';
 
 interface Message {
   id: string;
@@ -45,6 +48,17 @@ export function MessagesViewer() {
     setError('');
     try {
       const db = getDatabase(getFirebaseApp());
+      const auth = getAuth(getFirebaseApp());
+      const user = auth.currentUser;
+      if (!user) {
+        throw new Error('Your admin session has expired. Please sign in again.');
+      }
+      const token = await user.getIdTokenResult(true);
+      if (token.claims.admin !== true) {
+        throw new Error(
+          'Message access requires the Firebase Auth admin custom claim. Ask the Firebase administrator to grant it, then sign in again.'
+        );
+      }
       const snap = await get(ref(db, 'Message'));
 
       if (!snap.exists()) {
@@ -70,8 +84,16 @@ export function MessagesViewer() {
 
       if (isMountedRef.current) setMessages(all);
     } catch (err) {
-      if (isMountedRef.current)
-        setError(err instanceof Error ? err.message : 'Failed to load messages.');
+      if (isMountedRef.current) {
+        const message = err instanceof Error ? err.message : '';
+        setError(
+          message.includes('permission') ||
+            message.includes('Permission') ||
+            message.includes('admin custom claim')
+            ? 'Message access requires the Firebase Auth admin custom claim. Refresh your ID token after an administrator grants it.'
+            : message || 'Failed to load messages.'
+        );
+      }
     } finally {
       if (isMountedRef.current) setIsLoading(false);
     }
@@ -94,8 +116,16 @@ export function MessagesViewer() {
     setDeleting(msg.id);
     try {
       const db = getDatabase(getFirebaseApp());
+      const auth = getAuth(getFirebaseApp());
+      const user = auth.currentUser;
+      if (!user) {
+        throw new Error('Your admin session has expired. Please sign in again.');
+      }
       await remove(ref(db, `Message/${msg.date}/${msg.id}`));
       setMessages((prev) => prev.filter((m) => m.id !== msg.id));
+      await logMessageOperation(user.uid, user.email ?? 'unknown', 'message_deleted', msg.id, {
+        date: msg.date,
+      });
     } catch (err) {
       alert(err instanceof Error ? err.message : 'Delete failed.');
     } finally {

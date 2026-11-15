@@ -5,7 +5,6 @@ import { PersonalAssistant } from './PersonalAssistant';
 describe('PersonalAssistant', () => {
   beforeEach(() => {
     vi.restoreAllMocks();
-    sessionStorage.clear();
   });
 
   it('renders assistant Markdown and submits with Enter', async () => {
@@ -65,15 +64,17 @@ describe('PersonalAssistant', () => {
     });
   });
 
-  it('stops sending after the session question limit', () => {
+  it('starts a new in-memory session after a page refresh', () => {
     sessionStorage.setItem('portfolio-assistant-question-count', '12');
     vi.stubGlobal('fetch', vi.fn());
 
     render(<PersonalAssistant />);
     fireEvent.click(screen.getByRole('button', { name: /open portfolio assistant/i }));
 
-    expect(screen.getByRole('textbox', { name: /ask the portfolio assistant/i })).toBeDisabled();
-    expect(screen.getByText(/session question limit reached/i)).toBeInTheDocument();
+    expect(
+      screen.getByRole('textbox', { name: /ask the portfolio assistant/i })
+    ).not.toBeDisabled();
+    expect(screen.getByText(/12 questions remaining/i)).toBeInTheDocument();
     expect(fetch).not.toHaveBeenCalled();
   });
 });

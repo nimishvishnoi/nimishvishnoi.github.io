@@ -54,16 +54,15 @@ export function TrustedUsers() {
     const trimmedEmail = email.trim().toLowerCase();
     const trimmedUid = uid.trim();
 
-    if (!trimmedEmail && !trimmedUid) {
-      setError('Provide either an email or a UID to add a trusted user.');
+    if (!trimmedUid) {
+      setError('Provide the Firebase Auth UID. Admin access is authorized by UID.');
       return;
     }
 
     setSaving(true);
     try {
       const db = getDb();
-      const docId = trimmedUid || `email:${encodeURIComponent(trimmedEmail)}`;
-      await setDoc(doc(db, 'admins', docId), {
+      await setDoc(doc(db, 'admins', trimmedUid), {
         email: trimmedEmail || null,
         uid: trimmedUid || null,
         isAdmin: true,
@@ -101,14 +100,13 @@ export function TrustedUsers() {
       <div className="rounded-lg border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-6">
         <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Trusted Users</h2>
         <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
-          Add or remove trusted admin users from within the app. You can provide either a user UID
-          or an email address. If you use email, the user will be recognized once they sign in with
-          that email.
+          Add or remove trusted admin users by their Firebase Auth UID. UID-based records match the
+          Firestore security rules and avoid granting access based only on an editable email value.
         </p>
 
         <div className="mt-6 grid gap-4 sm:grid-cols-2">
           <label className="space-y-2 text-sm text-gray-600 dark:text-gray-300">
-            <span>Trusted user email</span>
+            <span>Trusted user email (optional)</span>
             <input
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -118,7 +116,7 @@ export function TrustedUsers() {
             />
           </label>
           <label className="space-y-2 text-sm text-gray-600 dark:text-gray-300">
-            <span>Trusted user UID</span>
+            <span>Trusted user UID (required)</span>
             <input
               value={uid}
               onChange={(e) => setUid(e.target.value)}
