@@ -5,6 +5,7 @@ import skillsContext from '../context/skills.md';
 const MAX_QUERY_LENGTH = 1000;
 const MAX_BODY_LENGTH = 4_000;
 const MAX_ANSWER_LENGTH = 1_500;
+const AI_MAX_TOKENS = 500;
 const MAX_CONTEXT_LENGTH = 1_400;
 const RATE_LIMIT_WINDOW_MS = 60_000;
 const RATE_LIMIT_MAX_REQUESTS = 10;
@@ -249,7 +250,7 @@ async function generateAnswer(query: string, context: string, env: Env): Promise
         },
         { role: 'user', content: query },
       ],
-      max_tokens: 250,
+      max_tokens: AI_MAX_TOKENS,
       temperature: 0.2,
     })) as WorkersAiResponse;
     const answer =

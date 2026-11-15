@@ -153,6 +153,31 @@ describe('portfolio assistant Worker', () => {
     expect(run).toHaveBeenCalledOnce();
   });
 
+  it('allows enough model output budget for experience technology questions', async () => {
+    const run = vi.fn().mockResolvedValue({
+      choices: [
+        {
+          message: {
+            content: 'C#, .NET, React, AWS, SQL Server, and JavaScript.',
+          },
+        },
+      ],
+    });
+    const response = await worker.fetch(
+      request(
+        JSON.stringify({ query: 'experience in what technology ?' }),
+        undefined,
+        'experience-technology-client'
+      ),
+      { ...env, AI: { run } }
+    );
+    const payload = (await response.json()) as { answer?: string };
+    const input = run.mock.calls[0][1] as { max_tokens: number };
+
+    expect(payload.answer).toContain('C#');
+    expect(input.max_tokens).toBe(500);
+  });
+
   it('returns focused context for technical skills questions', async () => {
     const response = await worker.fetch(
       request(
