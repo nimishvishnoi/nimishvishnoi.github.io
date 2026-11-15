@@ -107,6 +107,18 @@ clear technical communication, mentoring, and solutions that solve real business
 problems. He is comfortable contributing hands-on while also guiding teams and
 stakeholders through technical decisions.
 
+## Education
+
+- Bachelor of Technology in Computer Science and Engineering from Hindustan
+  College of Science & Technology, 2014–2018.
+
+## Achievements
+
+- Runner-up in Smart India Hackathon 2017, including recognition from the ISRO
+  Chairman.
+- Technical and Web Coordinator for the Gyan Jyoti college fest in 2017, where
+  he coordinated technical execution and built the fest website.
+
 ## Assistant response rules
 
 1. Ground answers in this document and `llms.txt`.

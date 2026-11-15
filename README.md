@@ -75,8 +75,11 @@ Portfolio content is maintained in `src/data/`.
 ## Personal AI Portfolio Assistant
 
 The Cloudflare Worker for the portfolio assistant is in [`worker/`](worker/).
-Its editable, markdown-based context is [`worker/context/llms.txt`](worker/context/llms.txt)
-and [`worker/context/profile.md`](worker/context/profile.md).
+Its editable, markdown-based context index is [`worker/context/llms.txt`](worker/context/llms.txt),
+with profile, project, and skill content in
+[`worker/context/profile.md`](worker/context/profile.md),
+[`worker/context/projects.md`](worker/context/projects.md), and
+[`worker/context/skills.md`](worker/context/skills.md).
 The deployed endpoint is
 `https://nimish-portfolio-assistant.nnimish75.workers.dev`.
 
